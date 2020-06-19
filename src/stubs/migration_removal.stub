@@ -1,0 +1,41 @@
+<?php
+/**
+ * Migration generated using IdeaGroup
+ * Help: lehung.hut@gmail.com
+ * CrmAdmin is open-sourced software licensed under the MIT license.
+ * Developed by: Lehungdev IT Solutions
+ * Developer Website: http://ideagroup.vn
+ */
+
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
+
+class __migration_class_name__ extends Migration
+{
+    /**
+     * This is Reverse Migration for Deleted Module
+     *
+     * @return void
+     */
+    public function up()
+    {
+        // This Module has been deleted.
+        // You can remove this file after migrate:reset
+        
+        if(Schema::hasTable('__db_table_name__')) {
+            Schema::drop('__db_table_name__');
+        }
+    }
+    
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        if(Schema::hasTable('__db_table_name__')) {
+            Schema::drop('__db_table_name__');
+        }
+    }
+}
