@@ -272,9 +272,9 @@ class LAInstall extends Command
                 $this->copyFolder($from . "/tests", $to . "/tests");
                 if (LAHelper::laravel_ver() == 5.3 || LAHelper::laravel_ver() != 5.4) {
                     unlink($to . '/tests/TestCase.php');
-                    rename($to . '/tests/TestCase5.5.php', $to . '/tests/TestCase.php');
+                    rename($to . '/tests/TestCase5.3.php', $to . '/tests/TestCase.php');
                 } else {
-                    unlink($to . '/tests/TestCase5.5.php');
+                    unlink($to . '/tests/TestCase5.3.php');
                 }
 
                 // Utilities

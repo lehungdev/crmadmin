@@ -9,20 +9,52 @@
 
 namespace App;
 
-use Shanmuga\LaravelEntrust\LaravelEntrustPermission;
-use Illuminate\Database\Eloquent\SoftDeletes;
+// use Shanmuga\LaravelEntrust\EntrustPermission;
+// use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Permission extends LaravelEntrustPermission
+// class Permission extends EntrustPermission
+// {
+//     use SoftDeletes;
+
+// 	protected $table = 'permissions';
+
+// 	protected $hidden = [
+
+//     ];
+
+// 	protected $guarded = [];
+
+// 	protected $dates = ['deleted_at'];
+// }
+
+
+use Shanmuga\LaravelEntrust\Models;
+
+use Illuminate\Support\Facades\Config;
+use Illuminate\Database\Eloquent\Model;
+use Shanmuga\LaravelEntrust\Traits\LaravelEntrustPermissionTrait;
+use Shanmuga\LaravelEntrust\Contracts\LaravelEntrustPermissionInterface;
+
+class Permission extends Model implements LaravelEntrustPermissionInterface
 {
-    use SoftDeletes;
-	
-	protected $table = 'permissions';
-	
-	protected $hidden = [
-        
-    ];
+    use LaravelEntrustPermissionTrait;
 
-	protected $guarded = [];
+    /**
+     * The database table used by the model.
+     *
+     * @var string
+     */
+    protected $table;
 
-	protected $dates = ['deleted_at'];
+    /**
+     * Creates a new instance of the model.
+     *
+     * @param  array  $attributes
+     * @return void
+     */
+    public function __construct(array $attributes = [])
+    {
+        parent::__construct($attributes);
+        $this->table = Config::get('entrust.tables.permissions');
+    }
 }
