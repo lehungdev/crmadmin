@@ -9,10 +9,10 @@
 
 namespace App;
 
-use Shanmuga\LaravelEntrust\LaravelEntrustRole;
+use Shanmuga\LaravelEntrust\EntrustRole;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Role extends LaravelEntrustRole
+class Role extends EntrustRole
 {
     use SoftDeletes;
 

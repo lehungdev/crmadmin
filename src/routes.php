@@ -1,5 +1,5 @@
 <?php
-
+use Illuminate\Support\Facades\Route;
 $as = "";
 if(\Lehungdev\Crmadmin\Helpers\LAHelper::laravel_ver() != 5.3) {
     $as = config('crmadmin.adminRoute') . '.';
@@ -14,7 +14,7 @@ Route::group([
     'as' => $as,
     'middleware' => ['web', 'auth', 'permission:ADMIN_PANEL', 'role:SUPER_ADMIN']
 ], function () {
-    
+
     /* ================== Modules ================== */
     Route::resource(config('crmadmin.adminRoute') . '/modules', 'ModuleController');
     Route::resource(config('crmadmin.adminRoute') . '/module_fields', 'FieldController');
@@ -41,14 +41,14 @@ Route::group([
             return View('la.editor.install');
         }
     });
-    
+
     /* ================== Menu Editor ================== */
     Route::resource(config('crmadmin.adminRoute') . '/la_menus', 'MenuController');
     Route::post(config('crmadmin.adminRoute') . '/la_menus/update_hierarchy', 'MenuController@update_hierarchy');
-    
+
     /* ================== Configuration ================== */
     Route::resource(config('crmadmin.adminRoute') . '/la_configs', '\App\Http\Controllers\LA\LAConfigController');
-    
+
     Route::group([
         'middleware' => 'role'
     ], function () {

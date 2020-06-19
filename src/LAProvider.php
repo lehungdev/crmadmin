@@ -133,10 +133,10 @@ class LAProvider extends ServiceProvider
         $loader->alias('LAConfigs', \Lehungdev\Crmadmin\Models\LAConfigs::class);
 
         // For LaravelEntrust
-        $loader->alias('LaravelEntrust', \Shanmuga\LaravelEntrust\EntrustFacade::class);
+        $loader->alias('LaravelEntrust', \Shanmuga\LaravelEntrust\LaravelEntrustFacade::class);
         $loader->alias('role', \Shanmuga\LaravelEntrust\Middleware\EntrustRole::class);
-        $loader->alias('permission', \Shanmuga\LaravelEntrust\Middleware\EntrustPermission::class);
-        $loader->alias('ability', \Shanmuga\LaravelEntrust\Middleware\EntrustAbility::class);
+        $loader->alias('permission', \Shanmuga\LaravelEntrust\Middleware\LaravelEntrustPermission::class);
+        $loader->alias('ability', \Shanmuga\LaravelEntrust\Middleware\LaravelEntrustAbility::class);
 
         /*
         |--------------------------------------------------------------------------

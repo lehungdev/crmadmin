@@ -1,10 +1,11 @@
 <?php
+
 /**
- * Code generated using IdeaGroup
- * Help: lehung.hut@gmail.com
+ * Code generated using CrmAdmin
+ * Help: http://crmadmin.com
  * CrmAdmin is open-sourced software licensed under the MIT license.
  * Developed by: Lehungdev IT Solutions
- * Developer Website: http://ideagroup.vn
+ * Developer Website: http://lehungdevitsolutions.com
  */
 
 namespace Lehungdev\Crmadmin\Commands;
@@ -56,19 +57,19 @@ class LAInstall extends Command
             $this->info('from: ' . $from . " to: " . $to);
 
             $this->line("\nDB Assistant:");
-            if($this->confirm("Want to set your Database config in the .env file ?", true)) {
+            if ($this->confirm("Want to set your Database config in the .env file ?", true)) {
                 $this->line("DB Assistant Initiated....");
                 $db_data = array();
 
-                if(LAHelper::laravel_ver() != 5.3) {
-                    $db_data['host'] = $this->ask('Database Host', '127.0.0.1');
+                if (LAHelper::laravel_ver() == 5.3 || LAHelper::laravel_ver() != 5.4) {
+                    $db_data['host'] = $this->ask('Database Host', 'localhost');
                     $db_data['port'] = $this->ask('Database Port', '3306');
                 }
                 $db_data['db'] = $this->ask('Database Name', 'crmadmin1');
                 $db_data['dbuser'] = $this->ask('Database User', 'root');
                 $dbpass = $this->ask('Database Password', false);
 
-                if($dbpass !== FALSE) {
+                if ($dbpass !== FALSE) {
                     $db_data['dbpass'] = $dbpass;
                 } else {
                     $db_data['dbpass'] = "";
@@ -76,7 +77,7 @@ class LAInstall extends Command
 
                 $default_db_conn = env('DB_CONNECTION', 'mysql');
 
-                if(LAHelper::laravel_ver() != 5.3) {
+                if (LAHelper::laravel_ver() == 5.3 || LAHelper::laravel_ver() != 5.4) {
                     config(['database.connections.' . $default_db_conn . '.host' => $db_data['host']]);
                     config(['database.connections.' . $default_db_conn . '.port' => $db_data['port']]);
                     LAHelper::setenv("DB_HOST", $db_data['host']);
@@ -91,23 +92,22 @@ class LAInstall extends Command
                 LAHelper::setenv("DB_PASSWORD", $db_data['dbpass']);
             }
 
-            if(env('CACHE_DRIVER') != "array") {
+            if (env('CACHE_DRIVER') != "array") {
                 config(['cache.default' => 'array']);
                 LAHelper::setenv("CACHE_DRIVER", "array");
             }
 
-            if($this->confirm("This process may change/append to the following of your existing project files:"
+            if ($this->confirm("This process may change/append to the following of your existing project files:"
                 . "\n\n\t app/Http/routes.php"
                 . "\n\t app/User.php"
                 . "\n\t database/migrations/2014_10_12_000000_create_users_table.php"
                 . "\n\t gulpfile.js"
-                . "\n\n Please take backup or use git. Do you wish to continue ?", true)
-            ) {
+                . "\n\n Please take backup or use git. Do you wish to continue ?", true)) {
 
                 // Controllers
                 $this->line("\n" . 'Generating Controllers...');
                 $this->copyFolder($from . "/app/Controllers/Auth", $to . "/app/Http/Controllers/Auth");
-                if(LAHelper::laravel_ver() != 5.3) {
+                if (LAHelper::laravel_ver() == 5.3 || LAHelper::laravel_ver() != 5.4) {
                     // Delete Redundant Controllers
                     unlink($to . "/app/Http/Controllers/Auth/PasswordController.php");
                     unlink($to . "/app/Http/Controllers/Auth/AuthController.php");
@@ -118,7 +118,7 @@ class LAInstall extends Command
                     unlink($to . "/app/Http/Controllers/Auth/ResetPasswordController.php");
                 }
                 $this->replaceFolder($from . "/app/Controllers/LA", $to . "/app/Http/Controllers/LA");
-                if(LAHelper::laravel_ver() != 5.3) {
+                if (LAHelper::laravel_ver() == 5.3 || LAHelper::laravel_ver() != 5.4) {
                     $this->copyFile($from . "/app/Controllers/Controller.5.5.php", $to . "/app/Http/Controllers/Controller.php");
                 } else {
                     $this->copyFile($from . "/app/Controllers/Controller.php", $to . "/app/Http/Controllers/Controller.php");
@@ -126,10 +126,14 @@ class LAInstall extends Command
                 $this->copyFile($from . "/app/Controllers/HomeController.php", $to . "/app/Http/Controllers/HomeController.php");
 
                 // Middleware
-                if(LAHelper::laravel_ver() != 5.3) {
+                if (LAHelper::laravel_ver() == 5.3 || LAHelper::laravel_ver() != 5.4) {
                     $this->copyFile($from . "/app/Middleware/RedirectIfAuthenticated.php", $to . "/app/Http/Middleware/RedirectIfAuthenticated.php");
                 }
 
+                // AppServiceProvider - https://laravel-news.com/laravel-5-4-key-too-long-error
+                if (LAHelper::laravel_ver() != 5.4) {
+                    $this->copyFile($from . "/app/Providers/AppServiceProvider.php", $to . "/app/Providers/AppServiceProvider.php");
+                }
 
                 // Config
                 $this->line('Generating Config...');
@@ -137,18 +141,18 @@ class LAInstall extends Command
 
                 // Models
                 $this->line('Generating Models...');
-                if(!file_exists($to . "/app/Models")) {
+                if (!file_exists($to . "/app/Models")) {
                     $this->info("mkdir: (" . $to . "/app/Models)");
                     mkdir($to . "/app/Models");
                 }
-                foreach($this->modelsInstalled as $model) {
-                    if($model == "User") {
-                        if(LAHelper::laravel_ver() != 5.3) {
+                foreach ($this->modelsInstalled as $model) {
+                    if ($model == "User") {
+                        if (LAHelper::laravel_ver() == 5.3 || LAHelper::laravel_ver() != 5.4) {
                             $this->copyFile($from . "/app/Models/" . $model . "5.5.php", $to . "/app/" . $model . ".php");
                         } else {
                             $this->copyFile($from . "/app/Models/" . $model . ".php", $to . "/app/" . $model . ".php");
                         }
-                    } else if($model == "Role" || $model == "Permission") {
+                    } else if ($model == "Role" || $model == "Permission") {
                         $this->copyFile($from . "/app/Models/" . $model . ".php", $to . "/app/" . $model . ".php");
                     } else {
                         $this->copyFile($from . "/app/Models/" . $model . ".php", $to . "/app/Models/" . $model . ".php");
@@ -170,11 +174,11 @@ class LAInstall extends Command
 
                 // Generate Uploads / Thumbnails folders in /storage
                 $this->line('Generating Uploads / Thumbnails folders...');
-                if(!file_exists($to . "/storage/uploads")) {
+                if (!file_exists($to . "/storage/uploads")) {
                     $this->info("mkdir: (" . $to . "/storage/uploads)");
                     mkdir($to . "/storage/uploads");
                 }
-                if(!file_exists($to . "/storage/thumbnails")) {
+                if (!file_exists($to . "/storage/thumbnails")) {
                     $this->info("mkdir: (" . $to . "/storage/thumbnails)");
                     mkdir($to . "/storage/thumbnails");
                 }
@@ -185,11 +189,11 @@ class LAInstall extends Command
                 // Use "git config core.fileMode false" for ignoring file permissions
 
                 // check CACHE_DRIVER to be array or else
-                // It is required for Shanmuga/LaravelEntrust
-                // https://github.com/Shanmuga/entrust/issues/468
+                // It is required for Zizaco/Entrust
+                // https://github.com/Zizaco/entrust/issues/468
                 $driver_type = env('CACHE_DRIVER');
-                if($driver_type != "array") {
-                    throw new Exception("Please set Cache Driver to array in .env (Required for Shanmuga\LaravelEntrust) and run la:install again:"
+                if ($driver_type != "array") {
+                    throw new Exception("Please set Cache Driver to array in .env (Required for Zizaco\Entrust) and run la:install again:"
                         . "\n\n\tCACHE_DRIVER=array\n\n", 1);
                 }
 
@@ -215,11 +219,11 @@ class LAInstall extends Command
                 $this->call('clear-compiled');
                 $this->call('cache:clear');
                 $composer_path = "composer";
-                if(PHP_OS == "Darwin") {
+                if (PHP_OS == "Darwin") {
                     $composer_path = "/usr/bin/composer.phar";
-                } else if(PHP_OS == "Linux") {
+                } else if (PHP_OS == "Linux") {
                     $composer_path = "/usr/bin/composer";
-                } else if(PHP_OS == "Windows") {
+                } else if (PHP_OS == "Windows") {
                     $composer_path = "composer";
                 }
                 $this->info(exec($composer_path . ' dump-autoload'));
@@ -236,7 +240,7 @@ class LAInstall extends Command
                 $this->call('vendor:publish', ['--provider' => 'Spatie\Backup\BackupServiceProvider']);
 
                 // Edit config/database.php for Spatie Backup Configuration
-                if(LAHelper::getLineWithString('config/database.php', "dump_command_path") == -1) {
+                if (LAHelper::getLineWithString('config/database.php', "dump_command_path") == -1) {
                     $newDBConfig = "            'driver' => 'mysql',\n"
                         . "            'dump_command_path' => '/opt/lampp/bin', // only the path, so without 'mysqldump' or 'pg_dump'\n"
                         . "            'dump_command_timeout' => 60 * 5, // 5 minute timeout\n"
@@ -251,13 +255,13 @@ class LAInstall extends Command
                 // Routes
                 $this->line('Appending routes...');
                 //if(!$this->fileContains($to."/app/Http/routes.php", "crmadmin.adminRoute")) {
-                if(LAHelper::laravel_ver() != 5.3) {
-                    if(LAHelper::getLineWithString($to . "/routes/web.php", "require __DIR__.'/admin_routes.php';") == -1) {
+                if (LAHelper::laravel_ver() == 5.3 || LAHelper::laravel_ver() != 5.4) {
+                    if (LAHelper::getLineWithString($to . "/routes/web.php", "require __DIR__.'/admin_routes.php';") == -1) {
                         $this->appendFile($from . "/app/routes.php", $to . "/routes/web.php");
                     }
                     $this->copyFile($from . "/app/admin_routes.php", $to . "/routes/admin_routes.php");
                 } else {
-                    if(LAHelper::getLineWithString($to . "/app/Http/routes.php", "require __DIR__.'/admin_routes.php';") == -1) {
+                    if (LAHelper::getLineWithString($to . "/app/Http/routes.php", "require __DIR__.'/admin_routes.php';") == -1) {
                         $this->appendFile($from . "/app/routes.php", $to . "/app/Http/routes.php");
                     }
                     $this->copyFile($from . "/app/admin_routes.php", $to . "/app/Http/admin_routes.php");
@@ -266,23 +270,25 @@ class LAInstall extends Command
                 // tests
                 $this->line('Generating tests...');
                 $this->copyFolder($from . "/tests", $to . "/tests");
-                if(LAHelper::laravel_ver() != 5.3) {
+                if (LAHelper::laravel_ver() == 5.3 || LAHelper::laravel_ver() != 5.4) {
                     unlink($to . '/tests/TestCase.php');
-                    rename($to . '/tests/TestCase5.3.php', $to . '/tests/TestCase.php');
+                    rename($to . '/tests/TestCase5.5.php', $to . '/tests/TestCase.php');
                 } else {
-                    unlink($to . '/tests/TestCase5.3.php');
+                    unlink($to . '/tests/TestCase5.5.php');
                 }
 
                 // Utilities
                 $this->line('Generating Utilities...');
                 // if(!$this->fileContains($to."/gulpfile.js", "admin-lte/AdminLTE.less")) {
-                if(LAHelper::getLineWithString($to . "/gulpfile.js", "mix.less('admin-lte/AdminLTE.less', 'public/la-assets/css');") == -1) {
-                    $this->appendFile($from . "/gulpfile.js", $to . "/gulpfile.js");
+                if (file_exists($to . "/gulpfile.js")) {
+                    if (LAHelper::getLineWithString($to . "/gulpfile.js", "mix.less('admin-lte/AdminLTE.less', 'public/la-assets/css');") == -1) {
+                        $this->appendFile($from . "/gulpfile.js", $to . "/gulpfile.js");
+                    }
                 }
                 // Creating Super Admin User
 
                 $user = \App\User::where('context_id', "1")->first();
-                if(!isset($user['id'])) {
+                if (!isset($user['id'])) {
 
                     $this->line('Creating Super Admin User...');
 
@@ -322,13 +328,12 @@ class LAInstall extends Command
                 $user->attachRole($role);
                 $this->info("\nCrmAdmin successfully installed.");
                 $this->info("You can now login from yourdomain.com/" . config('crmadmin.adminRoute') . " !!!\n");
-
             } else {
                 $this->error("Installation aborted. Please try again after backup / git. Thank you...");
             }
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             $msg = $e->getMessage();
-            if(strpos($msg, 'SQLSTATE') !== false) {
+            if (strpos($msg, 'SQLSTATE') !== false) {
                 throw new Exception("LAInstall: Database is not connected. Connect database (.env) and run 'la:install' again.\n" . $msg, 1);
             } else {
                 $this->error("LAInstall::handle exception: " . $e);
@@ -358,7 +363,7 @@ class LAInstall extends Command
     private function replaceFolder($from, $to)
     {
         // $this->info("replaceFolder: ($from, $to)");
-        if(file_exists($to)) {
+        if (file_exists($to)) {
             LAHelper::recurse_delete($to);
         }
         LAHelper::recurse_copy($from, $to);
@@ -373,7 +378,7 @@ class LAInstall extends Command
     private function copyFile($from, $to)
     {
         // $this->info("copyFile: ($from, $to)");
-        if(!file_exists(dirname($to))) {
+        if (!file_exists(dirname($to))) {
             $this->info("mkdir: (" . dirname($to) . ")");
             mkdir(dirname($to));
         }
@@ -431,7 +436,7 @@ class LAInstall extends Command
         // TODO: Method not working properly
 
         $fileData = file_get_contents($filePath);
-        if(strpos($fileData, $text) === false) {
+        if (strpos($fileData, $text) === false) {
             return true;
         } else {
             return false;
