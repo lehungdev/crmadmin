@@ -1,0 +1,35 @@
+ {
+    "name": "lehungdev/crmadmin",
+    "description": "IdeaAdmin is a Open source Laravel Admin Panel / CMS which can be used as Admin Backend, Data Management Tool or CRM boilerplate for Laravel with features like CRUD Generation, Module Manager, Media, Menus, Backups and much more",
+    "keywords": ["php", "laravel", "crm", "admin", "cms", "administrator"],
+    "license": "MIT",
+    "require": {
+        "illuminate/support": "^7.16.1",
+        "laravelcollective/html": "^6.1.2",
+        "illuminate/container": "^7.16.1",
+        "yajra/laravel-datatables-oracle": "^9.10.2",
+        "creativeorange/gravatar": "^1.0.14",
+        "doctrine/dbal": "~2.10.2",
+        "shanmuga/laravel-entrust": "^1.2",
+        "spatie/laravel-backup": "^6.11.1"
+
+    },
+    "authors": [
+        {
+            "name": "HungLV",
+            "email": "lehung.hut@gmail.com"
+        }
+    ],
+    "classmap": [
+        "src/Controllers",
+        "src/Models"
+    ],
+    "autoload": {
+        "psr-4": {
+            "Lehungdev\\Crmadmin\\": "src/"
+        },
+        "files": [
+        ]
+    }
+
+}
