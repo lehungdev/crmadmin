@@ -13,7 +13,7 @@ use Schema;
 use Collective\Html\FormFacade as Form;
 use Lehungdev\Crmadmin\Models\Module;
 use Lehungdev\Crmadmin\Models\ModuleFieldTypes;
-
+use Illuminate\Support\Str;
 /**
  * Class LAFormMaker
  * @package Lehungdev\Crmadmin
@@ -505,7 +505,7 @@ class LAFormMaker
                     $out .= '<label for="' . $field_name . '">' . $label . $required_ast . ' :</label>';
 
                     unset($params['data-rule-maxlength']);
-                    $params['data-placeholder'] = "Select multiple " . str_plural($label);
+                    $params['data-placeholder'] = "Select multiple " . Str::plural($label);
                     unset($params['placeholder']);
                     $params['multiple'] = "true";
                     $params['rel'] = "select2";
@@ -561,7 +561,7 @@ class LAFormMaker
                         $default_val = $row->$field_name;
                     }
 
-                    if(starts_with($popup_vals, "@")) {
+                    if(Str::startsWith($popup_vals, '@')) {
                         $popup_vals = LAFormMaker::process_values($popup_vals);
                         $out .= '<div class="radio">';
                         foreach($popup_vals as $key => $value) {
@@ -611,7 +611,7 @@ class LAFormMaker
                     }
                     $params['multiple'] = "true";
                     $params['rel'] = "taginput";
-                    $params['data-placeholder'] = "Add multiple " . str_plural($label);
+                    $params['data-placeholder'] = "Add multiple " . Str::plural($label);
                     unset($params['placeholder']);
 
                     // Override the edit value
@@ -809,11 +809,11 @@ class LAFormMaker
     {
         $out = array();
         // Check if populated values are from Module or Database Table
-        if(is_string($json) && starts_with($json, "@")) {
+        if(is_string($json) &&  Str::startsWith($json, '@')) {
 
             // Get Module / Table Name
             $json = str_ireplace("@", "", $json);
-            $table_name = strtolower(str_plural($json));
+            $table_name = strtolower(Str::plural($json));
 
             // Search Module
             $module = Module::getByTable($table_name);
@@ -822,8 +822,8 @@ class LAFormMaker
             } else {
                 // Search Table if no module found
                 if(Schema::hasTable($table_name)) {
-                    if(file_exists(resource_path('app/Models/' . ucfirst(str_singular($table_name) . ".php")))) {
-                        $model = "App\\Models\\" . ucfirst(str_singular($table_name));
+                    if(file_exists(resource_path('app/Models/' . ucfirst(Str::plural($table_name) . ".php")))) {
+                        $model = "App\\Models\\" . ucfirst(Str::plural($table_name));
                         $result = $model::all();
                     } else {
                         $result = \DB::table($table_name)->get();
@@ -950,7 +950,7 @@ class LAFormMaker
                     break;
                 case 'Dropdown':
                     $values = LAFormMaker::process_values($fieldObj['popup_vals']);
-                    if(starts_with($fieldObj['popup_vals'], "@")) {
+                    if(Str::startsWith($fieldObj['popup_vals'], '@')) {
                         if($value != 0) {
                             $moduleVal = Module::getByTable(str_replace("@", "", $fieldObj['popup_vals']));
                             if(isset($moduleVal->id)) {
@@ -1031,7 +1031,7 @@ class LAFormMaker
                     $valueOut = "";
                     $values = LAFormMaker::process_values($fieldObj['popup_vals']);
                     if(count($values)) {
-                        if(starts_with($fieldObj['popup_vals'], "@")) {
+                        if(Str::startsWith($popup_vals, '@')) {
                             $moduleVal = Module::getByTable(str_replace("@", "", $fieldObj['popup_vals']));
                             $valueSel = json_decode($value);
                             foreach($values as $key => $val) {
@@ -1070,7 +1070,7 @@ class LAFormMaker
                     $valueOut = "";
                     $values = LAFormMaker::process_values($fieldObj['popup_vals']);
                     if(count($values)) {
-                        if(starts_with($fieldObj['popup_vals'], "@")) {
+                        if(Str::startsWith($popup_vals, '@')) {
                             $moduleVal = Module::getByTable(str_replace("@", "", $fieldObj['popup_vals']));
                             $valueSel = json_decode($value);
                             foreach($values as $key => $val) {

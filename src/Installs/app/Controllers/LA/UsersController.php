@@ -91,13 +91,15 @@ class UsersController extends Controller
 		$fields_popup = ModuleFields::getModuleFields('Users');
 
 		for($i=0; $i < count($data->data); $i++) {
+            $data->data[$i] =(array)$data->data[$i];
 			for ($j=0; $j < count($listing_cols); $j++) {
-				$col = $listing_cols[$j];
+                $col = $listing_cols[$j];
+                $data->data[$i][$j] = $data->data[$i][$col];
 				if($fields_popup[$col] != null && Str::of($fields_popup[$col]->popup_vals)->startsWith('@')) {
-					$data->data[$i][$j] = ModuleFields::getFieldValue($fields_popup[$col], $data->data[$i][$j]);
+					$data->data[$i][$j] = ModuleFields::getFieldValue($fields_popup[$col], $data->data[$i][$col]);
 				}
 				if($col == $module->view_col) {
-					$data->data[$i][$j] = '<a href="'.url(config('crmadmin.adminRoute') . '/users/'.$data->data[$i][0]).'">'.$data->data[$i][$j].'</a>';
+					$data->data[$i][$j] = '<a href="'.url(config('crmadmin.adminRoute') . '/users/'.$data->data[$i][$listing_cols[0]]).'">'.$data->data[$i][$col].'</a>';
 				}
 				// else if($col == "author") {
 				//    $data->data[$i][$j];

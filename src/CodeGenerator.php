@@ -15,7 +15,7 @@ use Lehungdev\Crmadmin\Models\Module;
 use Lehungdev\Crmadmin\Models\ModuleFieldTypes;
 use Lehungdev\Crmadmin\Helpers\LAHelper;
 use Lehungdev\Crmadmin\Models\Menu;
-
+use Illuminate\Support\Str;
 /**
  * Class CodeGenerator
  * @package Lehungdev\Crmadmin
@@ -232,19 +232,19 @@ class CodeGenerator
     {
         $filesystem = new Filesystem();
 
-        if(starts_with($table, "create_")) {
+        if(Str::startsWith($table, "create_")) {
             $tname = str_replace("create_", "", $table);
             $table = str_replace("_table", "", $tname);
         }
 
-        $modelName = ucfirst(str_singular($table));
-        $tableP = str_plural(strtolower($table));
-        $tableS = str_singular(strtolower($table));
+        $modelName = ucfirst(Str::plural($table));
+        $tableP = Str::plural(strtolower($table));
+        $tableS = Str::plural(strtolower($table));
         $migrationName = 'create_' . $tableP . '_table';
         $migrationFileName = date("Y_m_d_His_") . $migrationName . ".php";
         $migrationClassName = ucfirst(camel_case($migrationName));
         $dbTableName = $tableP;
-        $moduleName = ucfirst(str_plural($table));
+        $moduleName = ucfirst(Str::plural($table));
 
         LAHelper::log("info", "Model:\t   " . $modelName, $comm);
         LAHelper::log("info", "Module:\t   " . $moduleName, $comm);
@@ -275,7 +275,7 @@ class CodeGenerator
                     }
                     $dvalue = "";
                     if($field['defaultvalue'] != "") {
-                        if(starts_with($field['defaultvalue'], "[")) {
+                        if(Str::startsWith($field['defaultvalue'], "[")) {
                             $dvalue = $field['defaultvalue'];
                         } else {
                             $dvalue = '"' . $field['defaultvalue'] . '"';
@@ -295,7 +295,7 @@ class CodeGenerator
                     }
                     $values = "";
                     if($field['popup_vals'] != "") {
-                        if(starts_with($field['popup_vals'], "[")) {
+                        if(Str::startsWith($field['popup_vals'], "[")) {
                             $values = $field['popup_vals'];
                         } else {
                             $values = '"' . $field['popup_vals'] . '"';
@@ -391,21 +391,21 @@ class CodeGenerator
         $config = array();
         $config = (object)$config;
 
-        if(starts_with($module, "create_")) {
+        if(Str::startsWith($module, "create_")) {
             $tname = str_replace("create_", "", $module);
             $module = str_replace("_table", "", $tname);
         }
 
-        $config->modelName = ucfirst(str_singular($module));
-        $tableP = str_plural(strtolower($module));
-        $tableS = str_singular(strtolower($module));
+        $config->modelName = ucfirst(Str::plural($module));
+        $tableP = Str::plural(strtolower($module));
+        $tableS = Str::plural(strtolower($module));
         $config->dbTableName = $tableP;
         $config->fa_icon = $icon;
-        $config->moduleName = ucfirst(str_plural($module));
-        $config->moduleName2 = str_replace('_', ' ', ucfirst(str_plural($module)));
-        $config->controllerName = ucfirst(str_plural($module)) . "Controller";
-        $config->singularVar = strtolower(str_singular($module));
-        $config->singularCapitalVar = str_replace('_', ' ', ucfirst(str_singular($module)));
+        $config->moduleName = ucfirst(Str::plural($module));
+        $config->moduleName2 = str_replace('_', ' ', ucfirst(Str::plural($module)));
+        $config->controllerName = ucfirst(Str::plural($module)) . "Controller";
+        $config->singularVar = strtolower(Str::plural($module));
+        $config->singularCapitalVar = str_replace('_', ' ', ucfirst(Str::plural($module)));
 
         $module = Module::get($config->moduleName);
         if(!isset($module->id)) {

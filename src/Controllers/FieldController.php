@@ -115,7 +115,7 @@ class FieldController extends Controller
         // Delete from Table module_field
         Schema::table($module->name_db, function ($table) use ($field) {
 //            $table->dropIndex([$field->colname]);
-            if (starts_with($field->popup_vals, "@")) {
+            if ( Str::startsWith($field->popup_vals, '@')) {
                 $table->dropForeign([$field->colname]);	// Issue #239
 
             }

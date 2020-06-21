@@ -83,10 +83,10 @@
 						$default_val = "";
 						$popup_value_type_table = false;
 						$popup_value_type_list = false;
-						if(starts_with($field->popup_vals, "@")) {
+						if( Str::startsWith($field->popup_vals, '@')) {
 							$popup_value_type_table = true;
 							$default_val = str_replace("@", "", $field->popup_vals);
-						} else if(starts_with($field->popup_vals, "[")) {
+						} else if(Str::startsWith($field->popup_vals, "[")) {
 							$popup_value_type_list = true;
 							$default_val = json_decode($field->popup_vals);
 						}

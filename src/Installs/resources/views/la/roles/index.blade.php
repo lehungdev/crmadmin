@@ -31,7 +31,7 @@
 		<thead>
 		<tr class="success">
 			@foreach( $listing_cols as $col )
-			<th>{{ $module->fields[$col]['label'] or ucfirst($col) }}</th>
+			<th>{{ $module->fields[$col]['label'] ?? ucfirst($col) }}</th>
 			@endforeach
 			@if($show_actions)
 			<th>Actions</th>

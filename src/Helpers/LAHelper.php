@@ -499,9 +499,9 @@ class LAHelper
     {
         $var = \App::VERSION();
 
-        // if(starts_with($var, "5.2")) {
+        // if(Str::startsWith($var, "5.2")) {
         //     return 5.2;
-        // } else if(starts_with($var, "5.5")) {
+        // } else if(Str::startsWith($var, "5.5")) {
         //     return 5.5;
         // } else
         if(substr_count($var, ".") == 3) {

@@ -261,13 +261,15 @@ class EmployeesController extends Controller
 		$fields_popup = ModuleFields::getModuleFields('Employees');
 
 		for($i=0; $i < count($data->data); $i++) {
+            $data->data[$i] =(array)$data->data[$i];
 			for ($j=0; $j < count($listing_cols); $j++) {
-				$col = $listing_cols[$j];
+                $col = $listing_cols[$j];
+                $data->data[$i][$j] = $data->data[$i][$col];
 				if($fields_popup[$col] != null && Str::of($fields_popup[$col]->popup_vals)->startsWith('@')) {
-					$data->data[$i][$j] = ModuleFields::getFieldValue($fields_popup[$col], $data->data[$i][$j]);
+					$data->data[$i][$j] = ModuleFields::getFieldValue($fields_popup[$col], $data->data[$i][$col]);
 				}
 				if($col == $module->view_col) {
-					$data->data[$i][$j] = '<a href="'.url(config('crmadmin.adminRoute') . '/employees/'.$data->data[$i][0]).'">'.$data->data[$i][$j].'</a>';
+					$data->data[$i][$j] = '<a href="'.url(config('crmadmin.adminRoute') . '/employees/'.$data->data[$i][$listing_cols[0]]).'">'.$data->data[$i][$col].'</a>';
 				}
 				// else if($col == "author") {
 				//    $data->data[$i][$j];
@@ -277,11 +279,11 @@ class EmployeesController extends Controller
 			if($this->show_action) {
 				$output = '';
 				if(Module::hasAccess("Employees", "edit")) {
-					$output .= '<a href="'.url(config('crmadmin.adminRoute') . '/employees/'.$data->data[$i][0].'/edit').'" class="btn btn-warning btn-xs" style="display:inline;padding:2px 5px 3px 5px;"><i class="fa fa-edit"></i></a>';
+					$output .= '<a href="'.url(config('crmadmin.adminRoute') . '/employees/'.$data->data[$i][$listing_cols[0]].'/edit').'" class="btn btn-warning btn-xs" style="display:inline;padding:2px 5px 3px 5px;"><i class="fa fa-edit"></i></a>';
 				}
 
 				if(Module::hasAccess("Employees", "delete")) {
-					$output .= Form::open(['route' => [config('crmadmin.adminRoute') . '.employees.destroy', $data->data[$i][0]], 'method' => 'delete', 'style'=>'display:inline']);
+					$output .= Form::open(['route' => [config('crmadmin.adminRoute') . '.employees.destroy', $data->data[$i][$listing_cols[0]]], 'method' => 'delete', 'style'=>'display:inline']);
 					$output .= ' <button class="btn btn-danger btn-xs" type="submit"><i class="fa fa-times"></i></button>';
 					$output .= Form::close();
 				}

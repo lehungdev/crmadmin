@@ -16,7 +16,7 @@ use Collective\Html\FormFacade as Form;
 
 use Lehungdev\Crmadmin\Models\Module;
 use Lehungdev\Crmadmin\Helpers\LAHelper;
-use Shanmuga\LaravelEntrust\LaravelEntrustFacade as LaravelEntrust;
+use Shanmuga\LaravelEntrust\Facades\LaravelEntrustFacade as LaravelEntrust;
 
 use Auth;
 use DB;
@@ -212,11 +212,11 @@ class UploadsController extends Controller
                 $type_file3 = '.'.str_slug(substr( $filename,  strlen($filename) - 4, strlen($filename)));
                 $type_file4 = '.'.str_slug(substr( $filename,  strlen($filename) - 5, strlen($filename)));
                 $type_file5 = '.'.str_slug(substr( $filename,  strlen($filename) - 6, strlen($filename)));
-                if( starts_with($type_file3, '.')) {
+                if( Str::startsWith($type_file3, '.')) {
                     $name_file = str_slug(substr( $filename,  0, strlen($filename) - 4), '-');
                     $filename = $name_file.$type_file3;
                 }
-                else if(starts_with($type_file4, '.') ){
+                else if(Str::startsWith($type_file4, '.') ){
                     $name_file = str_slug(substr( $filename,  0, strlen($filename) - 5), '-');
                     $filename = $name_file.$type_file4;
                 }
