@@ -18,6 +18,7 @@ use Lehungdev\Crmadmin\Models\Module;
 use Lehungdev\Crmadmin\Models\ModuleFields;
 use Lehungdev\Crmadmin\Models\ModuleFieldTypes;
 use Lehungdev\Crmadmin\CodeGenerator;
+use Illuminate\Support\Str;
 use App\Role;
 use Schema;
 use Lehungdev\Crmadmin\Models\Menu;
@@ -29,13 +30,13 @@ use Lehungdev\Crmadmin\Models\Menu;
  */
 class ModuleController extends Controller
 {
-    
+
     public function __construct()
     {
         // for authentication (optional)
         // $this->middleware('auth');
     }
-    
+
     /**
      * Display a listing of the Module
      *
@@ -46,13 +47,13 @@ class ModuleController extends Controller
         $modules = Module::all();
         $menu   = Menu::all();
         $tables = LAHelper::getDBTables([]);
-        
+
         return View('la.modules.index', [
             'modules' => $modules,
             'tables' => $tables
         ]);
     }
-    
+
     /**
      * Store a newly created Module
      *
@@ -61,12 +62,12 @@ class ModuleController extends Controller
      */
     public function store(Request $request)
     {
-
+        dd($request->name);
         $module_id = Module::generateBase($request->name, $request->icon);
-        
+
         return redirect()->route(config('crmadmin.adminRoute') . '.modules.show', [$module_id]);
     }
-    
+
     /**
      * Display the specified Module
      *
@@ -78,13 +79,13 @@ class ModuleController extends Controller
         $ftypes = ModuleFieldTypes::getFTypes2();
         $module = Module::find($id);
         $module = Module::get($module->name);
-        
+
         $tables = LAHelper::getDBTables([]);
         $modules = LAHelper::getModuleNames([]);
-        
+
         // Get Module Access for all roles
         $roles = Module::getRoleAccess($id);
-        
+
         return view('la.modules.show', [
             'no_header' => true,
             'no_padding' => "no-padding",
@@ -94,7 +95,7 @@ class ModuleController extends Controller
             'roles' => $roles
         ])->with('module', $module);
     }
-    
+
     /**
      * Update the specified Module
      *
@@ -119,7 +120,7 @@ class ModuleController extends Controller
             }
         }
     }
-    
+
     /**
      * Remove the specified Module Including Module Schema, DB Table,
      * Controller, Model, Views directory, routes and modifies the migration file.
@@ -130,37 +131,37 @@ class ModuleController extends Controller
     public function destroy($id)
     {
         $module = Module::find($id);
-        
+
         //Delete Menu
         $menuItems = Menu::where('name', $module->name)->first();
         if(isset($menuItems)) {
             $menuItems->delete();
         }
-        
+
         // Delete Module Fields
         $module_fields = ModuleFields::where('module', $module->id)->delete();
-        
+
         // Delete Resource Views directory
         \File::deleteDirectory(resource_path('/views/la/' . $module->name_db));
-        
+
         // Delete Controller
         \File::delete(app_path('/Http/Controllers/LA/' . $module->name . 'Controller.php'));
-        
+
         // Delete Model
         if($module->model == "User" || $module->model == "Role" || $module->model == "Permission") {
             \File::delete(app_path($module->model . '.php'));
         } else {
             \File::delete(app_path('Models/' . $module->model . '.php'));
         }
-        
+
         // Modify Migration for Deletion
         // Find existing migration file
         $mfiles = scandir(base_path('database/migrations/'));
         $fileExistName = "";
         foreach($mfiles as $mfile) {
             if(str_contains($mfile, "create_" . $module->name_db . "_table")) {
-                $migrationClassName = ucfirst(camel_case("create_" . $module->name_db . "_table"));
-                
+                $migrationClassName = ucfirst(Str::camel("create_" . $module->name_db . "_table"));
+
                 $templateDirectory = __DIR__ . '/../stubs';
                 $migrationData = file_get_contents($templateDirectory . "/migration_removal.stub");
                 $migrationData = str_replace("__migration_class_name__", $migrationClassName, $migrationData);
@@ -168,7 +169,7 @@ class ModuleController extends Controller
                 file_put_contents(base_path('database/migrations/' . $mfile), $migrationData);
             }
         }
-        
+
         // Delete Admin Routes
         if(LAHelper::laravel_ver() != 5.3) {
             $file_admin_routes = base_path("/routes/admin_routes.php");
@@ -187,19 +188,19 @@ class ModuleController extends Controller
             $fileData = str_replace($line, "", $fileData);
             file_put_contents($file_admin_routes, $fileData);
         }
-        
+
         // Delete Table
         if(Schema::hasTable($module->name_db)) {
             Schema::drop($module->name_db);
         }
-        
+
         // Delete Module
         $module->delete();
-        
+
         $modules = Module::all();
         return redirect()->route(config('crmadmin.adminRoute') . '.modules.index', ['modules' => $modules]);
     }
-    
+
     /**
      * Generate Modules CRUDs Views, Controller, Model, Routes, Menu and Set Default Full Access for Super Admin
      *
@@ -210,29 +211,29 @@ class ModuleController extends Controller
     {
         $module = Module::find($module_id);
         $module = Module::get($module->name);
-        
+
         $config = CodeGenerator::generateConfig($module->name, $module->fa_icon);
-        
+
         CodeGenerator::createController($config);
         CodeGenerator::createModel($config);
         CodeGenerator::createViews($config);
         CodeGenerator::appendRoutes($config);
         CodeGenerator::addMenu($config);
-        
+
         // Set Module Generated = True
         $module = Module::find($module_id);
         $module->is_gen = '1';
         $module->save();
-        
+
         // Give Default Full Access to Super Admin
         $role = Role::where("name", "SUPER_ADMIN")->first();
         Module::setDefaultRoleAccess($module->id, $role->id, "full");
-        
+
         return response()->json([
             'status' => 'success'
         ]);
     }
-    
+
     /**
      * Generate Module Migrations
      *
@@ -244,12 +245,12 @@ class ModuleController extends Controller
         $module = Module::find($module_id);
         $module = Module::get($module->name);
         CodeGenerator::generateMigration($module->name_db, true);
-        
+
         return response()->json([
             'status' => 'success'
         ]);
     }
-    
+
     /**
      * Generate Modules Migrations and CRUDs Views, Controller, Model, Routes, Menu and Set Default Full Access
      * for Super Admin
@@ -274,21 +275,21 @@ class ModuleController extends Controller
         CodeGenerator::createViews($config);
         CodeGenerator::appendRoutes($config);
         CodeGenerator::addMenu($config);
-        
+
         // Set Module Generated = True
         $module = Module::find($module_id);
         $module->is_gen = '1';
         $module->save();
-        
+
         // Give Default Full Access to Super Admin
         $role = Role::where("name", "SUPER_ADMIN")->first();
         Module::setDefaultRoleAccess($module->id, $role->id, "full");
-        
+
         return response()->json([
             'status' => 'success'
         ]);
     }
-    
+
     /**
      * Updates Modules all files except routes
      *
@@ -299,28 +300,28 @@ class ModuleController extends Controller
     {
         $module = Module::find($module_id);
         $module = Module::get($module->name);
-        
+
         // Generate Migration
         CodeGenerator::generateMigration($module->name_db, true);
-        
+
         // Create Config for Code Generation
         $config = CodeGenerator::generateConfig($module->name, $module->fa_icon);
-        
+
         // Generate CRUD
         CodeGenerator::createController($config);
         CodeGenerator::createModel($config);
         CodeGenerator::createViews($config);
-        
+
         // Set Module Generated = True
         $module = Module::find($module_id);
         $module->is_gen = '1';
         $module->save();
-        
+
         return response()->json([
             'status' => 'success'
         ]);
     }
-    
+
     /**
      * Set the Modules view_column_name
      *
@@ -333,10 +334,10 @@ class ModuleController extends Controller
         $module = Module::find($module_id);
         $module->view_col = $column_name;
         $module->save();
-        
+
         return redirect()->route(config('crmadmin.adminRoute') . '.modules.show', [$module_id]);
     }
-    
+
     /**
      * Save Module-Role Permissions including Module Fields
      *
@@ -348,17 +349,17 @@ class ModuleController extends Controller
     {
         $module = Module::find($id);
         $module = Module::get($module->name);
-        
+
         $tables = LAHelper::getDBTables([]);
         $modules = LAHelper::getModuleNames([]);
         $roles = Role::all();
-        
+
         $now = date("Y-m-d H:i:s");
-        
+
         foreach($roles as $role) {
-            
+
             /* =============== role_module_fields =============== */
-            
+
             foreach($module->fields as $field) {
                 $field_name = $field['colname'] . '_' . $role->id;
                 $field_value = $request->$field_name;
@@ -369,7 +370,7 @@ class ModuleController extends Controller
                 } else if($field_value == 2) {
                     $access = 'write';
                 }
-                
+
                 $query = DB::table('role_module_fields')->where('role_id', $role->id)->where('field_id', $field['id']);
                 if($query->count() == 0) {
                     DB::insert('insert into role_module_fields (role_id, field_id, access, created_at, updated_at) values (?, ?, ?, ?, ?)', [$role->id, $field['id'], $access, $now, $now]);
@@ -377,9 +378,9 @@ class ModuleController extends Controller
                     DB::table('role_module_fields')->where('role_id', $role->id)->where('field_id', $field['id'])->update(['access' => $access]);
                 }
             }
-            
+
             /* =============== role_module =============== */
-            
+
             $module_name = 'module_' . $role->id;
             if(isset($request->$module_name)) {
                 $view = 'module_view_' . $role->id;
@@ -406,7 +407,7 @@ class ModuleController extends Controller
                 } else {
                     $delete = 0;
                 }
-                
+
                 $query = DB::table('role_module')->where('role_id', $role->id)->where('module_id', $id);
                 if($query->count() == 0) {
                     DB::insert('insert into role_module (role_id, module_id, acc_view, acc_create, acc_edit, acc_delete, created_at, updated_at) values (?, ?, ?, ?, ?, ?, ?, ?)', [$role->id, $id, $view, $create, $edit, $delete, $now, $now]);
@@ -417,7 +418,7 @@ class ModuleController extends Controller
         }
         return redirect(config('crmadmin.adminRoute') . '/modules/' . $id . "#access");
     }
-    
+
     /**
      * Update Module Field's Sorting Numbers
      *
@@ -428,16 +429,16 @@ class ModuleController extends Controller
     public function save_module_field_sort(Request $request, $id)
     {
         $sort_array = $request->sort_array;
-        
+
         foreach($sort_array as $index => $field_id) {
             DB::table('module_fields')->where('id', $field_id)->update(['sort' => ($index + 1)]);
         }
-        
+
         return response()->json([
             'status' => 'success'
         ]);
     }
-    
+
     /**
      * Get Array of all Module Files generated by CrmAdmin
      *
@@ -448,7 +449,7 @@ class ModuleController extends Controller
     public function get_module_files(Request $request, $module_id)
     {
         $module = Module::find($module_id);
-        
+
         $arr = array();
         $arr[] = "app/Http/Controllers/LA/" . $module->controller . ".php";
         $arr[] = "app/Models/" . $module->model . ".php";

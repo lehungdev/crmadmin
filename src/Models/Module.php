@@ -1051,7 +1051,7 @@ class Module extends Model
     {
         $module = Module::where('name', $module_name)->first();
         if(isset($module)) {
-            $model_name = ucfirst(Str::plural($module_name));
+            $model_name = ucfirst(Str::singular($module_name));
             if($model_name == "User" || $model_name == "Role" || $model_name == "Permission") {
                 // $model = "App\\" . ucfirst(Str::plural($module_name));
                 $model = "App\\" . ucfirst(Str::singular($module_name));
@@ -1293,7 +1293,7 @@ class Module extends Model
     {
         $module = Module::get($module_name);
         if(isset($module)) {
-            $model_name = ucfirst(Str::plural($module_name));
+            $model_name = ucfirst(Str::singular($module_name));
             if($model_name == "User" || $model_name == "Role" || $model_name == "Permission") {
                 if(file_exists(base_path('app/' . $model_name . ".php"))) {
                     $model = "App\\" . $model_name;

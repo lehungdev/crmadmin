@@ -2,6 +2,7 @@
 
 <?php
 use Lehungdev\Crmadmin\Models\Module;
+use Lehungdev\Crmadmin\Models\Menu;
 ?>
 
 @section("contentheader_title", "Modules")
@@ -24,22 +25,31 @@ use Lehungdev\Crmadmin\Models\Module;
 		<thead>
 		<tr class="success">
 			<th>ID</th>
+			<th>Menu Name</th>
 			<th>Name</th>
 			<th>Table</th>
 			<th>Items</th>
 			<th>Actions</th>
 		</tr>
 		</thead>
-		<tbody>	
+		<tbody>
 
 			@foreach ($modules as $module)
+				<?php $menuItems = Menu::where('url', strtolower($module->name))->where('type', 'module')->first();  ?>
+				@if(empty($menuItems->name))
+					<?php $menuItems_name = 'Backup'; $menu_id = '0'; ?>
+				@else
+                    <?php $menuItems_name = $menuItems->name; $menu_id = $menuItems->id; ?>
+				@endif
 				<tr>
 					<td>{{ $module->id }}</td>
+						<td>{{ $menuItems_name }}</td>
+
 					<td><a href="{{ url(config('crmadmin.adminRoute') . '/modules/'.$module->id) }}">{{ $module->label }}</a></td>
 					<td>{{ $module->name_db }}</td>
 					<td>{{ Module::itemCount($module->name) }}</td>
 					<td>
-						<a module_label="{{ $module->label }}" module_icon="{{ $module->fa_icon }}" module_id="{{ $module->id }}" class="btn btn-primary btn-xs update_module" style="display:inline;padding:2px 5px 3px 5px;"><i class="fa fa-edit"></i></a>
+						<a module_label="{{ $module->label }}" menu_name="{{ $menuItems_name }}" module_icon="{{ $module->fa_icon }}" module_id="{{ $module->id }}" menu_id="{{ $menu_id }}" class="btn btn-primary btn-xs update_module" style="display:inline;padding:2px 5px 3px 5px;"><i class="fa fa-edit"></i></a>
 						<a href="{{ url(config('crmadmin.adminRoute') . '/modules/'.$module->id)}}#access" class="btn btn-warning btn-xs" style="display:inline;padding:2px 5px 3px 5px;"><i class="fa fa-key"></i></a>
 						<a href="{{ url(config('crmadmin.adminRoute') . '/modules/'.$module->id)}}#sort" class="btn btn-success btn-xs" style="display:inline;padding:2px 5px 3px 5px;"><i class="fa fa-sort"></i></a>
 						<a module_name="{{ $module->name }}" module_id="{{ $module->id }}" class="btn btn-danger btn-xs delete_module" style="display:inline;padding:2px 5px 3px 5px;"><i class="fa fa-trash"></i></a>
@@ -63,8 +73,8 @@ use Lehungdev\Crmadmin\Models\Module;
 				<div class="box-body">
 					<!--<div class="form-group">
 						<label for="name">Module Name :</label>
-						{{ Form::text("name", null, ['class'=>'form-control', 'placeholder'=>'Module Name', 'data-rule-minlength' => 2, 'data-rule-maxlength'=>20, 'required' => 'required']) }}
-					</div>-->				
+						{{ Form::text("name", null, ['class'=>'form-control', 'placeholder'=>'Module Name', 'data-rule-minlength' => 2, 'data-rule-maxlength'=>50, 'required' => 'required']) }}
+					</div>-->
 					<div class="form-group">
 						<label for="table">Table</label>
 						<?php
@@ -108,8 +118,12 @@ use Lehungdev\Crmadmin\Models\Module;
 			<div class="modal-body">
 				<div class="box-body">
 					<div class="form-group">
+						<label for="menu_name">Menu Name :</label>
+						{{ Form::text("menu_name", null, ['class'=>'form-control', 'placeholder'=>'Menu Name', 'data-rule-minlength' => 2, 'data-rule-maxlength'=>50, 'required' => 'required']) }}
+					</div>
+					<div class="form-group">
 						<label for="name">Module Name :</label>
-						{{ Form::text("name", null, ['class'=>'form-control', 'placeholder'=>'Module Name', 'data-rule-minlength' => 2, 'data-rule-maxlength'=>20, 'required' => 'required']) }}
+						{{ Form::text("name", null, ['class'=>'form-control', 'placeholder'=>'Module Name', 'data-rule-minlength' => 2, 'data-rule-maxlength'=>30, 'required' => 'required']) }}
 					</div>
 					<div class="form-group">
 						<label for="icon">Icon</label>
@@ -149,7 +163,7 @@ use Lehungdev\Crmadmin\Models\Module;
 				{{ Form::open(['route' => [config('crmadmin.adminRoute') . '.modules.destroy', 0], 'id' => 'module_del_form', 'method' => 'delete', 'style'=>'display:inline']) }}
 					<button class="btn btn-danger btn-delete pull-left" type="submit">Yes</button>
 				{{ Form::close() }}
-				<a data-dismiss="modal" class="btn btn-default pull-right" >No</a>				
+				<a data-dismiss="modal" class="btn btn-default pull-right" >No</a>
 			</div>
 		</div>
 		<!-- /.modal-content -->
@@ -169,6 +183,10 @@ use Lehungdev\Crmadmin\Models\Module;
                 {{ csrf_field() }}
 				<div class="modal-body">
 					<div class="box-body">
+						<div class="form-group">
+							<label for="menu_name">Menu Name :</label>
+							<input type="text"  class="form-control menu_name_edit" placeholder="Menu Name" name="Menu Name" value=""/>
+						</div>
 						<div class="form-group">
 							<label for="name">Module Name :</label>
 							<input type="text"  class="form-control module_label_edit" placeholder="Module Name" name="Module Name" value=""/>
@@ -221,7 +239,7 @@ $(function () {
 			success: function(data) {
 				var files = data.files;
 				var filesList = "<ul>";
-				for ($i = 0; $i < files.length; $i++) { 
+				for ($i = 0; $i < files.length; $i++) {
 					filesList += "<li>" + files[$i] + "</li>";
 				}
 				filesList += "</ul>";
@@ -231,34 +249,38 @@ $(function () {
 	});
 
 	$('.update_module').on("click", function () {
-    	var module_id = $(this).attr('module_id');	 
+    	var module_id = $(this).attr('module_id');
+    	var menu_id = $(this).attr('menu_id');
+		var menu_name = $(this).attr('menu_name');
 		var module_label = $(this).attr('module_label');
 		var module_icon = $(this).attr('module_icon');
+        $(".menu_name_edit").val(menu_name);
 		$(".module_label_edit").val(module_label);
-		$(".module_icon_edit").val(module_icon);		
+		$(".module_icon_edit").val(module_icon);
 		$("#module_update").modal('show');
 		$(".update-icon").html('<center><i class="fa '+module_icon+'"></i></center>');
 
 		$('.save_edit_module').on("click", function () {
+			var menu_name = $(".menu_name_edit").val();
 			var module_label = $(".module_label_edit").val();
 			var module_icon = $(".module_icon_edit").val();
 			$.ajax({
 				url: "{{ url(config('crmadmin.adminRoute') . '/module_update') }}",
 				type:"POST",
-				data : {'id':module_id,'label':module_label, 'icon':module_icon, '_token': '{{ csrf_token() }}' },
+				data : {'id':module_id, 'menu_id':menu_id, 'menu_name':menu_name, 'label':module_label, 'icon':module_icon, '_token': '{{ csrf_token() }}' },
 				success: function(data) {
 					location.reload();
 				}
 			});
 		});
 	});
-	
+
 	$('input[name=icon]').iconpicker();
 	$("#dt_modules").DataTable({
-		
+
 	});
 	$("#module-add-form").validate({
-		
+
 	});
 });
 </script>

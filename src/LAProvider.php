@@ -175,6 +175,14 @@ class LAProvider extends ServiceProvider
             return "<?php echo LAFormMaker::form$expression; ?>";
         });
 
+        // LAForm Form Maker
+        Blade::directive('la_form_language', function($expression) {
+            if(LAHelper::laravel_ver() != 5.3) {
+                $expression = "(".$expression.")";
+            }
+            return "<?php echo LAFormMaker::form_language$expression; ?>  ";
+        });
+
         // LAForm Maker - Display Values
         Blade::directive('la_display', function ($expression) {
             if(LAHelper::laravel_ver() != 5.3) {

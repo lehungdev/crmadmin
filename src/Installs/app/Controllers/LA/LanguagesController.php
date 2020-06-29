@@ -3,7 +3,7 @@
  * Controller generated using IdeaGroup
  * Help: lehung.hut@gmail.com
  * CrmAdmin is open-sourced software licensed under the MIT license.
- * Developed by: Lehungdev IT Solutions
+ * Developed by: Lehunghut IT Solutions
  * Developer Website: http://ideagroup.vn
  */
 
@@ -12,34 +12,33 @@ namespace App\Http\Controllers\LA;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Requests;
-use Illuminate\Support\Str;
 use Auth;
 use DB;
 use Validator;
 use Datatables;
 use Collective\Html\FormFacade as Form;
-use Lehungdev\Crmadmin\Models\Module;
-use Lehungdev\Crmadmin\Models\ModuleFields;
+use Lehunghut\Crmadmin\Models\Module;
+use Lehunghut\Crmadmin\Models\ModuleFields;
 
-use App\Models\__model_name__;
+use App\Models\Language;
 
-class __controller_class_name__ extends Controller
+class LanguagesController extends Controller
 {
     public $show_action = true;
 
     /**
-     * Display a listing of the __module_name__.
+     * Display a listing of the Languages.
      *
      * @return mixed
      */
     public function index()
     {
-        $module = Module::get('__module_name__');
+        $module = Module::get('Languages');
 
         if(Module::hasAccess($module->id)) {
-            return View('la.__view_folder__.index', [
+            return View('la.languages.index', [
                 'show_actions' => $this->show_action,
-                'listing_cols' => Module::getListingColumns('__module_name__'),
+                'listing_cols' => Module::getListingColumns('Languages'),
                 'module' => $module
             ]);
         } else {
@@ -48,7 +47,7 @@ class __controller_class_name__ extends Controller
     }
 
     /**
-     * Show the form for creating a new __singular_var__.
+     * Show the form for creating a new language.
      *
      * @return mixed
      */
@@ -58,16 +57,16 @@ class __controller_class_name__ extends Controller
     }
 
     /**
-     * Store a newly created __singular_var__ in database.
+     * Store a newly created language in database.
      *
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\RedirectResponse
      */
     public function store(Request $request)
     {
-        if(Module::hasAccess("__module_name__", "create")) {
+        if(Module::hasAccess("Languages", "create")) {
 
-            $rules = Module::validateRules("__module_name__", $request);
+            $rules = Module::validateRules("Languages", $request);
 
             $validator = Validator::make($request->all(), $rules);
 
@@ -75,9 +74,9 @@ class __controller_class_name__ extends Controller
                 return redirect()->back()->withErrors($validator)->withInput();
             }
 
-            $insert_id = Module::insert("__module_name__", $request);
+            $insert_id = Module::insert("Languages", $request);
 
-            return redirect()->route(config('crmadmin.adminRoute') . '.__route_resource__.index');
+            return redirect()->route(config('crmadmin.adminRoute') . '.languages.index');
 
         } else {
             return redirect(config('crmadmin.adminRoute') . "/");
@@ -85,30 +84,30 @@ class __controller_class_name__ extends Controller
     }
 
     /**
-     * Display the specified __singular_var__.
+     * Display the specified language.
      *
-     * @param int $id __singular_var__ ID
+     * @param int $id language ID
      * @return mixed
      */
     public function show($id)
     {
-        if(Module::hasAccess("__module_name__", "view")) {
+        if(Module::hasAccess("Languages", "view")) {
 
-            $__singular_var__ = __model_name__::find($id);
-            if(isset($__singular_var__->id)) {
-                $module = Module::get('__module_name__');
-                $module->row = $__singular_var__;
+            $language = Language::find($id);
+            if(isset($language->id)) {
+                $module = Module::get('Languages');
+                $module->row = $language;
 
-                return view('la.__view_folder__.show', [
+                return view('la.languages.show', [
                     'module' => $module,
                     'view_col' => $module->view_col,
                     'no_header' => true,
                     'no_padding' => "no-padding"
-                ])->with('__singular_var__', $__singular_var__);
+                ])->with('language', $language);
             } else {
                 return view('errors.404', [
                     'record_id' => $id,
-                    'record_name' => ucfirst("__singular_var__"),
+                    'record_name' => ucfirst("language"),
                 ]);
             }
         } else {
@@ -117,28 +116,28 @@ class __controller_class_name__ extends Controller
     }
 
     /**
-     * Show the form for editing the specified __singular_var__.
+     * Show the form for editing the specified language.
      *
-     * @param int $id __singular_var__ ID
+     * @param int $id language ID
      * @return \Illuminate\Http\RedirectResponse
      */
     public function edit($id)
     {
-        if(Module::hasAccess("__module_name__", "edit")) {
-            $__singular_var__ = __model_name__::find($id);
-            if(isset($__singular_var__->id)) {
-                $module = Module::get('__module_name__');
+        if(Module::hasAccess("Languages", "edit")) {
+            $language = Language::find($id);
+            if(isset($language->id)) {
+                $module = Module::get('Languages');
 
-                $module->row = $__singular_var__;
+                $module->row = $language;
 
-                return view('la.__view_folder__.edit', [
+                return view('la.languages.edit', [
                     'module' => $module,
                     'view_col' => $module->view_col,
-                ])->with('__singular_var__', $__singular_var__);
+                ])->with('language', $language);
             } else {
                 return view('errors.404', [
                     'record_id' => $id,
-                    'record_name' => ucfirst("__singular_var__"),
+                    'record_name' => ucfirst("language"),
                 ]);
             }
         } else {
@@ -147,17 +146,17 @@ class __controller_class_name__ extends Controller
     }
 
     /**
-     * Update the specified __singular_var__ in storage.
+     * Update the specified language in storage.
      *
      * @param \Illuminate\Http\Request $request
-     * @param int $id __singular_var__ ID
+     * @param int $id language ID
      * @return \Illuminate\Http\RedirectResponse
      */
     public function update(Request $request, $id)
     {
-        if(Module::hasAccess("__module_name__", "edit")) {
+        if(Module::hasAccess("Languages", "edit")) {
 
-            $rules = Module::validateRules("__module_name__", $request, true);
+            $rules = Module::validateRules("Languages", $request, true);
 
             $validator = Validator::make($request->all(), $rules);
 
@@ -165,9 +164,9 @@ class __controller_class_name__ extends Controller
                 return redirect()->back()->withErrors($validator)->withInput();;
             }
 
-            $insert_id = Module::updateRow("__module_name__", $request, $id);
+            $insert_id = Module::updateRow("Languages", $request, $id);
 
-            return redirect()->route(config('crmadmin.adminRoute') . '.__route_resource__.index');
+            return redirect()->route(config('crmadmin.adminRoute') . '.languages.index');
 
         } else {
             return redirect(config('crmadmin.adminRoute') . "/");
@@ -175,18 +174,18 @@ class __controller_class_name__ extends Controller
     }
 
     /**
-     * Remove the specified __singular_var__ from storage.
+     * Remove the specified language from storage.
      *
-     * @param int $id __singular_var__ ID
+     * @param int $id language ID
      * @return \Illuminate\Http\RedirectResponse
      */
     public function destroy($id)
     {
-        if(Module::hasAccess("__module_name__", "delete")) {
-            __model_name__::find($id)->delete();
+        if(Module::hasAccess("Languages", "delete")) {
+            Language::find($id)->delete();
 
             // Redirecting to index() method
-            return redirect()->route(config('crmadmin.adminRoute') . '.__route_resource__.index');
+            return redirect()->route(config('crmadmin.adminRoute') . '.languages.index');
         } else {
             return redirect(config('crmadmin.adminRoute') . "/");
         }
@@ -200,29 +199,27 @@ class __controller_class_name__ extends Controller
      */
     public function dtajax(Request $request)
     {
-        $module = Module::get('__module_name__');
-        $listing_cols = Module::getListingColumns('__module_name__');
+        $module = Module::get('Languages');
+        $listing_cols = Module::getListingColumns('Languages');
 
-        $values = DB::table('__db_table_name__')->select($listing_cols)->whereNull('deleted_at');
+        $values = DB::table('languages')->select($listing_cols)->whereNull('deleted_at');
         $out = Datatables::of($values)->make();
         $data = $out->getData();
 
-        $fields_popup = ModuleFields::getModuleFields('__module_name__');
+        $fields_popup = ModuleFields::getModuleFields('Languages');
 
         for($i = 0; $i < count($data->data); $i++) {
-            $data->data[$i] =(array)$data->data[$i];
             for($j = 0; $j < count($listing_cols); $j++) {
                 $col = $listing_cols[$j];
-                $data->data[$i][$j] = $data->data[$i][$col];
-                if($fields_popup[$col] != null && Str::of($fields_popup[$col]->popup_vals)->startsWith('@')) {
-                    $data->data[$i][$j] = ModuleFields::getFieldValue($fields_popup[$col], $data->data[$i][$col]);
+                if($fields_popup[$col] != null && starts_with($fields_popup[$col]->popup_vals, "@")) {
+                    $data->data[$i][$j] = ModuleFields::getFieldValue($fields_popup[$col], $data->data[$i][$j]);
                 }
                 if($col == $module->view_col) {
-                    $data->data[$i][$j] = '<a href="' . url(config('crmadmin.adminRoute') . '/__route_resource__/' . $data->data[$i][$listing_cols[0]]) . '">' . $data->data[$i][$col] . '</a>';
+                    $data->data[$i][$j] = '<a href="' . url(config('crmadmin.adminRoute') . '/languages/' . $data->data[$i][0]) . '">' . $data->data[$i][$j] . '</a>';
                 }
                 if($fields_popup[$col] != null && $fields_popup[$col]->field_type_str == "Image") {
-                    if($data->data[$i][$col] != 0) {
-                        $img = \App\Models\Upload::find($data->data[$i][$col]);
+                    if($data->data[$i][$j] != 0) {
+                        $img = \App\Models\Upload::find($data->data[$i][$j]);
                         if(isset($img->name)) {
                             $data->data[$i][$j] = '<img src="'.$img->path().'?s=50">';
                         } else {
@@ -234,18 +231,18 @@ class __controller_class_name__ extends Controller
                 }
 
                 // else if($col == "author") {
-                //    $data->data[$i][$col];
+                //    $data->data[$i][$j];
                 // }
             }
 
             if($this->show_action) {
                 $output = '';
-                if(Module::hasAccess("__module_name__", "edit")) {
-                    $output .= '<a href="' . url(config('crmadmin.adminRoute') . '/__route_resource__/' . $data->data[$i][$listing_cols[0]] . '/edit') . '" class="btn btn-warning btn-xs" style="display:inline;padding:2px 5px 3px 5px;"><i class="fa fa-edit"></i></a>';
+                if(Module::hasAccess("Languages", "edit")) {
+                    $output .= '<a href="' . url(config('crmadmin.adminRoute') . '/languages/' . $data->data[$i][0] . '/edit') . '" class="btn btn-warning btn-xs" style="display:inline;padding:2px 5px 3px 5px;"><i class="fa fa-edit"></i></a>';
                 }
 
-                if(Module::hasAccess("__module_name__", "delete")) {
-                    $output .= Form::open(['route' => [config('crmadmin.adminRoute') . '.__route_resource__.destroy', $data->data[$i][$listing_cols[0]]], 'method' => 'delete', 'style' => 'display:inline']);
+                if(Module::hasAccess("Languages", "delete")) {
+                    $output .= Form::open(['route' => [config('crmadmin.adminRoute') . '.languages.destroy', $data->data[$i][0]], 'method' => 'delete', 'style' => 'display:inline']);
                     $output .= ' <button class="btn btn-danger btn-xs" type="submit"><i class="fa fa-times"></i></button>';
                     $output .= Form::close();
                 }
