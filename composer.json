@@ -9,10 +9,12 @@
         "illuminate/container": "^7.16.1",
         "yajra/laravel-datatables-oracle": "^9.10.2",
         "creativeorange/gravatar": "^1.0.14",
+        "guzzlehttp/guzzle": "^6.5",
         "doctrine/dbal": "~2.10.2",
         "shanmuga/laravel-entrust": "^1.2",
-        "spatie/laravel-backup": "^6.11.1"
-
+        "spatie/laravel-backup": "^6.11.1",
+        "laravel/passport": "^9.2",
+        "symfony/psr-http-message-bridge": "^2.0"
     },
     "authors": [
         {

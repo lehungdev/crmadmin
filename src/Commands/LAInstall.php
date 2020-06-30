@@ -102,6 +102,9 @@ class LAInstall extends Command
                 . "\n\t app/User.php"
                 . "\n\t database/migrations/2014_10_12_000000_create_users_table.php"
                 . "\n\t gulpfile.js"
+                . "\n\t app/Providers/AuthServiceProvider.php"
+                . "\n\t config/auth.php"
+                . "\n\t app/Http/Kernel.php"
                 . "\n\n Please take backup or use git. Do you wish to continue ?", true)) {
 
                 // Controllers
@@ -128,11 +131,13 @@ class LAInstall extends Command
                 // Middleware
                 if (LAHelper::laravel_ver() == 5.3 || LAHelper::laravel_ver() != 5.4) {
                     $this->copyFile($from . "/app/Middleware/RedirectIfAuthenticated.php", $to . "/app/Http/Middleware/RedirectIfAuthenticated.php");
+                    $this->copyFile($from . "/app/Middleware/CheckClientCredentials.php", $to . "/app/Http/Middleware/CheckClientCredentials.php");  ###changed
                 }
 
                 // AppServiceProvider - https://laravel-news.com/laravel-5-4-key-too-long-error
                 if (LAHelper::laravel_ver() != 5.4) {
                     $this->copyFile($from . "/app/Providers/AppServiceProvider.php", $to . "/app/Providers/AppServiceProvider.php");
+
                 }
 
                 // Config
@@ -260,11 +265,13 @@ class LAInstall extends Command
                         $this->appendFile($from . "/app/routes.php", $to . "/routes/web.php");
                     }
                     $this->copyFile($from . "/app/admin_routes.php", $to . "/routes/admin_routes.php");
+                    $this->copyFile($from . "/app/api.php", $to . "/routes/api.php");  ###changed
                 } else {
                     if (LAHelper::getLineWithString($to . "/app/Http/routes.php", "require __DIR__.'/admin_routes.php';") == -1) {
                         $this->appendFile($from . "/app/routes.php", $to . "/app/Http/routes.php");
                     }
                     $this->copyFile($from . "/app/admin_routes.php", $to . "/app/Http/admin_routes.php");
+                    $this->copyFile($from . "/app/api.php", $to . "/app/Http/api.php");  ###changed
                 }
 
                 // tests
@@ -326,6 +333,26 @@ class LAInstall extends Command
                 }
                 $role = \App\Role::whereName('SUPER_ADMIN')->first();
                 $user->attachRole($role);
+
+                //Install passport authentication
+                $this->line('Install passport authentication...');
+                $this->call('passport:install');
+                $this->info("\nPassport successfully installed.");
+                //Add Trait To User Class
+                $this->info("\nAdd Trait To User Class: HasApiTokens");
+                // Call Passport Routes And Add Some Configs
+                $this->info("\nCall Passport Routes And Add Some Configs");
+                $this->copyFile($from . "/app/Providers/AuthServiceProvider.php", $to . "/app/Providers/AuthServiceProvider.php");  ###changed
+                $this->copyFile($from . "/app/User.php", $to . "/app/User.php");  ###changed
+                //Finally You Need To Change The Api Driver
+                $this->info("\nFinally You Need To Change The Api Driver: config/auth.php");
+                $this->copyFile($from . "/config/auth.php", $to . "/config/auth.php");  ###changed
+                //Creat Folder API in Controllers
+                // $this->replaceFolder($from . "/app/Http/Controllers/Api", $to . "/app/Http/Controllers/Api");
+                $this->replaceFolder($from . "/app/Http/Controllers/Api/Auth", $to . "/app/Http/Controllers/Api/Auth");
+                // $this->copyFile($from . "/app/Controllers/Api/Auth/UserController.php", $to . "/app/Http/Controllers/Api/Auth/UserController.php");  ###changed
+
+                $this->info("\nPassport complate.");
                 $this->info("\nCrmAdmin successfully installed.");
                 $this->info("You can now login from yourdomain.com/" . config('crmadmin.adminRoute') . " !!!\n");
             } else {

@@ -12,6 +12,7 @@ namespace App;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Auth\Passwords\CanResetPassword;
+use Laravel\Passport\HasApiTokens;
 use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 
@@ -21,7 +22,7 @@ use Shanmuga\LaravelEntrust\Traits\LaravelEntrustUserTrait;
 
 class User extends Authenticatable implements AuthorizableContract, CanResetPasswordContract
 {
-    use Notifiable;
+    use Notifiable, HasApiTokens;
     use CanResetPassword;
     // use SoftDeletes;
     use LaravelEntrustUserTrait;
@@ -47,6 +48,15 @@ class User extends Authenticatable implements AuthorizableContract, CanResetPass
     ];
 
     // protected $dates = ['deleted_at'];
+
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+    ];
 
     /**
      * @return mixed
