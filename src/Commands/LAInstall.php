@@ -334,23 +334,25 @@ class LAInstall extends Command
                 $role = \App\Role::whereName('SUPER_ADMIN')->first();
                 $user->attachRole($role);
 
+                $this->info("\n");
                 //Install passport authentication
                 $this->line('Install passport authentication...');
                 $this->call('passport:install');
-                $this->info("\nPassport successfully installed.");
+                $this->info("Passport successfully installed.");
+
+                $this->line('Auto config Passport:');
                 //Add Trait To User Class
-                $this->info("\nAdd Trait To User Class: HasApiTokens");
+                $this->info("Add Trait To User Class: HasApiTokens");
                 // Call Passport Routes And Add Some Configs
-                $this->info("\nCall Passport Routes And Add Some Configs");
+                $this->info("Call Passport Routes And Add Some Configs");
                 $this->copyFile($from . "/app/Providers/AuthServiceProvider.php", $to . "/app/Providers/AuthServiceProvider.php");  ###changed
                 $this->copyFile($from . "/app/User.php", $to . "/app/User.php");  ###changed
                 //Finally You Need To Change The Api Driver
-                $this->info("\nFinally You Need To Change The Api Driver: config/auth.php");
+                $this->info("Finally You Need To Change The Api Driver: config/auth.php");
                 $this->copyFile($from . "/config/auth.php", $to . "/config/auth.php");  ###changed
                 //Creat Folder API in Controllers
-                // $this->replaceFolder($from . "/app/Http/Controllers/Api", $to . "/app/Http/Controllers/Api");
-                $this->replaceFolder($from . "/app/Http/Controllers/Api/Auth", $to . "/app/Http/Controllers/Api/Auth");
-                // $this->copyFile($from . "/app/Controllers/Api/Auth/UserController.php", $to . "/app/Http/Controllers/Api/Auth/UserController.php");  ###changed
+                $this->replaceFolder($from . "/app/Controllers/Api", $to . "/app/Http/Controllers/Api");
+
 
                 $this->info("\nPassport complate.");
                 $this->info("\nCrmAdmin successfully installed.");
