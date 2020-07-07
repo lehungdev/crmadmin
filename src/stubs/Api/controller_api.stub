@@ -25,14 +25,30 @@ use App\Models\__model_name__;
 
 class __controller_class_name__ extends Controller
 {
+    public $table       = '__db_table_name__';
     public $page        = 50;
     public $show_action = true;
     protected $listing_cols             = [];
     protected $listing_cols_transform   = [];
     protected $listing_cols_module_fields = array();
+
+    public function __construct(Request $request) {
+
+        $this -> table_id = DB::table('modules')->where('name_db', $this -> table)->value('id');
+
+        foreach ($this->listing_cols as $key => $value ){
+            if($value != 'id')
+                $this->listing_cols_module_fields[$value] = IdeaHelper::nameModuleFiledType($value, $this -> table_id);
+
+        };
+
+
+    }
+
     /**
      * Display a listing of the __module_name__.
      *
-     * @return mixed
+     * @return response json
      */
+
 }

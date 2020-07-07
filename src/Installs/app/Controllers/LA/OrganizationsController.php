@@ -203,7 +203,7 @@ class OrganizationsController extends Controller
 		$listing_cols = Module::getListingColumns('Organizations');
 
 		$values = DB::table('organizations')->select($listing_cols)->whereNull('deleted_at');
-		$out = Datatables::of($values)->make();
+		$out = \DataTables::of($values)->make();
 		$data = $out->getData();
 
 		$fields_popup = ModuleFields::getModuleFields('Organizations');

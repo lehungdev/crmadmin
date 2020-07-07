@@ -94,7 +94,7 @@ class LAProvider extends ServiceProvider
         // Collective HTML & Form Helper
         $this->app->register(\Collective\Html\HtmlServiceProvider::class);
         // For Datatables
-        $this->app->register(\Yajra\Datatables\DatatablesServiceProvider::class);
+        $this->app->register(\Yajra\DataTables\DataTablesServiceProvider::class);
         // For Gravatar
         $this->app->register(\Creativeorange\Gravatar\GravatarServiceProvider::class);
         // For LaravelEntrust

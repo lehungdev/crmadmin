@@ -229,7 +229,7 @@ class RolesController extends Controller
 		$listing_cols = Module::getListingColumns('Roles');
 
 		$values = DB::table('roles')->select($listing_cols)->whereNull('deleted_at');
-		$out = Datatables::of($values)->make();
+		$out = \DataTables::of($values)->make();
 		$data = $out->getData();
 
 		$fields_popup = ModuleFields::getModuleFields('Roles');
