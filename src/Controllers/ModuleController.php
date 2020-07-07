@@ -62,7 +62,6 @@ class ModuleController extends Controller
      */
     public function store(Request $request)
     {
-        dd($request->name);
         $module_id = Module::generateBase($request->name, $request->icon);
 
         return redirect()->route(config('crmadmin.adminRoute') . '.modules.show', [$module_id]);

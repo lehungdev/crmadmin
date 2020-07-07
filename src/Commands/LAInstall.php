@@ -110,6 +110,7 @@ class LAInstall extends Command
                 // Controllers
                 $this->line("\n" . 'Generating Controllers...');
                 $this->copyFolder($from . "/app/Controllers/Auth", $to . "/app/Http/Controllers/Auth");
+                $this->replaceFolder($from . "/app/Controllers/Helpers", $to . "/app/Http/Controllers/Helpers");
                 if (LAHelper::laravel_ver() == 5.3 || LAHelper::laravel_ver() != 5.4) {
                     // Delete Redundant Controllers
                     unlink($to . "/app/Http/Controllers/Auth/PasswordController.php");

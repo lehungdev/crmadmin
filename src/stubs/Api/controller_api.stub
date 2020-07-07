@@ -1,0 +1,38 @@
+<?php
+/**
+ * Model generated using IdeaGroup
+ * Help: lehung.hut@gmail.com
+ * LaraAdmin is open-sourced software licensed under the MIT license.
+ * Developed by: Dwij IT Solutions
+ * Developer Website: http://ideagroup.vn
+ */
+
+namespace App\Http\Controllers\LA;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use App\Http\Requests;
+use Illuminate\Support\Str;
+use Auth;
+use DB;
+use Validator;
+use Datatables;
+use Collective\Html\FormFacade as Form;
+use Lehungdev\Crmadmin\Models\Module;
+use Lehungdev\Crmadmin\Models\ModuleFields;
+
+use App\Models\__model_name__;
+
+class __controller_class_name__ extends Controller
+{
+    public $page        = 50;
+    public $show_action = true;
+    protected $listing_cols             = [];
+    protected $listing_cols_transform   = [];
+    protected $listing_cols_module_fields = array();
+    /**
+     * Display a listing of the __module_name__.
+     *
+     * @return mixed
+     */
+}

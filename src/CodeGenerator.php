@@ -237,14 +237,14 @@ class CodeGenerator
             $table = str_replace("_table", "", $tname);
         }
 
-        $modelName = ucfirst(Str::plural($table));
+        $modelName = Str::ucfirst(Str::plural($table));
         $tableP = Str::plural(strtolower($table));
         $tableS = Str::plural(strtolower($table));
         $migrationName = 'create_' . $tableP . '_table';
         $migrationFileName = date("Y_m_d_His_") . $migrationName . ".php";
-        $migrationClassName = ucfirst(Str::camel($migrationName));
+        $migrationClassName = Str::ucfirst(Str::camel($migrationName));
         $dbTableName = $tableP;
-        $moduleName = ucfirst(Str::plural($table));
+        $moduleName = Str::ucfirst(Str::plural($table));
 
         LAHelper::log("info", "Model:\t   " . $modelName, $comm);
         LAHelper::log("info", "Module:\t   " . $moduleName, $comm);
@@ -396,16 +396,16 @@ class CodeGenerator
             $module = str_replace("_table", "", $tname);
         }
 
-        $config->modelName = ucfirst(Str::plural($module));
+        $config->modelName = Str::ucfirst(Str::singular($module));
         $tableP = Str::plural(strtolower($module));
-        $tableS = Str::plural(strtolower($module));
+        $tableS = Str::singular(strtolower($module));
         $config->dbTableName = $tableP;
         $config->fa_icon = $icon;
-        $config->moduleName = ucfirst(Str::plural($module));
-        $config->moduleName2 = str_replace('_', ' ', ucfirst(Str::plural($module)));
-        $config->controllerName = ucfirst(Str::plural($module)) . "Controller";
-        $config->singularVar = strtolower(Str::plural($module));
-        $config->singularCapitalVar = str_replace('_', ' ', ucfirst(Str::plural($module)));
+        $config->moduleName = Str::ucfirst(Str::plural($module));
+        $config->moduleName2 = str_replace('_', ' ', Str::ucfirst(Str::plural($module)));
+        $config->controllerName = Str::ucfirst(Str::singular($module)) . "Controller";
+        $config->singularVar = strtolower(Str::singular($module));
+        $config->singularCapitalVar = str_replace('_', ' ', Str::ucfirst(Str::singular($module)));
 
         $module = Module::get($config->moduleName);
         if(!isset($module->id)) {

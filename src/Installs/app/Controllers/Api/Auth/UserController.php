@@ -116,7 +116,7 @@ class UserController extends Controller
                 ],
             ]); //dd($response);
             return json_decode((string) $response->getBody(), true);
-        } catch (Exception $e) { dd('aaaa');
+        } catch (Exception $e) {
             return response()->json("unauthorized", 401);
         }
     }

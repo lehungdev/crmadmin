@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Foundation\Auth\AuthenticatesUsers;
+// use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Http\Request;
+use Auth;
 use App\Role;
 use App\User;
 
@@ -20,7 +22,7 @@ class LoginController extends Controller
     |
     */
 
-    use AuthenticatesUsers;
+    // use AuthenticatesUsers;
 
     /**
      * Where to redirect users after login.
@@ -55,5 +57,35 @@ class LoginController extends Controller
 				'message' => 'Please run command <code>php artisan db:seed</code> to generate required table data.',
 			]);
 		}
+    }
+
+    /**
+     * Handle an authentication attempt.
+     *
+     * @param  \Illuminate\Http\Request $request
+     *
+     * @return Response
+     */
+    public function login(Request $request)
+    {
+        $credentials = $request->only('email', 'password');
+
+        if (Auth::attempt($credentials)) {
+            // Authentication passed...
+            return redirect()->intended(config('crmadmin.adminRoute'));
+        }
+    }
+
+
+    /**
+     * Handle an not authentication attempt.
+     *
+     * @param  \Illuminate\Http\Request $request
+     *
+     */
+    public function logout()
+    {
+        Auth::logout();
+        return redirect()->intended('/');
     }
 }

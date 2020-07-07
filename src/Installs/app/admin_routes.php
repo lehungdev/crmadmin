@@ -19,7 +19,12 @@ if(\Lehungdev\Crmadmin\Helpers\LAHelper::laravel_ver() != 5.3) {
 	$as = config('crmadmin.adminRoute').'.';
 
 	// Routes for Laravel 5.5
-	Route::get('/logout', 'Auth\LoginController@logout');
+    Route::get('/logout', 'Auth\LoginController@logout');
+
+    // Authentication Routes...
+    Route::get('login', 'Auth\LoginController@showLoginForm')->name('login');
+    Route::post('login', 'Auth\LoginController@login');
+    Route::post('logout', 'Auth\LoginController@logout')->name('logout');
 }
 
 Route::group(['as' => $as, 'middleware' => ['auth', 'permission:ADMIN_PANEL']], function () {

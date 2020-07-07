@@ -285,7 +285,6 @@ class LAFormMaker
                             if(is_numeric($url_array[count($url_array) - 2])) {
                                 $tb_name = substr( $url_array[count($url_array) - 3],  0, strlen($url_array[count($url_array) - 3]) - 5 );
                                 $item_info = \DB::table($tb_name)->where('id',$url_array[count($url_array) - 2])->first();
-//                                dd($item_info);
                                 $id_cat = $item_info->categories_id;
                             }
 
@@ -932,7 +931,7 @@ class LAFormMaker
         if(Module::hasFieldAccess($module->id, $module->fields[$field_name]['id'], $access_type = "write") and !empty($field_name)) {
 
             $row = null;
-            $default_language = config('app.locale_id'); //dd($default_language);
+            $default_language = config('app.locale_id');
             if(isset($module->row[$language->id])) {
                 $row = $module->row[$language->id];
                 if(isset($module->row[$default_language]))
@@ -950,7 +949,6 @@ class LAFormMaker
                     }
 
             }
-//dd($row);
 
 
 

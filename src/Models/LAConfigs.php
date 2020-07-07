@@ -27,15 +27,15 @@ use Lehungdev\Crmadmin\Helpers\LAHelper;
 class LAConfigs extends Model
 {
     protected $table = 'la_configs';
-    
+
     protected $fillable = [
         "key", "value"
     ];
-    
+
     protected $hidden = [
-    
+
     ];
-    
+
     /**
      * Get configuration string value by using key such as 'sitename'
      *
@@ -53,7 +53,7 @@ class LAConfigs extends Model
             return false;
         }
     }
-    
+
     /**
      * Get all configuration as object
      *
