@@ -319,8 +319,8 @@ class LAInstall extends Command
                         'email' => $data['email'],
                         'gender' => 'Male',
                         'dept' => "1",
-                        'city' => "Pune",
-                        'address' => "Karve nagar, Pune 411030",
+                        'city' => "HaNoi",
+                        'address' => "HaNoi, VietName",
                         'about' => "About user / biography",
                         'date_birth' => date("Y-m-d"),
                         'date_hire' => date("Y-m-d"),
@@ -353,6 +353,10 @@ class LAInstall extends Command
                 $this->copyFile($from . "/config/auth.php", $to . "/config/auth.php");  ###changed
                 //Creat Folder API in Controllers
                 $this->replaceFolder($from . "/app/Controllers/Api", $to . "/app/Http/Controllers/Api");
+
+                //publish DataTables\DataTablesServiceProvider"
+                $this->line('publish DataTables\DataTablesServiceProvider...');
+                $this->call('vendor:publish', ['--provider' => 'Yajra\DataTables\DataTablesServiceProvider']);
 
 
                 $this->info("\nPassport complate.");
