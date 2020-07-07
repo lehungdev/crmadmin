@@ -9,7 +9,7 @@
         "illuminate/container": "^7.18.0",
         "yajra/laravel-datatables-oracle": "^9.10.2",
         "creativeorange/gravatar": "^1.0.14",
-        "guzzlehttp/guzzle": "^7.0.1",
+        "guzzlehttp/guzzle": "^6.5.5",
         "doctrine/dbal": "~2.10.2",
         "shanmuga/laravel-entrust": "^1.2",
         "spatie/laravel-backup": "^6.11.1",
