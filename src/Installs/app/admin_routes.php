@@ -71,8 +71,8 @@ Route::group(['as' => $as, 'middleware' => ['auth', 'permission:ADMIN_PANEL']], 
     Route::get(config('crmadmin.adminRoute') . '/organization_dt_ajax', 'LA\OrganizationsController@dtajax');
 
     /* ================== Languages ================== */
-    Route::resource(config('crmadmin.adminRoute') . '/languages', 'LA\LanguagesController');
-    Route::get(config('crmadmin.adminRoute') . '/language_dt_ajax', 'LA\LanguagesController@dtajax');
+    Route::resource(config('crmadmin.adminRoute') . '/languages', 'LA\LanguageController');
+    Route::get(config('crmadmin.adminRoute') . '/language_dt_ajax', 'LA\LanguageController@dtajax');
 
 	/* ================== Backups ================== */
 	Route::resource(config('crmadmin.adminRoute') . '/backups', 'LA\BackupsController');

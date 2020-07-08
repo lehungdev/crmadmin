@@ -92,7 +92,7 @@
 					@endforeach
 				</select>
 			</div>
-			
+
 			<div class="form-group">
 				<label>Layout</label>
 				<select class="form-control" name="layout">

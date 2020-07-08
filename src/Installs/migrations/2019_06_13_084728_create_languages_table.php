@@ -44,16 +44,16 @@ class CreateLanguagesTable extends Migration
             ], [
                 "colname" => "locale",
                 "label" => "Locale",
-                "field_type" => "Integer",
-                "unique" => false,
+                "field_type" => "String",
+                "unique" => true,
                 "defaultvalue" => "",
                 "minlength" => 1,
-                "maxlength" => 2,
-                "required" => false,
-                "listing_col" => false
+                "maxlength" => 3,
+                "required" => true,
+                "listing_col" => true
             ]
         ]);
-
+        
         /*
         Module::generate("Module_Name", "Table_Name", "view_column_name" "Fields_Array");
 
@@ -71,7 +71,7 @@ class CreateLanguagesTable extends Migration
             "popup_vals" => ["Employee", "Client"]
         ]
         # Format Details: Check http://ideagroup.vn/docs/migrations_cruds#schema-ui-types
-
+        
         colname: Database column name. lowercase, words concatenated by underscore (_)
         label: Label of Column e.g. Name, Cost, Is Public
         field_type: It defines type of Column in more General way.
@@ -84,7 +84,7 @@ class CreateLanguagesTable extends Migration
         popup_vals: These are values for MultiSelect, TagInput and Radio Columns. Either connecting @tables or to list []
         */
     }
-
+    
     /**
      * Reverse the migrations.
      *

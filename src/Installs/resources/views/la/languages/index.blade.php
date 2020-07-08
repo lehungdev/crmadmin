@@ -31,7 +31,7 @@
         <thead>
         <tr class="success">
             @foreach( $listing_cols as $col )
-            <th>{{ $module->fields[$col]['label'] or ucfirst($col) }}</th>
+            <th>{{ $module->fields[$col]['label'] ?? ucfirst($col) }}</th>
             @endforeach
             @if($show_actions)
             <th>Actions</th>
@@ -53,7 +53,7 @@
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                 <h4 class="modal-title" id="myModalLabel">Add Language</h4>
             </div>
-            {!! Form::open(['action' => 'LA\LanguagesController@store', 'id' => 'language-add-form']) !!}
+            {!! Form::open(['action' => 'LA\LanguageController@store', 'id' => 'language-add-form']) !!}
             <div class="modal-body">
                 <div class="box-body">
                     @la_form($module)

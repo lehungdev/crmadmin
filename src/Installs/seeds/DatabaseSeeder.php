@@ -143,7 +143,7 @@ class DatabaseSeeder extends Seeder
 
 		$laconfig = new LAConfigs;
 		$laconfig->key = "skin";
-		$laconfig->value = "skin-white";
+		$laconfig->value = "skin-green";
 		$laconfig->save();
 
 		$laconfig = new LAConfigs;
