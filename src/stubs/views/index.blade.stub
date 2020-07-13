@@ -1,4 +1,4 @@
-@extends("la.layouts.app")
+@extends("crm.layouts.app")
 
 @section("contentheader_title", "__module_name_2__")
 @section("contentheader_description", "__module_name_2__ listing")
@@ -53,7 +53,7 @@
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                 <h4 class="modal-title" id="myModalLabel">Add __singular_cap_var__</h4>
             </div>
-            {!! Form::open(['action' => 'LA\__controller_class_name__@store', 'id' => '__singular_var__-add-form']) !!}
+            {!! Form::open(['action' => 'CRM\__controller_class_name__@store', 'id' => '__singular_var__-add-form']) !!}
             <div class="modal-body">
                 <div class="box-body">
                     @la_form($module)

@@ -7,7 +7,7 @@
  * Developer Website: http://ideagroup.vn
  */
 
-namespace App\Http\Controllers\LA;
+namespace App\Http\Controllers\CRM;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -37,7 +37,7 @@ class __controller_class_name__ extends Controller
         $module = Module::get('__module_name__');
 
         if(Module::hasAccess($module->id)) {
-            return View('la.__view_folder__.index', [
+            return View('crm.__view_folder__.index', [
                 'show_actions' => $this->show_action,
                 'listing_cols' => Module::getListingColumns('__module_name__'),
                 'module' => $module
@@ -99,7 +99,7 @@ class __controller_class_name__ extends Controller
                 $module = Module::get('__module_name__');
                 $module->row = $__singular_var__;
 
-                return view('la.__view_folder__.show', [
+                return view('crm.__view_folder__.show', [
                     'module' => $module,
                     'view_col' => $module->view_col,
                     'no_header' => true,
@@ -131,7 +131,7 @@ class __controller_class_name__ extends Controller
 
                 $module->row = $__singular_var__;
 
-                return view('la.__view_folder__.edit', [
+                return view('crm.__view_folder__.edit', [
                     'module' => $module,
                     'view_col' => $module->view_col,
                 ])->with('__singular_var__', $__singular_var__);
@@ -204,7 +204,7 @@ class __controller_class_name__ extends Controller
         $listing_cols = Module::getListingColumns('__module_name__');
 
         $values = DB::table('__db_table_name__')->select($listing_cols)->whereNull('deleted_at');
-        $out = \DataTables::of($values)->make();
+        $out = \\DataTables::of($values)->make();
         $data = $out->getData();
 
         $fields_popup = ModuleFields::getModuleFields('__module_name__');

@@ -111,7 +111,7 @@ class DatabaseSeeder extends Seeder
 
 		$laconfig = new LAConfigs;
 		$laconfig->key = "site_description";
-		$laconfig->value = "CrmAdmin is a open-source Crm Admin Panel for quick-start Admin based applications and boilerplate for CRM or CMS systems.";
+		$laconfig->value = "CrmAdmin is a open-source Crm Admin Panel for quick-start Admin based applications and boilerplate for CRM\ or CMS systems.";
 		$laconfig->save();
 
 		// Display Configurations

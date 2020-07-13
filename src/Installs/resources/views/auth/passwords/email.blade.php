@@ -1,4 +1,4 @@
-@extends('la.layouts.auth')
+@extends('crm.layouts.auth')
 
 @section('htmlheader_title')
     Password recovery
@@ -56,7 +56,7 @@
 
     </div><!-- /.login-box -->
 
-    @include('la.layouts.partials.scripts_auth')
+    @include('crm.layouts.partials.scripts_auth')
 
     <script>
         $(function () {

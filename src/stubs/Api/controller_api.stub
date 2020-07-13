@@ -7,7 +7,7 @@
  * Developer Website: http://ideagroup.vn
  */
 
-namespace App\Http\Controllers\LA;
+namespace App\Http\Controllers\CRM;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;

@@ -1,4 +1,4 @@
-@extends("la.layouts.app")
+@extends("crm.layouts.app")
 
 @section("contentheader_title")
     <a href="{{ url(config('crmadmin.adminRoute') . '/__db_table_name__') }}">__singular_cap_var__</a> :

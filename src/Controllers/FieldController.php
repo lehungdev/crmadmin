@@ -77,7 +77,7 @@ class FieldController extends Controller
 
         $tables = LAHelper::getDBTables([]);
 
-        return view('la.modules.field_edit', [
+        return view('crm.modules.field_edit', [
             'module' => $module,
             'ftypes' => $ftypes,
             'tables' => $tables

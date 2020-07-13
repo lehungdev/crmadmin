@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Helper;
+namespace App\Http\Controllers\Helpers;
 
 use DB;
 use Log;
@@ -26,7 +26,7 @@ class IdeaHelper
      * @return mixed
      */
     public static function print_menu_editor($menu, $url = 'categories', $cat_all = array(), $module_tables = array(), $module_table_id = null) {
- 
+
         $listing_cols = ModuleFields::getModuleFields('Categories');
 
         //Data langgue
@@ -53,7 +53,7 @@ class IdeaHelper
                 $value_true['slug'] = null;
             $menu_lang_locale[$value_true['locale']] = $value_true;
             unset($cat_all[$key]);
-        }  
+        }
         //Lấy danh sách nhóm con
         $childrens = array_filter($cat_all, function($cat_item) use ($menu, $module_table_id) {
             if($cat_item['parent'] == $menu['id'] and !empty($module_table_id) and $cat_item['module_table_id'] ==  $module_table_id){
@@ -91,7 +91,7 @@ class IdeaHelper
             $editing1 = '<a id="display_sub'.$menu['id'].'" class="display_sub btn-success btn pull-right" style="display: block;"><i class="fa fa-minus"></i></a>';
         else $editing1 = '';
 
-        
+
         $editing = \Collective\Html\FormFacade::open(['route' => [config('laraadmin.adminRoute').'.categories.destroy', $menu['id']], 'method' => 'delete', 'style'=>'display:inline']);
         $editing .= $editing1;
         $editing .= '<button class="btn btn-xs btn-danger pull-right"><i class="fa fa-times"></i></button>';
@@ -106,9 +106,9 @@ class IdeaHelper
 			        <div class="dd-handle dd3-handle"></div>
 			        <div class="dd3-content"><a href="' . url(config('laraadmin.adminRoute') . '/'.$module_table_url) . '" ><i class="fa '.$menu['icon'].'"></i> '.$name_cat.' '.$editing.'</a></div>'; //url(config('ideaadmin.adminRoute') . '/categories/' . $menu['id'])
 
-            if(count($childrens) > 0) { 
+            if(count($childrens) > 0) {
                 $str .= '<ol class="dd-list" style="display: block;">';
-                    foreach($childrens as $children) {  
+                    foreach($childrens as $children) {
                         if($children['locale'] == config('app.locale_id') ){
                              $menu_show1 = IdeaHelper::print_menu_editor($children, 'categories', $cat_all, $module_tables);
                             $str .= $menu_show1['string'];
@@ -354,15 +354,15 @@ class IdeaHelper
      * */
     public  static function getValueColumn($field, $value, $result_lang_default = null){
         $external_table_name    = substr($field->popup_vals, 1);
-        $field_type_str         = $field->field_type_str;  
+        $field_type_str         = $field->field_type_str;
         $colname = $field->colname;
-        if($field->lang_active == 0 and !empty($result_lang_default)){ 
+        if($field->lang_active == 0 and !empty($result_lang_default)){
             $value = $result_lang_default->$colname;
-        } 
+        }
         if(!empty($field)) {
             switch($field_type_str) {
-                case 'Image':  
-                    // $image = \App\Models\Upload::find($value);   
+                case 'Image':
+                    // $image = \App\Models\Upload::find($value);
                     $values = IdeaHelper::pathImageNoSize($value);
                     // if(isset($image->name))
                     //     $values = $image->path();
@@ -498,14 +498,14 @@ class IdeaHelper
             $date_append = substr($img_name, 2, 15 );
             return url("/s".$size."/$img->caption/$date_append/$img->name");
         } else return '';
-        
+
     }
 
     /*
      * Get File path
      * @param   $id image
      * @param   $size image
-     * 
+     *
      */
 
     public static function pathImageNoSize($id){
@@ -516,7 +516,7 @@ class IdeaHelper
             $date_append = substr($img_name, 2, 15 );
             return '/'.$img->caption.'/'.$date_append.'/'.$img->name;
         } else return '';
-        
+
     }
 
     /*
@@ -579,7 +579,7 @@ class IdeaHelper
                         $hierarchy1   = $hierarchy1.','.$hierarchy_item;
                         $hierarchy    = $hierarchy.','.$hierarchy_string_array[$i];
                     }
-                } 
+                }
 
 
                 $idchar = $idchar.'.'.$item->id;
@@ -687,7 +687,7 @@ class IdeaHelper
 
                 }
             }
-            
+
             if(!empty($request_lang)) {
                 //Insert value langguge default
 
@@ -725,33 +725,33 @@ class IdeaHelper
     public static function update_item_muti_langauges($request, $id, $module_name){
         $module = Module::get($module_name);
         $language =  Language::select('id','locale','name','image')->get()->toArray();
-         
-        $request_all = $request->all(); 
+
+        $request_all = $request->all();
         //Gán lại local_parent thành locale defaull  có id mặc định
         // if(!empty($request->id[config('app.locale_id')]) and $id != $request->id[config('app.locale_id')]){
-            
+
         //         // $id = $request->id[config('app.locale_id')];
         //         $array_local_parent = array();
-        //         foreach ($request->local_parent as  $key_local_paren => $local_parent_item){ 
+        //         foreach ($request->local_parent as  $key_local_paren => $local_parent_item){
         //             $array_local_parent[$key_local_paren] = $request->id[config('app.locale_id')];
         //         }
 
         //         $request_all['local_parent'] = $array_local_parent;
-        // } 
+        // }
 
-        if(!empty($language)) { 
+        if(!empty($language)) {
             $request_lang = array();
             $fields = $module->fields;
-            foreach ($language as $key_lang => $lang_item){ 
+            foreach ($language as $key_lang => $lang_item){
                 //Call class trang
                 //Khởi tạo GoogleTranslate cấu hình
-                if($lang_item['id'] != config('app.locale_id')){ 
+                if($lang_item['id'] != config('app.locale_id')){
                     if(isset($request[$module->view_col][config('app.locale_id')])){
-                      
-                        $tr[$lang_item['id']] = new GoogleTranslate($lang_item['locale'], config('app.locale_name'));  
+
+                        $tr[$lang_item['id']] = new GoogleTranslate($lang_item['locale'], config('app.locale_name'));
                     }
-                       
-                    else if(empty($value[config('app.locale_id')])){ 
+
+                    else if(empty($value[config('app.locale_id')])){
                         $local_de =  array_search($id, $request['id']);
                         //Lấy locale cho ngôn ngữ hiện tại;
                         $lang_item_locale = Language::where('id', $local_de)->value('locale');
@@ -759,38 +759,38 @@ class IdeaHelper
                             $tr[$lang_item['id']] = new GoogleTranslate($lang_item_locale, $lang_item['locale']);
                         }
                     }
-                }  
-                  
-                
-                
-                foreach ($request_all  as $key =>$value){     
-                    if(is_array($value)) { 
+                }
+
+
+
+                foreach ($request_all  as $key =>$value){
+                    if(is_array($value)) {
                         if ($key != 'locale' and $key != 'id'  and $key != 'translate_auto' ) {
-                             
-                            if (!empty($value[$lang_item['id']]) ){  
+
+                            if (!empty($value[$lang_item['id']]) ){
                                 if(isset($request_all['translate_auto'][config('app.locale_id')]) and isset($request_all['translate_auto'][$lang_item['id']]) and $lang_item['id'] != config('app.locale_id')  and !empty($fields[$key]['field_type'])  and  !in_array($fields[$key]['field_type'], [2, 4, 5, 7, 8, 9, 12, 13, 14, 15, 17] )){
-                                    $request_lang[$lang_item['id']][$key] = $tr[$lang_item['id']]->translate($value[config('app.locale_id')]); 
-                                } 
-                                else {
-                                    $request_lang[$lang_item['id']][$key] = $value[$lang_item['id']]; 
+                                    $request_lang[$lang_item['id']][$key] = $tr[$lang_item['id']]->translate($value[config('app.locale_id')]);
                                 }
-                                    
+                                else {
+                                    $request_lang[$lang_item['id']][$key] = $value[$lang_item['id']];
+                                }
+
                             }
 
                             else if (!empty($value[config('app.locale_id')])){
                                 $request_lang[$lang_item['id']][$key] = $value[config('app.locale_id')];
 
                             }
-                            else {   
+                            else {
                                 if(!empty($value[array_search($id, $request_all['id'])]) )
                                      $request_lang[$lang_item['id']][$key] = $value[array_search($id, $request_all['id'])];
                                 else $request_lang[$lang_item['id']][$key] = null;
 
                             }
-                        } 
+                        }
                         else if ($key == 'locale') {
                             $request_lang[$lang_item['id']][$key] = $lang_item['id'];
-                        } 
+                        }
                         else if ($key == 'id' and isset($value[$lang_item['id']])) {
                             $request_lang[$lang_item['id']][$key] = $value[$lang_item['id']];
                         }
@@ -799,7 +799,7 @@ class IdeaHelper
                                 $request_lang[$lang_item['id']][$key] = $value[$lang_item['id']];
                             else $request_lang[$lang_item['id']][$key] = 0;
                         }
-                    } 
+                    }
                     else if(strpos($key, '_lang_') !== false )
                     {
                         $key = explode("_lang_",$key);
@@ -807,16 +807,16 @@ class IdeaHelper
                     }
 
                 }
-            }    
-            if(!empty($request_lang)){   
+            }
+            if(!empty($request_lang)){
                 foreach ($request_lang as $key => $request) {
-                    if(!empty($request['id'])) {  
+                    if(!empty($request['id'])) {
                         $insert_id = Module::updateRow($module_name, $request, $request['id']);
                     }
                     else {
                         $insert_id = Module::insert($module_name, $request);
                     }
-                } 
+                }
                 return $insert_id;
             }
 

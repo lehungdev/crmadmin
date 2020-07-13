@@ -52,16 +52,6 @@ class Module extends Model
 
         $names = LAHelper::generateModuleNames($module_name, $icon);
 
-        //Create names module langguege
-        $names_lang = array();
-        $names_lang['module']   = $names->module.'_langs';
-        $names_lang['label']    = $names->label.'_langs';
-        $names_lang['table']    = $names->table.'_langs';
-        $names_lang['model']    = $names->model.'_langs';
-        $names_lang['fa_icon']  = $names->fa_icon.'_langs';
-        $names_lang['controller'] = $names->module.'_langsController';
-        $names_lang['singular_l'] = $names->singular_l.'_langs';
-        $names_lang['singular_c'] = $names->singular_c.'_langs';
 
         // Check is Generated
         $is_gen = false;
@@ -88,31 +78,6 @@ class Module extends Model
 
             ]);
         }
-
-        // Check is Generated Lang
-        $is_gen_lang = false;
-        if(file_exists(base_path('app/Http/Controllers/' . ($names_lang['controller']) . ".php"))) {
-            if(($names_lang['module'] == "User" || $names_lang['module'] == "Role" || $names_lang['module'] == "Permission") && file_exists(base_path('app/' . ($names_lang['module']) . ".php"))) {
-                $is_gen_lang = true;
-            } else if(file_exists(base_path('app/Models/' . ($names_lang['module']) . ".php"))) {
-                $is_gen_lang = true;
-            }
-        }
-        $module_lang = Module::where('name', $names_lang['module'])->first();
-        if(!isset($module_lang->id)) {
-            $module_lang = Module::create([
-                'name' => $names_lang['module'],
-                'label' => $names_lang['label'],
-                'name_db' => $names_lang['table'],
-                'view_col' => "",
-                'model' => $names_lang['model'],
-                'controller' => $names_lang['controller'],
-                'fa_icon' => $names_lang['fa_icon'],
-                'is_gen' => $is_gen_lang,
-
-            ]);
-        }
-
         return $module->id;
     }
 

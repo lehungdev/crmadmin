@@ -34,11 +34,11 @@ Route::group([
 
     /* ================== Code Editor ================== */
     Route::get(config('crmadmin.adminRoute') . '/lacodeeditor', function () {
-        if(file_exists(resource_path("views/la/editor/index.blade.php"))) {
+        if(file_exists(resource_path("views/crm/editor/index.blade.php"))) {
             return redirect(config('crmadmin.adminRoute') . '/laeditor');
         } else {
             // show install code editor page
-            return View('la.editor.install');
+            return View('crm.editor.install');
         }
     });
 
@@ -47,7 +47,7 @@ Route::group([
     Route::post(config('crmadmin.adminRoute') . '/la_menus/update_hierarchy', 'MenuController@update_hierarchy');
 
     /* ================== Configuration ================== */
-    Route::resource(config('crmadmin.adminRoute') . '/la_configs', '\App\Http\Controllers\LA\LAConfigController');
+    Route::resource(config('crmadmin.adminRoute') . '/la_configs', '\App\Http\Controllers\CRM\LAConfigController');
 
     Route::group([
         'middleware' => 'role'

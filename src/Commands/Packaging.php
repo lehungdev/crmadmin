@@ -54,7 +54,7 @@ class Packaging extends Command
         // Controllers
         $this->line('Exporting Controllers...');
         $this->replaceFolder($from . "/app/Http/Controllers/Auth", $to . "/app/Controllers/Auth");
-        $this->replaceFolder($from . "/app/Http/Controllers/LA", $to . "/app/Controllers/LA");
+        $this->replaceFolder($from . "/app/Http/Controllers/CRM", $to . "/app/Controllers/CRM");
         $this->copyFile($from . "/app/Http/Controllers/Controller.php", $to . "/app/Controllers/Controller.php");
         $this->copyFile($from . "/app/Http/Controllers/HomeController.php", $to . "/app/Controllers/HomeController.php");
 

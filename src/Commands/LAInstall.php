@@ -29,7 +29,7 @@ class LAInstall extends Command
     var $modelsInstalled = ["User", "Role", "Permission", "Employee", "Department", "Language", "Upload", "Organization", "Backup"];
 
     // The command signature.
-    protected $signature = 'la:install';
+    protected $signature = 'crm:install';
 
     // The command description.
     protected $description = 'Install CrmAdmin Package. Generate whole structure for /admin.';
@@ -121,7 +121,7 @@ class LAInstall extends Command
                     unlink($to . "/app/Http/Controllers/Auth/RegisterController.php");
                     unlink($to . "/app/Http/Controllers/Auth/ResetPasswordController.php");
                 }
-                $this->replaceFolder($from . "/app/Controllers/LA", $to . "/app/Http/Controllers/LA");
+                $this->replaceFolder($from . "/app/Controllers/CRM", $to . "/app/Http/Controllers/CRM");
                 if (LAHelper::laravel_ver() == 5.3 || LAHelper::laravel_ver() != 5.4) {
                     $this->copyFile($from . "/app/Controllers/Controller.5.5.php", $to . "/app/Http/Controllers/Controller.php");
                 } else {
@@ -199,7 +199,7 @@ class LAInstall extends Command
                 // https://github.com/Zizaco/entrust/issues/468
                 $driver_type = env('CACHE_DRIVER');
                 if ($driver_type != "array") {
-                    throw new Exception("Please set Cache Driver to array in .env (Required for Zizaco\Entrust) and run la:install again:"
+                    throw new Exception("Please set Cache Driver to array in .env (Required for Zizaco\Entrust) and run crm:install again:"
                         . "\n\n\tCACHE_DRIVER=array\n\n", 1);
                 }
 
@@ -355,11 +355,13 @@ class LAInstall extends Command
                 $this->replaceFolder($from . "/app/Controllers/Api", $to . "/app/Http/Controllers/Api");
 
                 //publish DataTables\DataTablesServiceProvider"
-                $this->line('publish DataTables\DataTablesServiceProvider...');
+                $this->line('Publish DataTables\DataTablesServiceProvider done');
                 $this->call('vendor:publish', ['--provider' => 'Yajra\DataTables\DataTablesServiceProvider']);
-
-
                 $this->info("\nPassport complate.");
+
+                $this->line('\nPublish Spatie\Fractal\FractalServiceProvider done');
+                $this->call('vendor:publish', ['--provider' => 'Spatie\Fractal\FractalServiceProvider']);
+
                 $this->info("\nCrmAdmin successfully installed.");
                 $this->info("You can now login from yourdomain.com/" . config('crmadmin.adminRoute') . " !!!\n");
             } else {
@@ -368,7 +370,7 @@ class LAInstall extends Command
         } catch (Exception $e) {
             $msg = $e->getMessage();
             if (strpos($msg, 'SQLSTATE') !== false) {
-                throw new Exception("LAInstall: Database is not connected. Connect database (.env) and run 'la:install' again.\n" . $msg, 1);
+                throw new Exception("LAInstall: Database is not connected. Connect database (.env) and run 'crm:install' again.\n" . $msg, 1);
             } else {
                 $this->error("LAInstall::handle exception: " . $e);
                 throw new Exception("LAInstall::handle Unable to install : " . $msg, 1);

@@ -48,7 +48,7 @@ class ModuleController extends Controller
         $menu   = Menu::all();
         $tables = LAHelper::getDBTables([]);
 
-        return View('la.modules.index', [
+        return View('crm.modules.index', [
             'modules' => $modules,
             'tables' => $tables
         ]);
@@ -85,7 +85,7 @@ class ModuleController extends Controller
         // Get Module Access for all roles
         $roles = Module::getRoleAccess($id);
 
-        return view('la.modules.show', [
+        return view('crm.modules.show', [
             'no_header' => true,
             'no_padding' => "no-padding",
             'ftypes' => $ftypes,
@@ -141,10 +141,10 @@ class ModuleController extends Controller
         $module_fields = ModuleFields::where('module', $module->id)->delete();
 
         // Delete Resource Views directory
-        \File::deleteDirectory(resource_path('/views/la/' . $module->name_db));
+        \File::deleteDirectory(resource_path('/views/crm/' . $module->name_db));
 
         // Delete Controller
-        \File::delete(app_path('/Http/Controllers/LA/' . $module->name . 'Controller.php'));
+        \File::delete(app_path('/Http/Controllers/CRM/' . $module->name . 'Controller.php'));
 
         // Delete Model
         if($module->model == "User" || $module->model == "Role" || $module->model == "Permission") {
@@ -175,8 +175,8 @@ class ModuleController extends Controller
         } else {
             $file_admin_routes = base_path("/app/Http/admin_routes.php");
         }
-        while(LAHelper::getLineWithString($file_admin_routes, "LA\\" . $module->name . "Controller") != -1) {
-            $line = LAHelper::getLineWithString($file_admin_routes, "LA\\" . $module->name . 'Controller');
+        while(LAHelper::getLineWithString($file_admin_routes, "CRM\\" . $module->name . "Controller") != -1) {
+            $line = LAHelper::getLineWithString($file_admin_routes, "CRM\\" . $module->name . 'Controller');
             $fileData = file_get_contents($file_admin_routes);
             $fileData = str_replace($line, "", $fileData);
             file_put_contents($file_admin_routes, $fileData);
@@ -450,12 +450,12 @@ class ModuleController extends Controller
         $module = Module::find($module_id);
 
         $arr = array();
-        $arr[] = "app/Http/Controllers/LA/" . $module->controller . ".php";
+        $arr[] = "app/Http/Controllers/CRM/" . $module->controller . ".php";
         $arr[] = "app/Models/" . $module->model . ".php";
-        $views = scandir(resource_path('views/la/' . $module->name_db));
+        $views = scandir(resource_path('views/crm/' . $module->name_db));
         foreach($views as $view) {
             if($view != "." && $view != "..") {
-                $arr[] = "resources/views/la/" . $view;
+                $arr[] = "resources/views/crm/" . $view;
             }
         }
         // Find existing migration file

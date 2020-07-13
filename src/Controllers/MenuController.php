@@ -46,7 +46,7 @@ class MenuController extends Controller
         // Send Menus with No Parent to Views
         $menuItems = Menu::where("parent", 0)->orderBy('hierarchy', 'asc')->get();
 
-        return View('la.menus.index', [
+        return View('crm.menus.index', [
             'menus' => $menuItems,
             'modules' => $modules
         ]);
