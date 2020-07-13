@@ -13,9 +13,9 @@
         "doctrine/dbal": "~2.10.2",
         "shanmuga/laravel-entrust": "^1.2",
         "spatie/laravel-backup": "^6.11.1",
-        "spatie/laravel-fractal": "^5.7.0",
         "laravel/passport": "^9.3.0",
-        "symfony/psr-http-message-bridge": "^2.0.1"
+        "symfony/psr-http-message-bridge": "^2.0.1",
+        "spatie/laravel-fractal": "^5.7.0"
     },
     "authors": [
         {
