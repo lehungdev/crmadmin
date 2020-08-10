@@ -157,7 +157,7 @@ class __controller_class_name__ extends Controller
     {
         if(Module::hasAccess("__module_name__", "edit")) {
 
-            $rules = Module::validateRules("__module_name__", $request, true);
+            $rules = Module::validateRules("__module_name__", $request, true, $id);
 
             $validator = Validator::make($request->all(), $rules);
 
@@ -204,7 +204,7 @@ class __controller_class_name__ extends Controller
         $listing_cols = Module::getListingColumns('__module_name__');
 
         $values = DB::table('__db_table_name__')->select($listing_cols)->whereNull('deleted_at');
-        $out = \\DataTables::of($values)->make();
+        $out = \DataTables::of($values)->make();
         $data = $out->getData();
 
         $fields_popup = ModuleFields::getModuleFields('__module_name__');

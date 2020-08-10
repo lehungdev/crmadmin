@@ -47,7 +47,7 @@ class Crud extends Command
      */
     public function handle()
     {
-        $module = $this->argument('module');
+        $module = $this->argument('module');// dd('aaaa');
 
         try {
 
@@ -58,6 +58,11 @@ class Crud extends Command
             CodeGenerator::createViews($config, $this);
             CodeGenerator::appendRoutes($config, $this);
             CodeGenerator::addMenu($config, $this);
+
+            //Api create
+            CodeGenerator::createControllerApi($config, $this);
+            CodeGenerator::createControllerTransformer($config, $this);
+            CodeGenerator::appendRoutesApi($config, $this);
 
         } catch(Exception $e) {
             $this->error("Crud::handle exception: " . $e);

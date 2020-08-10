@@ -28,7 +28,8 @@ use Lehungdev\Crmadmin\Models\Menu;
 			<th>Menu Name</th>
 			<th>Name</th>
 			<th>Table</th>
-			<th>Items</th>
+            <th>Items</th>
+            <th>Update Active</th>
 			<th>Actions</th>
 		</tr>
 		</thead>
@@ -47,7 +48,15 @@ use Lehungdev\Crmadmin\Models\Menu;
 
 					<td><a href="{{ url(config('crmadmin.adminRoute') . '/modules/'.$module->id) }}">{{ $module->label }}</a></td>
 					<td>{{ $module->name_db }}</td>
-					<td>{{ Module::itemCount($module->name) }}</td>
+                    <td>{{ Module::itemCount($module->name) }}</td>
+                    <td>
+                        <form id="update_active_cal" action="{{ url(config('crmadmin.adminRoute') . '/module_update_active') }}">
+                            <input name="ref_{!! $module->id !!}" type="checkbox" @if($module->update_active == 1) checked="checked" @endif>
+                            <div class="Switch Ajax module_update Round @if($module->update_active == 1) On @else Off @endif" update_activeid="{{ $module->id }}">
+                                <div class="Toggle"></div>
+                            </div>
+                        </form>
+                    </td>
 					<td>
 						<a module_label="{{ $module->label }}" menu_name="{{ $menuItems_name }}" module_icon="{{ $module->fa_icon }}" module_id="{{ $module->id }}" menu_id="{{ $menu_id }}" class="btn btn-primary btn-xs update_module" style="display:inline;padding:2px 5px 3px 5px;"><i class="fa fa-edit"></i></a>
 						<a href="{{ url(config('crmadmin.adminRoute') . '/modules/'.$module->id)}}#access" class="btn btn-warning btn-xs" style="display:inline;padding:2px 5px 3px 5px;"><i class="fa fa-key"></i></a>
@@ -281,6 +290,28 @@ $(function () {
 	});
 	$("#module-add-form").validate({
 
+	});
+
+
+    $('.Switch.Ajax.module_update').click(function() {
+		var state = "false";
+		if ($(this).hasClass('On')) {
+			state = "false";
+		} else {
+			state = "true";
+		}
+		$.ajax({
+			type: "POST",
+			url : "{{ url(config('crmadmin.adminRoute') . '/module_update_active') }}",
+			data : {
+				_token: '{{ csrf_token() }}',
+                update_activeid: $(this).attr("update_activeid"),
+				state: state,
+			},
+			success : function(data){
+				console.log(data);
+			}
+		});
 	});
 });
 </script>

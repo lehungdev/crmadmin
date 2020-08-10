@@ -157,7 +157,7 @@ class DepartmentsController extends Controller
 	{
 		if(Module::hasAccess("Departments", "edit")) {
 
-			$rules = Module::validateRules("Departments", $request, true);
+			$rules = Module::validateRules("Departments", $request, true, $id);
 
 			$validator = Validator::make($request->all(), $rules);
 
@@ -203,7 +203,7 @@ class DepartmentsController extends Controller
 		$listing_cols = Module::getListingColumns('Departments');
 
 		$values = DB::table('departments')->select($listing_cols)->whereNull('deleted_at');
-		$out = \\DataTables::of($values)->make();
+		$out = \DataTables::of($values)->make();
 		$data = $out->getData();
 
 		$fields_popup = ModuleFields::getModuleFields('Departments');

@@ -1,0 +1,9 @@
+
+    /* ================== __module_name__ ================== */
+
+    Route::apiResource('__db_table_name__','Api\__module_name__\__module_model__ApiController', ['only' => ['index', 'show']]);
+    Route::group(['middleware' => ['CheckClientCredentials','auth:api']], function() {
+        Route::apiResource('__db_table_name__','Api\__module_name__\__module_model__ApiController', ['only' => ['update_', 'store_', 'destroy_']]);
+    });
+
+});//Add

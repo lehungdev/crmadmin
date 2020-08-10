@@ -177,7 +177,7 @@ class RolesController extends Controller
 	{
 		if(Module::hasAccess("Roles", "edit")) {
 
-			$rules = Module::validateRules("Roles", $request, true);
+			$rules = Module::validateRules("Roles", $request, true, $id);
 
 			$validator = Validator::make($request->all(), $rules);
 
@@ -229,7 +229,7 @@ class RolesController extends Controller
 		$listing_cols = Module::getListingColumns('Roles');
 
 		$values = DB::table('roles')->select($listing_cols)->whereNull('deleted_at');
-		$out = \\DataTables::of($values)->make();
+		$out = \DataTables::of($values)->make();
 		$data = $out->getData();
 
 		$fields_popup = ModuleFields::getModuleFields('Roles');

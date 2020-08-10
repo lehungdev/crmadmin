@@ -216,6 +216,11 @@ class LAInstall extends Command
                 $this->copyFolder($from . "/resources/assets", $to . "/resources/assets");
                 $this->copyFolder($from . "/resources/views", $to . "/resources/views");
 
+                // Traits & Transformer
+                $this->line('Generating resources: Traits + Transformer...');
+                $this->replaceFolder($from . "/Core", $to . "/app/Core");
+                $this->replaceFolder($from . "/Traits", $to . "/app/Traits");
+
                 // Checking database
                 $this->line('Checking database connectivity...');
                 DB::connection()->reconnect();
@@ -354,9 +359,15 @@ class LAInstall extends Command
                 //Creat Folder API in Controllers
                 $this->replaceFolder($from . "/app/Controllers/Api", $to . "/app/Http/Controllers/Api");
 
+
                 //publish DataTables\DataTablesServiceProvider"
                 $this->line('Publish DataTables\DataTablesServiceProvider done');
                 $this->call('vendor:publish', ['--provider' => 'Yajra\DataTables\DataTablesServiceProvider']);
+
+                //Note
+                $this->line('\n+++Change Kernel.php: $routeMiddleware -> "CheckClientCredentials" => \App\Http\Middleware\CheckClientCredentials::class #changed  ');
+                $this->line('+++$middlewarePriority ->  \App\Http\Middleware\CheckForMaintenanceMode::class,');
+
                 $this->info("\nPassport complate.");
 
                 $this->line('\nPublish Spatie\Fractal\FractalServiceProvider done');

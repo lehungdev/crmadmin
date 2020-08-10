@@ -157,7 +157,7 @@ class LanguageController extends Controller
     {
         if(Module::hasAccess("Languages", "edit")) {
 
-            $rules = Module::validateRules("Languages", $request, true);
+            $rules = Module::validateRules("Languages", $request, true, $id);
 
             $validator = Validator::make($request->all(), $rules);
 
@@ -204,7 +204,7 @@ class LanguageController extends Controller
         $listing_cols = Module::getListingColumns('Languages');
 
         $values = DB::table('languages')->select($listing_cols)->whereNull('deleted_at');
-        $out = \\DataTables::of($values)->make();
+        $out = \DataTables::of($values)->make();
         $data = $out->getData();
 
         $fields_popup = ModuleFields::getModuleFields('Languages');

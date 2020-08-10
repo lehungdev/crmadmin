@@ -19,6 +19,7 @@ use Lehungdev\Crmadmin\Models\Module;
 use Lehungdev\Crmadmin\Models\ModuleFields;
 use Lehungdev\Crmadmin\Models\ModuleFieldTypes;
 use Lehungdev\Crmadmin\Helpers\LAHelper;
+use Illuminate\Support\Str;
 
 /**
  * Class FieldController
@@ -47,17 +48,17 @@ class FieldController extends Controller
         Module::setDefaultFieldRoleAccess($field_id, $role->id, "full");
 
         //Create module langguege
-        $module_lang = Module::find($request->module_id + 1);
+        // $module_lang = Module::find($request->module_id + 1);
 
-        if($module_lang->name == $module->name.'_langs' and !empty($request->lang_active)){
-            $module_lang_id     = $request->module_id + 1;
-            $request->module_id = $request->module_id + 1;
-            $field_id = ModuleFields::createField($request);
+        // if($module_lang->name == $module->name.'_langs' and !empty($request->lang_active)){
+        //     $module_lang_id     = $request->module_id + 1;
+        //     $request->module_id = $request->module_id + 1;
+        //     $field_id = ModuleFields::createField($request);
 
-            // Give Default Full Access to Super Admin
-            $role = \App\Role::where("name", "SUPER_ADMIN")->first();
-            Module::setDefaultFieldRoleAccess($field_id, $role->id, "full");
-        }
+        //     // Give Default Full Access to Super Admin
+        //     $role = \App\Role::where("name", "SUPER_ADMIN")->first();
+        //     Module::setDefaultFieldRoleAccess($field_id, $role->id, "full");
+        // }
 
         return redirect()->route(config('crmadmin.adminRoute') . '.modules.show', [$module_id]);
     }
@@ -202,4 +203,7 @@ class FieldController extends Controller
             return response()->json(['status' => 'failed', 'message' => "Module field not found"]);
         }
     }
+
+
+
 }

@@ -21,6 +21,7 @@ use Lehungdev\Crmadmin\CodeGenerator;
 use Illuminate\Support\Str;
 use App\Role;
 use Schema;
+use Exception;
 use Lehungdev\Crmadmin\Models\Menu;
 
 /**
@@ -144,7 +145,10 @@ class ModuleController extends Controller
         \File::deleteDirectory(resource_path('/views/crm/' . $module->name_db));
 
         // Delete Controller
-        \File::delete(app_path('/Http/Controllers/CRM/' . $module->name . 'Controller.php'));
+        \File::delete(app_path('/Http/Controllers/CRM/' . $module->model . 'Controller.php'));
+
+        // Delete Controller Api
+        \File::deleteDirectory(app_path('/Http/Controllers/Api/' . $module->name));
 
         // Delete Model
         if($module->model == "User" || $module->model == "Role" || $module->model == "Permission") {
@@ -172,17 +176,19 @@ class ModuleController extends Controller
         // Delete Admin Routes
         if(LAHelper::laravel_ver() != 5.3) {
             $file_admin_routes = base_path("/routes/admin_routes.php");
+            $file_admin_routes_api = base_path("/routes/api.php");
         } else {
             $file_admin_routes = base_path("/app/Http/admin_routes.php");
+            $file_admin_routes_api = base_path("/app/Http/api.php");
         }
-        while(LAHelper::getLineWithString($file_admin_routes, "CRM\\" . $module->name . "Controller") != -1) {
-            $line = LAHelper::getLineWithString($file_admin_routes, "CRM\\" . $module->name . 'Controller');
+        while(LAHelper::getLineWithString($file_admin_routes, "CRM\\" . $module->model . "Controller") != -1) {
+            $line = LAHelper::getLineWithString($file_admin_routes, "CRM\\" . $module->model . 'Controller');
             $fileData = file_get_contents($file_admin_routes);
             $fileData = str_replace($line, "", $fileData);
             file_put_contents($file_admin_routes, $fileData);
         }
-        if(LAHelper::getLineWithString($file_admin_routes, "=== " . $module->name . " ===") != -1) {
-            $line = LAHelper::getLineWithString($file_admin_routes, "=== " . $module->name . " ===");
+        if(LAHelper::getLineWithString($file_admin_routes, "=== " . $module->model . " ===") != -1) {
+            $line = LAHelper::getLineWithString($file_admin_routes, "=== " . $module->model . " ===");
             $fileData = file_get_contents($file_admin_routes);
             $fileData = str_replace($line, "", $fileData);
             file_put_contents($file_admin_routes, $fileData);
@@ -219,9 +225,13 @@ class ModuleController extends Controller
         CodeGenerator::appendRoutes($config);
         CodeGenerator::addMenu($config);
 
+        CodeGenerator::createControllerApi($config);
+        CodeGenerator::appendRoutesApi($config);
+
         // Set Module Generated = True
         $module = Module::find($module_id);
         $module->is_gen = '1';
+        $module->update_active = '0';
         $module->save();
 
         // Give Default Full Access to Super Admin
@@ -273,11 +283,16 @@ class ModuleController extends Controller
         CodeGenerator::createModel($config);
         CodeGenerator::createViews($config);
         CodeGenerator::appendRoutes($config);
+        CodeGenerator::appendRoutesApi($config);
+        CodeGenerator::createControllerApi($config);
         CodeGenerator::addMenu($config);
 
+        CodeGenerator::createControllerApi($config);
+        CodeGenerator::createControllerTransformer($config);
         // Set Module Generated = True
         $module = Module::find($module_id);
         $module->is_gen = '1';
+        $module->update_active = '0';
         $module->save();
 
         // Give Default Full Access to Super Admin
@@ -308,6 +323,8 @@ class ModuleController extends Controller
 
         // Generate CRUD
         CodeGenerator::createController($config);
+        CodeGenerator::createControllerApi($config);
+        CodeGenerator::createControllerTransformer($config);
         CodeGenerator::createModel($config);
         CodeGenerator::createViews($config);
 
@@ -455,7 +472,14 @@ class ModuleController extends Controller
         $views = scandir(resource_path('views/crm/' . $module->name_db));
         foreach($views as $view) {
             if($view != "." && $view != "..") {
-                $arr[] = "resources/views/crm/" . $view;
+                $arr[] = "resources/views/crm/".$module->name_db."/" . $view;
+            }
+        }
+
+        $controller_api = scandir(app_path('/Http/Controllers/Api/' . $module->name));
+        foreach($controller_api as $controller) {
+            if($controller != "." && $controller != "..") {
+                $arr[] = "app/Http/Controllers/Api/".$module->name."/" . $controller;
             }
         }
         // Find existing migration file
@@ -469,5 +493,33 @@ class ModuleController extends Controller
         return response()->json([
             'files' => $arr
         ]);
+    }
+
+    /**
+     * Save column visibility in update active
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function module_update_active_ajax(Request $request)
+    {
+        try {
+            if($request->state == "true") {
+                $state = 1;
+            } else {
+                $state = 0;
+            }
+            $module = Module::find($request->update_activeid);
+            if(isset($module->id)) {
+                $module->update_active = $state;
+                $module->save();
+
+                return response()->json(['status' => 'success', 'message' => "Module update active visibility saved to " . $state]);
+            } else {
+                return response()->json(['status' => 'failed', 'message' => "Module field not found"]);
+            }
+        } catch (Exception $e) {
+            return response()->json(['status' => 'failed', 'message' => "Module field not found" ]);
+        }
     }
 }

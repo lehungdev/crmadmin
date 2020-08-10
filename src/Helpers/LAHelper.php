@@ -41,11 +41,11 @@ class LAHelper
         $array['module'] = ucfirst(Str::plural($module_name));
         $array['label'] = ucfirst(Str::plural($module_name));
         $array['table'] = strtolower(Str::plural($module_name));
-        $array['model'] = ucfirst(Str::plural($module_name));
+        $array['model'] = ucfirst(Str::singular($module_name));
         $array['fa_icon'] = $icon;
-        $array['controller'] = $array['module'] . "Controller";
-        $array['singular_l'] = strtolower(Str::plural($module_name));
-        $array['singular_c'] = ucfirst(Str::plural($module_name));
+        $array['controller'] = $array['model'] . "Controller";
+        $array['singular_l'] = strtolower(Str::singular($module_name));
+        $array['singular_c'] = ucfirst(Str::singular($module_name));
 
         return (object)$array;
     }

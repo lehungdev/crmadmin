@@ -199,7 +199,7 @@ class EmployeesController extends Controller
 	{
 		if(Module::hasAccess("Employees", "edit")) {
 
-			$rules = Module::validateRules("Employees", $request, true);
+			$rules = Module::validateRules("Employees", $request, true, $id);
 
 			$validator = Validator::make($request->all(), $rules);
 
@@ -255,7 +255,7 @@ class EmployeesController extends Controller
 		$listing_cols = Module::getListingColumns('Employees');
 
 		$values = DB::table('employees')->select($listing_cols)->whereNull('deleted_at');
-		$out = \\DataTables::of($values)->make();
+		$out = \DataTables::of($values)->make();
 		$data = $out->getData();
 
 		$fields_popup = ModuleFields::getModuleFields('Employees');

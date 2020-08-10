@@ -20,7 +20,7 @@ class CreateOrganizationsTable extends Migration
      */
     public function up()
     {
-        Module::generate("Organizations", 'organizations', 'name', 'fa-university', [
+        Module::generate("Organization", 'organizations', 'name', 'fa-university', [
             [
                 "colname" => "name",
                 "label" => "Name",
@@ -134,7 +134,7 @@ class CreateOrganizationsTable extends Migration
                 "listing_col" => false
             ]
         ]);
-        
+
         /*
         Module::generate("Module_Name", "Table_Name", "view_column_name" "Fields_Array");
 

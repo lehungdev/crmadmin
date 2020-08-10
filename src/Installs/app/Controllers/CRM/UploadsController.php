@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Response as FacadeResponse;
 use Illuminate\Support\Facades\Input;
 use Collective\Html\FormFacade as Form;
 
+use Illuminate\Support\Str;
 use Lehungdev\Crmadmin\Models\Module;
 use Lehungdev\Crmadmin\Helpers\LAHelper;
 use Shanmuga\LaravelEntrust\Facades\LaravelEntrustFacade as LaravelEntrust;

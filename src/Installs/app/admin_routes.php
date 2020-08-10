@@ -67,8 +67,8 @@ Route::group(['as' => $as, 'middleware' => ['auth', 'permission:ADMIN_PANEL']], 
 	Route::post(config('crmadmin.adminRoute') . '/change_password/{id}', 'CRM\EmployeesController@change_password');
 
 	/* ================== Organizations ================== */
-	Route::resource(config('crmadmin.adminRoute') . '/organizations', 'CRM\OrganizationsController');
-    Route::get(config('crmadmin.adminRoute') . '/organization_dt_ajax', 'CRM\OrganizationsController@dtajax');
+	Route::resource(config('crmadmin.adminRoute') . '/organizations', 'CRM\OrganizationController');
+    Route::get(config('crmadmin.adminRoute') . '/organization_dt_ajax', 'CRM\OrganizationController@dtajax');
 
     /* ================== Languages ================== */
     Route::resource(config('crmadmin.adminRoute') . '/languages', 'CRM\LanguageController');

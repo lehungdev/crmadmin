@@ -31,7 +31,7 @@ class Module extends Model
     protected $table = 'modules';
 
     protected $fillable = [
-        "name", "name_db", "label", "view_col", "model", "controller", "is_gen", "fa_icon"
+        "name", "name_db", "label", "view_col", "model", "controller", "is_gen", "update_active", "fa_icon"
     ];
 
     protected $hidden = [
@@ -65,6 +65,7 @@ class Module extends Model
 
 
         $module = Module::where('name', $names->module)->first();
+
         if(!isset($module->id)) {
             $module = Module::create([
                 'name' => $names->module,
@@ -75,6 +76,7 @@ class Module extends Model
                 'controller' => $names->controller,
                 'fa_icon' => $names->fa_icon,
                 'is_gen' => $is_gen,
+                'update_active' => 0,
 
             ]);
         }
@@ -1047,14 +1049,14 @@ class Module extends Model
      * @param bool $isEdit Is this a Update or Store Request
      * @return array Returns Array to validate given Request
      */
-    public static function validateRules($module_name, $request, $isEdit = false)
+    public static function validateRules($module_name, $request, $isEdit = false, $id = NULL)
     {
         $module = Module::get($module_name);
         $rules = [];
         if(isset($module)) {
             $ftypes = ModuleFieldTypes::getFTypes2();
             foreach($module->fields as $field) {
-                if(isset($request->{$field['colname']})) {
+                if(isset($request->{$field['colname']}) || isset($field['required'])) {
                     $col = "";
                     if($field['required']) {
                         $col .= "required|";
@@ -1069,8 +1071,8 @@ class Module extends Model
                             $col .= "max:" . $field['maxlength'] . "|";
                         }
                     }
-                    if($field['unique'] && !$isEdit) {
-                        $col .= "unique:" . $module->name_db . ",deleted_at,NULL";
+                    if($field['unique']) { //&& !$isEdit
+                        $col .= "unique:" . $module->name_db . "," . $field['colname']. "," .$id. ",id,deleted_at,NULL";
                     }
                     // 'name' => 'required|unique|min:5|max:256',
                     // 'author' => 'required|max:50',

@@ -30,6 +30,7 @@ class CreateModulesTable extends Migration
             $table->string('controller', 100);
             $table->string('fa_icon', 30)->default("fa-cube");
             $table->boolean('is_gen');
+            $table->boolean('update_active');
             $table->timestamps();
         });
     }

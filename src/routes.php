@@ -17,6 +17,7 @@ Route::group([
 
     /* ================== Modules ================== */
     Route::resource(config('crmadmin.adminRoute') . '/modules', 'ModuleController');
+    Route::post(config('crmadmin.adminRoute') . '/module_update_active', 'ModuleController@module_update_active_ajax');
     Route::resource(config('crmadmin.adminRoute') . '/module_fields', 'FieldController');
     Route::get(config('crmadmin.adminRoute') . '/module_generate_crud/{model_id}', 'ModuleController@generate_crud');
     Route::get(config('crmadmin.adminRoute') . '/module_generate_migr/{model_id}', 'ModuleController@generate_migr');
@@ -32,15 +33,16 @@ Route::group([
     Route::post(config('crmadmin.adminRoute') . '/module_field_listing_show', 'FieldController@module_field_listing_show_ajax');
     Route::post(config('crmadmin.adminRoute') . '/module_field_lang_active', 'FieldController@module_field_lang_active_ajax');
 
+
     /* ================== Code Editor ================== */
-    Route::get(config('crmadmin.adminRoute') . '/lacodeeditor', function () {
-        if(file_exists(resource_path("views/crm/editor/index.blade.php"))) {
-            return redirect(config('crmadmin.adminRoute') . '/laeditor');
-        } else {
-            // show install code editor page
-            return View('crm.editor.install');
-        }
-    });
+    // Route::get(config('crmadmin.adminRoute') . '/lacodeeditor', function () {
+    //     if(file_exists(resource_path("views/crm/editor/index.blade.php"))) {
+    //         return redirect(config('crmadmin.adminRoute') . '/laeditor');
+    //     } else {
+    //         // show install code editor page
+    //         return View('crm.editor.install');
+    //     }
+    // });
 
     /* ================== Menu Editor ================== */
     Route::resource(config('crmadmin.adminRoute') . '/la_menus', 'MenuController');

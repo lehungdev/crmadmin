@@ -7,48 +7,193 @@
  * Developer Website: http://ideagroup.vn
  */
 
-namespace App\Http\Controllers\CRM;
+namespace App\Http\Controllers\Api\__module_name__;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Http\Requests;
-use Illuminate\Support\Str;
-use Auth;
-use DB;
-use Validator;
-use Datatables;
-use Collective\Html\FormFacade as Form;
 use Lehungdev\Crmadmin\Models\Module;
-use Lehungdev\Crmadmin\Models\ModuleFields;
+use League\Fractal\Pagination\IlluminatePaginatorAdapter;
+use App\Http\Controllers\Api\__module_name__\__model_name__Transformer;
+
+use Validator;
+use Exception;
 
 use App\Models\__model_name__;
 
-class __controller_class_name__ extends Controller
+class __model_name__ApiController extends Controller
 {
     public $table       = '__db_table_name__';
-    public $page        = 50;
-    public $show_action = true;
-    protected $listing_cols             = [];
-    protected $listing_cols_transform   = [];
-    protected $listing_cols_module_fields = array();
+    public $page        = 25;
+    public $local       = 'vi';
+    public $local_id    = NULL;
+    protected $listing_cols             = ['id', __listing_cols__, 'updated_at'];
+    protected $listing_cols_transform   = [__listing_cols__];
 
-    public function __construct(Request $request) {
-
-        $this -> table_id = DB::table('modules')->where('name_db', $this -> table)->value('id');
-
-        foreach ($this->listing_cols as $key => $value ){
-            if($value != 'id')
-                $this->listing_cols_module_fields[$value] = IdeaHelper::nameModuleFiledType($value, $this -> table_id);
-
-        };
-
-
+    public function __construct()
+    {
     }
 
     /**
-     * Display a listing of the __module_name__.
+     * Display a listing of the resource.
      *
-     * @return response json
+     * @return \Illuminate\Http\Response
      */
+    public function index(Request $request)
+    {
+        $limit = $request['limit'] ? $request['limit'] : $this->page;
+        $with_includes = $request['with'] ? $request['with'] : '';
+        if($with_includes)
+            $with_includes = explode(',', $with_includes);
+        else  $with_includes  = [];
+        $query = __model_name__::with($with_includes)->filter($request)->select($this->listing_cols)->paginate($limit);
 
+        if (!empty($query)) {
+            $listing_item = fractal($query, new __model_name__Transformer)->paginateWith(new IlluminatePaginatorAdapter($query))->parseIncludes($with_includes)->toArray();
+            return response()->json($listing_item, 200);
+        } else {
+            return response()->json([
+                'error' => [
+                    'message' => '__model_name__ does not exist'
+                ]
+            ], 404);
+        }
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+        if (Module::hasAccess("__module_name__", "create")) {
+
+            $rules = Module::validateRules("__module_name__", $request);
+
+            $validator = Validator::make($request->all(), $rules);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'error' => [
+                        'message' => $validator->errors()
+                    ]
+                ], 404);
+            }
+
+            $insert_id = Module::insert("__module_name__", $request);
+
+            return response()->json([
+                'success' => [
+                    'insert_id' => $insert_id,
+                    'message' => 'Create Success'
+                ]
+            ], 200);
+        } else {
+            return response()->json([
+                'error' => [
+                    'message' => '__model_name__ does not exist'
+                ]
+            ], 404);
+        }
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show(Request $request, $id)
+    {
+        $item = __model_name__::findOrFail($id);
+        if (isset($item->id)) {
+            $parse_includes = $request['include'] ? $request['include'] : '';
+            $parse_includes = explode(',', $parse_includes);
+            $item = fractal($item, new __model_name__Transformer)->parseIncludes($parse_includes);
+            return response()->json($item, 200);
+        }
+        return response()->json([
+            'error' => [
+                'message' => '__model_name__ does not exist'
+            ]
+        ], 404);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, $id)
+    {
+        if (Module::hasAccess("__module_name__", "edit")) {
+
+            $rules = Module::validateRules("__module_name__", $request, true, $id);
+
+            $validator = Validator::make($request->all(), $rules);
+            if ($validator->fails()) {
+                return response()->json([
+                    'error' => $validator->errors()
+                ], 404);
+            }
+            $update_id = Module::updateRow("__module_name__", $request, $id);
+
+            return response()->json([
+                'success' => [
+                    'update_id' => $update_id,
+                    'message' => '__module_name__ update success'
+                ]
+            ], 200);
+        } else {
+            return response()->json([
+                'error' => [
+                    'message' => '__model_name__ does not exist'
+                ]
+            ], 404);
+        }
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($id)
+    {
+        if (Module::hasAccess("__module_name__", "delete")) {
+            try {
+
+                $item = __model_name__::findOrFail($id);
+
+                if ($item != null) {
+                    $item->delete();
+                    return response()->json([
+                        'success' => [
+                            'delete_id' => $id,
+                            'message' => '__module_name__ delete success'
+                        ]
+                    ], 200);
+                } else {
+                    return response()->json([
+                        'error' => [
+                            'delete_id' => $id,
+                            'message' => '__module_name__ not found'
+                        ]
+                    ], 200);
+                }
+            } catch (Exception $e) {
+                dd('aaa');
+            };
+        } else {
+            return response()->json([
+                'error' => [
+                    'message' => '__model_name__ does not exist'
+                ]
+            ], 404);
+        }
+    }
 }

@@ -23,7 +23,7 @@ use Illuminate\Support\Str;
 
 use App\Models\Organization;
 
-class OrganizationsController extends Controller
+class OrganizationController extends Controller
 {
 	public $show_action = true;
 
@@ -157,7 +157,7 @@ class OrganizationsController extends Controller
 	{
 		if(Module::hasAccess("Organizations", "edit")) {
 
-			$rules = Module::validateRules("Organizations", $request, true);
+			$rules = Module::validateRules("Organizations", $request, true, $id);
 
 			$validator = Validator::make($request->all(), $rules);
 
@@ -203,7 +203,7 @@ class OrganizationsController extends Controller
 		$listing_cols = Module::getListingColumns('Organizations');
 
 		$values = DB::table('organizations')->select($listing_cols)->whereNull('deleted_at');
-		$out = \\DataTables::of($values)->make();
+		$out = \DataTables::of($values)->make();
 		$data = $out->getData();
 
 		$fields_popup = ModuleFields::getModuleFields('Organizations');

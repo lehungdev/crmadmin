@@ -85,7 +85,7 @@ class UsersController extends Controller
 		$listing_cols = Module::getListingColumns('Users');
 
 		$values = DB::table('users')->select($listing_cols)->whereNull('deleted_at');
-		$out = \\DataTables::of($values)->make();
+		$out = \DataTables::of($values)->make();
 		$data = $out->getData();
 
 		$fields_popup = ModuleFields::getModuleFields('Users');

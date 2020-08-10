@@ -14,6 +14,15 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+//Clear all
+// Route::get('/clear-all', function() {
+//     Artisan::call('cache:clear');
+//     Artisan::call('route:clear');
+//     Artisan::call('config:clear');
+//     Artisan::call('view:clear');
+//     return "Cache is cleared";
+// });
+
 $locale = \Request::segment(2);
 Route::prefix($locale.'/v1')->group(function () {
 
@@ -40,4 +49,4 @@ Route::prefix($locale.'/v1')->group(function () {
     } else {
         //  abort(400);
     }
-});
+});//Add

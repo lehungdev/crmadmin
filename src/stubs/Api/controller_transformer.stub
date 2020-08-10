@@ -1,0 +1,40 @@
+<?php
+/**
+ * Model generated using IdeaGroup
+ * Help: lehung.hut@gmail.com
+ * CrmAdmin is open-sourced software licensed under the MIT license.
+ * Developed by: Lehungdev IT Solutions
+ * Developer Website: http://ideagroup.vn
+ */
+
+namespace App\Http\Controllers\Api\__module_name__;
+
+use League\Fractal\TransformerAbstract;
+__use_model_dropdown__
+__use_model_dropdown_children__
+
+use App\Models\__model_name__;
+
+
+class __model_name__Transformer extends TransformerAbstract
+{
+    protected $defaultIncludes = [];
+    protected $availableIncludes = [__listing_cols_dropdown__];
+    protected $fields = ['id', __listing_cols__, 'updated_at'];
+
+    public function transform($results)
+    {
+        $myNewArray = array_combine($this -> fields, array_map(function($value) use ($results) {
+            $value = $results[$value];
+            return  $value;
+        }, $this -> fields));
+        return $myNewArray;
+    }
+
+    /* Model belongsTo */
+__use_model_belongsTo__
+
+    /* Model belongsTo children*/
+__use_model_belongsTo_children__
+    //Add_belongsTo_parent
+}

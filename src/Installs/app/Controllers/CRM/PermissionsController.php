@@ -163,7 +163,7 @@ class PermissionsController extends Controller
 	{
 		if(Module::hasAccess("Permissions", "edit")) {
 
-			$rules = Module::validateRules("Permissions", $request, true);
+			$rules = Module::validateRules("Permissions", $request, true, $id);
 
 			$validator = Validator::make($request->all(), $rules);
 
@@ -209,7 +209,7 @@ class PermissionsController extends Controller
 		$listing_cols = Module::getListingColumns('Permissions');
 
 		$values = DB::table('permissions')->select($listing_cols)->whereNull('deleted_at');
-		$out = \\DataTables::of($values)->make();
+		$out = \DataTables::of($values)->make();
 		$data = $out->getData();
 
 		$fields_popup = ModuleFields::getModuleFields('Permissions');
