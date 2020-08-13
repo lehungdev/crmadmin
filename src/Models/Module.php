@@ -126,7 +126,8 @@ class Module extends Model
                     'model' => $names->model,
                     'controller' => $names->controller,
                     'is_gen' => $is_gen,
-                    'fa_icon' => $faIcon
+                    'fa_icon' => $faIcon,
+                    'update_active' => false,
                 ]);
             }
 

@@ -364,14 +364,46 @@ class LAInstall extends Command
                 $this->line('Publish DataTables\DataTablesServiceProvider done');
                 $this->call('vendor:publish', ['--provider' => 'Yajra\DataTables\DataTablesServiceProvider']);
 
-                //Note
-                $this->line('\n+++Change Kernel.php: $routeMiddleware -> "CheckClientCredentials" => \App\Http\Middleware\CheckClientCredentials::class #changed  ');
-                $this->line('+++$middlewarePriority ->  \App\Http\Middleware\CheckForMaintenanceMode::class,');
+                /////////////Note Change Kernel.php
+                $this->line("\nChange Kernel.php: \$routeMiddleware -> 'CheckClientCredentials' => \App\Http\Middleware\CheckClientCredentials::class #changed");
+                $contents_kernel = file_get_contents(base_path('app/Http/Kernel.php'));
+                $contents_kernel = str_replace("'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,", "'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,\n\t\t'CheckClientCredentials' => \App\Http\Middleware\CheckClientCredentials::class #changed", $contents_kernel);
+                file_put_contents('app/Http/Kernel.php', $contents_kernel);
+                ///////////////////////////////////////////////////////
 
                 $this->info("\nPassport complate.");
-
-                $this->line('\nPublish Spatie\Fractal\FractalServiceProvider done');
+                $this->line("\nPublish Spatie\Fractal\FractalServiceProvider done");
                 $this->call('vendor:publish', ['--provider' => 'Spatie\Fractal\FractalServiceProvider']);
+
+                $this->call('vendor:publish', ['--provider' => 'Kreait\Laravel\Firebase\ServiceProvider'], '--tag=config');
+
+                ///Add IdeaHelper, RedisManager to file app.php
+                $this->line("\n++ Add IdeaHelper, RedisManager, Kreait to file config/app.php");
+                $contents_app = file_get_contents(base_path('config/app.php'));
+                $contents_app = str_replace("'View' => Illuminate\Support\Facades\View::class,", "'View' => Illuminate\Support\Facades\View::class,  #changed\n\t\t'IdeaHelper' => App\Http\Controllers\Helpers\IdeaHelper::class,  #changed\n\t\t'RedisManager' => Illuminate\Support\Facades\Redis::class,  #changed\n\t\tKreait\Laravel\Firebase\ServiceProvider::class, #changed", $contents_app);
+                file_put_contents('config/app.php', $contents_app);
+
+                ///Add IdeaHelper, RedisManager to file app.php
+                $this->line("\n++ Add IdeaHelper, RedisManager, Kreait to file bootstrap/app.php");
+                $contents_bootstrap_app = file_get_contents(base_path('bootstrap/app.php'));
+                $contents_bootstrap_app = str_replace("return \$app;", "\$app->register(Kreait\Laravel\Firebase\ServiceProvider::class);\nreturn \$app;", $contents_bootstrap_app);
+                file_put_contents('bootstrap/app.php', $contents_bootstrap_app);
+
+
+                ///Edit phpredis -> predis in file database.php
+                $this->line("\nEdit phpredis -> predis in file database.php");
+                $contents_database = file_get_contents(base_path('config/database.php'));
+                $contents_database = str_replace("'client' => 'phpredis',", "'client' => 'predis',", $contents_database);
+                file_put_contents('config/database.php', $contents_database);
+
+
+
+                ///Add line FIREBASE_CREDENTIALS=/full/path/to/firebase_credentials.json in file .env
+                $this->line("\Add line FIREBASE_CREDENTIALS in file .env");
+                $contents_env = file_get_contents(base_path('.env'));
+                $contents_env .= "\nFIREBASE_CREDENTIALS=/full/path/to/firebase_credentials.json";
+                file_put_contents('.env', $contents_env);
+
 
                 $this->info("\nCrmAdmin successfully installed.");
                 $this->info("You can now login from yourdomain.com/" . config('crmadmin.adminRoute') . " !!!\n");
@@ -381,7 +413,7 @@ class LAInstall extends Command
         } catch (Exception $e) {
             $msg = $e->getMessage();
             if (strpos($msg, 'SQLSTATE') !== false) {
-                throw new Exception("LAInstall: Database is not connected. Connect database (.env) and run 'crm:install' again.\n" . $msg, 1);
+                throw new Exception("LAInstall: Database is not connected. Connect database (.env) and run 'php artisan crm:install' again.\n" . $msg, 1);
             } else {
                 $this->error("LAInstall::handle exception: " . $e);
                 throw new Exception("LAInstall::handle Unable to install : " . $msg, 1);
