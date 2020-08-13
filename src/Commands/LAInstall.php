@@ -384,7 +384,7 @@ class LAInstall extends Command
                 ///Add IdeaHelper, RedisManager to file app.php
                 $this->line("\n++ Add IdeaHelper, RedisManager, Kreait to file bootstrap/app.php");
                 $contents_bootstrap_app = file_get_contents(base_path('bootstrap/app.php'));
-                $contents_bootstrap_app = str_replace("return \$app;", "\$app->register(Kreait\Laravel\Firebase\ServiceProvider::class);\nreturn \$app;", $contents_bootstrap_app);
+                $contents_bootstrap_app = str_replace("return \$app;", "\$app->register(Kreait\Laravel\Firebase\ServiceProvider::class);\n\nreturn \$app;", $contents_bootstrap_app);
                 file_put_contents('bootstrap/app.php', $contents_bootstrap_app);
 
                 ///Add IdeaHelper, RedisManager to file app.php
