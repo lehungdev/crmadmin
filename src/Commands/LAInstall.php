@@ -375,12 +375,10 @@ class LAInstall extends Command
                 $this->line("\nPublish Spatie\Fractal\FractalServiceProvider done");
                 $this->call('vendor:publish', ['--provider' => 'Spatie\Fractal\FractalServiceProvider']);
 
-                $this->call('vendor:publish', ['--provider' => 'Kreait\Laravel\Firebase\ServiceProvider'], '--tag=config');
-
                 ///Add IdeaHelper, RedisManager to file app.php
                 $this->line("\n++ Add IdeaHelper, RedisManager, Kreait to file config/app.php");
                 $contents_app = file_get_contents(base_path('config/app.php'));
-                $contents_app = str_replace("'View' => Illuminate\Support\Facades\View::class,", "'View' => Illuminate\Support\Facades\View::class,  #changed\n\t\t'IdeaHelper' => App\Http\Controllers\Helpers\IdeaHelper::class,  #changed\n\t\t'RedisManager' => Illuminate\Support\Facades\Redis::class,  #changed\n\t\tKreait\Laravel\Firebase\ServiceProvider::class, #changed", $contents_app);
+                $contents_app = str_replace("'View' => Illuminate\Support\Facades\View::class,", "'View' => Illuminate\Support\Facades\View::class,  #changed\n\t\t'IdeaHelper' => App\Http\Controllers\Helpers\IdeaHelper::class,  #changed\n\t\t'RedisManager' => Illuminate\Support\Facades\Redis::class,  #changed", $contents_app);
                 file_put_contents('config/app.php', $contents_app);
 
                 ///Add IdeaHelper, RedisManager to file app.php
@@ -389,13 +387,19 @@ class LAInstall extends Command
                 $contents_bootstrap_app = str_replace("return \$app;", "\$app->register(Kreait\Laravel\Firebase\ServiceProvider::class);\nreturn \$app;", $contents_bootstrap_app);
                 file_put_contents('bootstrap/app.php', $contents_bootstrap_app);
 
+                ///Add IdeaHelper, RedisManager to file app.php
+                $this->line("\n++ Add Kreait to file config/app.php");
+                $contents_app = file_get_contents(base_path('config/app.php'));
+                $contents_app = str_replace("Lehungdev\Crmadmin\LAProvider::class,", "Lehungdev\Crmadmin\LAProvider::class,\n\t\tKreait\Laravel\Firebase\ServiceProvider::class, #changed", $contents_app);
+                file_put_contents('config/app.php', $contents_app);
+
+                $this->call('vendor:publish', ['--provider' => 'Kreait\Laravel\Firebase\ServiceProvider'], '--tag=config');
 
                 ///Edit phpredis -> predis in file database.php
                 $this->line("\nEdit phpredis -> predis in file database.php");
                 $contents_database = file_get_contents(base_path('config/database.php'));
                 $contents_database = str_replace("'client' => 'phpredis',", "'client' => 'predis',", $contents_database);
                 file_put_contents('config/database.php', $contents_database);
-
 
 
                 ///Add line FIREBASE_CREDENTIALS=/full/path/to/firebase_credentials.json in file .env
