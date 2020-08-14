@@ -376,18 +376,18 @@ class LAInstall extends Command
                 $this->call('vendor:publish', ['--provider' => 'Spatie\Fractal\FractalServiceProvider']);
 
                 ///Add IdeaHelper, RedisManager to file app.php
-                $this->line("\n++ Add IdeaHelper, RedisManager, Kreait to file config/app.php");
+                $this->line("\n++ Add IdeaHelper, RedisManager to file config/app.php");
                 $contents_app = file_get_contents(base_path('config/app.php'));
                 $contents_app = str_replace("'View' => Illuminate\Support\Facades\View::class,", "'View' => Illuminate\Support\Facades\View::class,  #changed\n\t\t'IdeaHelper' => App\Http\Controllers\Helpers\IdeaHelper::class,  #changed\n\t\t'RedisManager' => Illuminate\Support\Facades\Redis::class,  #changed", $contents_app);
                 file_put_contents('config/app.php', $contents_app);
 
                 ///Add IdeaHelper, RedisManager to file app.php
-                $this->line("\n++ Add IdeaHelper, RedisManager, Kreait to file bootstrap/app.php");
+                $this->line("\n++ Add Kreait to file bootstrap/app.php");
                 $contents_bootstrap_app = file_get_contents(base_path('bootstrap/app.php'));
                 $contents_bootstrap_app = str_replace("return \$app;", "\$app->register(Kreait\Laravel\Firebase\ServiceProvider::class);\n\nreturn \$app;", $contents_bootstrap_app);
                 file_put_contents('bootstrap/app.php', $contents_bootstrap_app);
 
-                ///Add IdeaHelper, RedisManager to file app.php
+                ///Add Kreait to file app.php
                 $this->line("\n++ Add Kreait to file config/app.php");
                 $contents_app = file_get_contents(base_path('config/app.php'));
                 $contents_app = str_replace("Lehungdev\Crmadmin\LAProvider::class,", "Lehungdev\Crmadmin\LAProvider::class,\n\t\tKreait\Laravel\Firebase\ServiceProvider::class, #changed", $contents_app);
