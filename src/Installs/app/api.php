@@ -46,7 +46,19 @@ Route::prefix($locale.'/v1')->group(function () {
         });
         // End Auth
 
-    } else {
-        //  abort(400);
     }
+    /* ================== Languages ================== */
+
+    Route::apiResource('languages','Api\Languages\LanguageApiController', ['only' => ['index', 'show']]);
+    Route::group(['middleware' => ['CheckClientCredentials','auth:api']], function() {
+        Route::apiResource('languages','Api\Languages\LanguageApiController', ['only' => ['update_', 'store_', 'destroy_']]);
+    });
+
+    /* ================== Languages ================== */
+
+    Route::apiResource('organizations','Api\Organizations\OrganizationApiController', ['only' => ['index', 'show']]);
+    Route::group(['middleware' => ['CheckClientCredentials','auth:api']], function() {
+        Route::apiResource('organizations','Api\Organizations\OrganizationApiController', ['only' => ['update_', 'store_', 'destroy_']]);
+    });
+
 });//Add

@@ -18,6 +18,7 @@ use Lehungdev\Crmadmin\Models\LAConfigs;
 use App\Role;
 use App\Permission;
 use App\Models\Department;
+use App\Models\Language;
 
 class DatabaseSeeder extends Seeder
 {
@@ -86,6 +87,19 @@ class DatabaseSeeder extends Seeder
 		$perm->save();
 
 		$role->attachPermission($perm);
+
+        // Create Language Default
+        $language = new Language;
+		$language->name = "Tiếng Việt";
+		$language->image = 0;
+		$language->locale = "vi";
+		$language->save();
+
+        $language = new Language;
+		$language->name = "English";
+		$language->image = 0;
+		$language->locale = "en";
+        $language->save();
 
 		// Generate CrmAdmin Default Configurations
 

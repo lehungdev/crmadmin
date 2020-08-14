@@ -14,6 +14,7 @@ use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
 use Lehungdev\Crmadmin\Helpers\LAHelper;
+use Illuminate\Support\Str;
 use Eloquent;
 use DB;
 
@@ -367,8 +368,10 @@ class LAInstall extends Command
                 /////////////Note Change Kernel.php
                 $this->line("\nChange Kernel.php: \$routeMiddleware -> 'CheckClientCredentials' => \App\Http\Middleware\CheckClientCredentials::class #changed");
                 $contents_kernel = file_get_contents(base_path('app/Http/Kernel.php'));
-                $contents_kernel = str_replace("'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,", "'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,\n\t\t'CheckClientCredentials' => \App\Http\Middleware\CheckClientCredentials::class #changed", $contents_kernel);
-                file_put_contents('app/Http/Kernel.php', $contents_kernel);
+                if (!Str::contains($contents_kernel, "CheckClientCredentials")) {
+                    $contents_kernel = str_replace("'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,", "'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,\n\t\t'CheckClientCredentials' => \App\Http\Middleware\CheckClientCredentials::class #changed", $contents_kernel);
+                    file_put_contents('app/Http/Kernel.php', $contents_kernel);
+                }
                 ///////////////////////////////////////////////////////
 
                 $this->info("\nPassport complate.");
@@ -378,35 +381,35 @@ class LAInstall extends Command
                 ///Add IdeaHelper, RedisManager to file app.php
                 $this->line("\n++ Add IdeaHelper, RedisManager to file config/app.php");
                 $contents_app = file_get_contents(base_path('config/app.php'));
-                $contents_app = str_replace("'View' => Illuminate\Support\Facades\View::class,", "'View' => Illuminate\Support\Facades\View::class,  #changed\n\t\t'IdeaHelper' => App\Http\Controllers\Helpers\IdeaHelper::class,  #changed\n\t\t'RedisManager' => Illuminate\Support\Facades\Redis::class,  #changed", $contents_app);
-                file_put_contents('config/app.php', $contents_app);
-
-                ///Add IdeaHelper, RedisManager to file app.php
-                $this->line("\n++ Add Kreait to file bootstrap/app.php");
-                $contents_bootstrap_app = file_get_contents(base_path('bootstrap/app.php'));
-                $contents_bootstrap_app = str_replace("return \$app;", "\$app->register(Kreait\Laravel\Firebase\ServiceProvider::class);\n\nreturn \$app;", $contents_bootstrap_app);
-                file_put_contents('bootstrap/app.php', $contents_bootstrap_app);
+                if (!Str::contains($contents_app, "'IdeaHelper'")) {
+                    $contents_app = str_replace("'View' => Illuminate\Support\Facades\View::class,", "'View' => Illuminate\Support\Facades\View::class,\n\t\t'IdeaHelper' => App\Http\Controllers\Helpers\IdeaHelper::class,  #changed\n\t\t'RedisManager' => Illuminate\Support\Facades\Redis::class,  #changed", $contents_app);
+                    file_put_contents('config/app.php', $contents_app);
+                }
 
                 ///Add Kreait to file app.php
                 $this->line("\n++ Add Kreait to file config/app.php");
                 $contents_app = file_get_contents(base_path('config/app.php'));
-                $contents_app = str_replace("Lehungdev\Crmadmin\LAProvider::class,", "Lehungdev\Crmadmin\LAProvider::class,\n\t\tKreait\Laravel\Firebase\ServiceProvider::class, #changed", $contents_app);
-                file_put_contents('config/app.php', $contents_app);
+                if (!Str::contains($contents_app, "Kreait\Laravel\Firebase")) {
+                    $contents_app = str_replace("Lehungdev\Crmadmin\LAProvider::class,", "Lehungdev\Crmadmin\LAProvider::class,\n\t\tKreait\Laravel\Firebase\ServiceProvider::class, #changed", $contents_app);
+                    file_put_contents('config/app.php', $contents_app);
+                }
 
                 $this->call('vendor:publish', ['--provider' => 'Kreait\Laravel\Firebase\ServiceProvider'], '--tag=config');
 
                 ///Edit phpredis -> predis in file database.php
                 $this->line("\nEdit phpredis -> predis in file database.php");
                 $contents_database = file_get_contents(base_path('config/database.php'));
-                $contents_database = str_replace("'client' => 'phpredis',", "'client' => 'predis',", $contents_database);
+                $contents_database = str_replace("phpredis", "predis", $contents_database);
                 file_put_contents('config/database.php', $contents_database);
 
 
                 ///Add line FIREBASE_CREDENTIALS=/full/path/to/firebase_credentials.json in file .env
-                $this->line("\Add line FIREBASE_CREDENTIALS in file .env");
+                $this->line("Add line FIREBASE_CREDENTIALS in file .env");
                 $contents_env = file_get_contents(base_path('.env'));
-                $contents_env .= "\nFIREBASE_CREDENTIALS=/full/path/to/firebase_credentials.json";
-                file_put_contents('.env', $contents_env);
+                if (!Str::contains($contents_env, "FIREBASE_CREDENTIALS")) {
+                    $contents_env .= "\nFIREBASE_CREDENTIALS=/full/path/to/firebase_credentials.json";
+                    file_put_contents('.env', $contents_env);
+                }
 
 
                 $this->info("\nCrmAdmin successfully installed.");
