@@ -193,6 +193,31 @@ class __controller_class_name__ extends Controller
     }
 
     /**
+     * Server side Datatable fetch via switch
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function dtswitch(Request $request)
+    {
+        if(Module::hasFieldAccess("__module_name__", $request->switchName, "write")){
+            if($request->state == "true") {
+                $state = 1;
+            } else {
+                $state = 0;
+            }
+            $item = __model_name__::find($request->switchId);
+            if(isset($item->id)) {
+                $item[$request['switchName']] = $state;
+                $item->save();
+                return response()->json(['status' => 'success', 'message' => "__model_name__ field switch ". $request->switchName ." saved to " . $state]);
+            } else {
+                return response()->json(['status' => 'failed', 'message' => "__model_name__ field not found"]);
+            }
+        }
+    }
+
+    /**
      * Server side Datatable fetch via Ajax
      *
      * @param \Illuminate\Http\Request $request
@@ -233,9 +258,18 @@ class __controller_class_name__ extends Controller
                     }
                 }
 
+                if(!empty($module->fields[$col]) && $module->fields[$col]['field_type'] == 2){
+                    if(!empty($data->data[$i][$col])){
+                        $switch = 'Off';
+                    } else $switch = 'On';
+                    $data->data[$i][$j] = '<div class="Switch Ajax '. $col .' Round '. $switch .'" switchName="'. $col .'" " switchId="'. $data->data[$i][$listing_cols[0]] .'" style="vertical-align:top;margin-left:10px;"><div class="Toggle"></div></div>';
+                }
+
                 // else if($col == "author") {
                 //    $data->data[$i][$col];
                 // }
+                if( $col!== 'id')
+                    unset($data->data[$i][$col]);
             }
 
             if($this->show_action) {
@@ -251,7 +285,9 @@ class __controller_class_name__ extends Controller
                 }
                 $data->data[$i][] = (string)$output;
             }
+            unset($data->data[$i]['id']);
         }
+        unset($data->queries);
         $out->setData($data);
         return $out;
     }

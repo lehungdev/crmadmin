@@ -100,4 +100,35 @@ $(function () {
     });
 });
 </script>
+@la_access("Properties", "create")
+    <script>
+        $('#example1').on("click", '.Switch',function() {
+            var state = "false";
+            if ($(this).hasClass('On')) {
+                state = "true";
+                $(this).removeClass("On");
+                $(this).addClass("Off");
+            } else {
+                state = "false";
+                $(this).removeClass("Off");
+                $(this).addClass("On");
+            }
+
+            $.ajax({
+            	type: "POST",
+            	url : "{{ url(config('crmadmin.adminRoute') . '/__singular_var___field_switch') }}",
+            	data : {
+                    _token: '{{ csrf_token() }}',
+                    switchName: $(this).attr("switchName"),
+                    switchId: $(this).attr("switchId"),
+            		state: state,
+            	},
+            	success : function(data){
+            		console.log(data);
+            	}
+            });
+        });
+
+    </script>
+@endla_access
 @endpush

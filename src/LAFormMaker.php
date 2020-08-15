@@ -274,7 +274,7 @@ class LAFormMaker
 
 
                     $popup_vals_str = $popup_vals;
-                    if(is_string($popup_vals) && Str::startsWith($popup_vals, '@') && $popup_vals == "@categories") {
+                    if(is_string($popup_vals) && Str::startsWith($popup_vals, '@') && $popup_vals == "@categories12") {
                         $url = Request::url();
 //                        $url_array = explode("categories", $url);
                         $url_array = explode("/", $url);

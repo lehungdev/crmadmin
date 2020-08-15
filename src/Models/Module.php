@@ -1225,14 +1225,14 @@ class Module extends Model
                         break;
                     case 'Multiselect':
                         // TODO: Bug fix
-                        $row->{$field['colname']} = json_encode($request->{$field['colname']});
+                        $row->{$field['colname']} = json_encode($request->{$field['colname']}, JSON_UNESCAPED_UNICODE);
                         break;
                     case 'Password':
                         $row->{$field['colname']} = bcrypt($request->{$field['colname']});
                         break;
                     case 'Taginput':
                         // TODO: Bug fix
-                        $row->{$field['colname']} = json_encode($request->{$field['colname']});
+                        $row->{$field['colname']} = json_encode($request->{$field['colname']}, JSON_UNESCAPED_UNICODE);
                         break;
                     case 'Files':
                         $files = json_decode($request->{$field['colname']});
@@ -1240,7 +1240,7 @@ class Module extends Model
                         foreach($files as $file) {
                             $files2[] = "" . $file;
                         }
-                        $row->{$field['colname']} = json_encode($files2);
+                        $row->{$field['colname']} = json_encode($files2, JSON_UNESCAPED_UNICODE);
                         break;
                     default:
                         $row->{$field['colname']} = $request->{$field['colname']};
