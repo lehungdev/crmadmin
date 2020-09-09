@@ -9,7 +9,7 @@
         "illuminate/container": "^8.0",
         "yajra/laravel-datatables-oracle": "^9.10.2",
         "creativeorange/gravatar": "^1.0.19",
-        "doctrine/dbal": "~2.10.3",
+        "doctrine/dbal": "^2.10.3",
         "shanmuga/laravel-entrust": "^1.2",
         "spatie/laravel-backup": "^6.11.2",
         "laravel/passport": "^9.3.2",
