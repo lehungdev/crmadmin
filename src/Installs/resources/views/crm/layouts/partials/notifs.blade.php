@@ -112,7 +112,7 @@
 						<ul class="dropdown-menu">
 							<!-- The user image in the menu -->
 							<li class="user-header">
-								<img src="{{ Gravatar::fallback(asset('/la-assets/img/user2-160x160.jpg'))->get(Auth::user()->email) }}" class="img-circle" alt="User Image" />
+                                <img src="{{ Gravatar::fallback(asset('https://www.gravatar.com/avatar/00000000000000000000000000000000?d=identicon&f=y'))->get(Auth::user()->email) }}" class="img-circle" alt="User Image"/>
 								<p>
 									{{ Auth::user()->name }}
 									<?php

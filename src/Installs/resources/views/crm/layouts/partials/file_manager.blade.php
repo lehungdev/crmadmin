@@ -1,4 +1,14 @@
 <script src="{{ asset('la-assets/plugins/dropzone/dropzone.js') }}"></script>
+<?php
+$path_site = explode(config('crmadmin.adminRoute'),\Request::path());
+$path_site = $path_site[1];
+$path_site_item = explode("/",$path_site);
+if(count($path_site_item) > 0 and !empty($path_site_item[1]))
+    $folder_end =  $path_site_item[1];
+else $folder_end = '';
+$folder_end123 = $folder_end;
+//dd($path_site);
+?>
 
 <div class="modal fade" id="fm" role="dialog" aria-labelledby="fileManagerLabel">
 	<input type="hidden" id="image_selecter_origin" value="">
@@ -16,18 +26,19 @@
 							<form action="{{ url(config('crmadmin.adminRoute') . '/upload_files')}}" id="fm_dropzone" enctype="multipart/form-data" method="POST">
 								{{ csrf_field() }}
 								<div class="dz-message"><i class="fa fa-cloud-upload"></i><br>Drop files here to upload</div>
-								
+
 								@if(!config('crmadmin.uploads.private_uploads'))
 									<label class="fm_folder_title">Is Public ?</label>
 									{{ Form::checkbox("public", "public", config("crmadmin.uploads.default_public"), []) }}
-									<div class="Switch Ajax Round On"><div class="Toggle"></div></div>
+									<input type="hidden" value="{{ $folder_end  }}" name="folder_end" />
+									<div class="Switch Ajax Round Off"><div class="Toggle"></div></div>
 								@endif
 							</form>
 						</div>
 					</div>
 					<div class="col-xs-12 col-sm-12 col-md-12 pl0_">
 						<div class="nav">
-							<div class="row">
+							<div class="row1">
 								<div class="col-xs-2 col-sm-7 col-md-7"></div>
 								<div class="col-xs-10 col-sm-5 col-md-5">
 									<input type="search" class="form-control pull-right" placeholder="Search file name">
@@ -36,7 +47,7 @@
 						</div>
 						<div class="fm_file_selector">
 							<ul>
-								
+
 							</ul>
 						</div>
 					</div>
