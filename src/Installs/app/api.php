@@ -48,17 +48,27 @@ Route::prefix($locale.'/v1')->group(function () {
 
     }
     /* ================== Languages ================== */
-
     Route::apiResource('languages','Api\Languages\LanguageApiController', ['only' => ['index', 'show']]);
     Route::group(['middleware' => ['CheckClientCredentials','auth:api']], function() {
         Route::apiResource('languages','Api\Languages\LanguageApiController', ['only' => ['update_', 'store_', 'destroy_']]);
     });
 
-    /* ================== Languages ================== */
-
+    /* ================== organizations ================== */
     Route::apiResource('organizations','Api\Organizations\OrganizationApiController', ['only' => ['index', 'show']]);
     Route::group(['middleware' => ['CheckClientCredentials','auth:api']], function() {
         Route::apiResource('organizations','Api\Organizations\OrganizationApiController', ['only' => ['update_', 'store_', 'destroy_']]);
+    });
+
+    /* ================== Categories ================== */
+    Route::apiResource('categories','Api\Categories\CategoryApiController', ['only' => ['index', 'show']]);
+    Route::group(['middleware' => ['CheckClientCredentials','auth:api']], function() {
+        Route::apiResource('categories','Api\Categories\CategoryApiController', ['only' => ['update_', 'store_', 'destroy_']]);
+    });
+
+    /* ================== Properties ================== */
+    Route::apiResource('properties','Api\Properties\PropertyApiController', ['only' => ['index', 'show']]);
+    Route::group(['middleware' => ['CheckClientCredentials','auth:api']], function() {
+        Route::apiResource('properties','Api\Properties\PropertyApiController', ['only' => ['update_', 'store_', 'destroy_']]);
     });
 
 });//Add

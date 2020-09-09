@@ -131,7 +131,7 @@
                   </div><!-- /.item -->
                   <!-- chat item -->
                   <div class="item">
-                    <img src="{{asset('/la-assets/img/user2-160x160.jpg')}}" alt="user image" class="offline">
+                    <img src="{{asset('/la-assets/img/avatar.png')}}" alt="user image" class="offline">
                     <p class="message">
                       <a href="#" class="name">
                         <small class="text-muted pull-right"><i class="fa fa-clock-o"></i> 5:30</small>

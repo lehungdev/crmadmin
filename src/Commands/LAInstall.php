@@ -27,7 +27,7 @@ use DB;
 class LAInstall extends Command
 {
     // Model Names to be handled during Install
-    var $modelsInstalled = ["User", "Role", "Permission", "Employee", "Department", "Language", "Upload", "Organization", "Backup"];
+    var $modelsInstalled = ["User", "Role", "Permission", "Employee", "Department", "Language", "Property",  "Category", "Upload", "Organization", "Backup"];
 
     // The command signature.
     protected $signature = 'crm:install';
@@ -137,10 +137,10 @@ class LAInstall extends Command
                 }
 
                 // AppServiceProvider - https://laravel-news.com/laravel-5-4-key-too-long-error
-                if (LAHelper::laravel_ver() != 5.4) {
-                    $this->copyFile($from . "/app/Providers/AppServiceProvider.php", $to . "/app/Providers/AppServiceProvider.php");
+                // if (LAHelper::laravel_ver() != 5.4) {
+                //     $this->copyFile($from . "/app/Providers/AppServiceProvider.php", $to . "/app/Providers/AppServiceProvider.php");
 
-                }
+                // }
 
                 // Config
                 $this->line('Generating Config...');
@@ -354,6 +354,9 @@ class LAInstall extends Command
                 $this->info("Call Passport Routes And Add Some Configs");
                 $this->copyFile($from . "/app/Providers/AuthServiceProvider.php", $to . "/app/Providers/AuthServiceProvider.php");  ###changed
                 $this->copyFile($from . "/app/User.php", $to . "/app/User.php");  ###changed
+                $this->copyFile($from . "/.htaccess", $to . "/.htaccess");  ###changed
+                $this->copyFile($from . "/public/.htaccess", $to . "/public/.htaccess");  ###changed
+                $this->copyFile($from . "/public/resize.php", $to . "/public/resize.php");  ###changed
                 //Finally You Need To Change The Api Driver
                 $this->info("Finally You Need To Change The Api Driver: config/auth.php");
                 $this->copyFile($from . "/config/auth.php", $to . "/config/auth.php");  ###changed
@@ -378,21 +381,33 @@ class LAInstall extends Command
                 $this->line("\nPublish Spatie\Fractal\FractalServiceProvider done");
                 $this->call('vendor:publish', ['--provider' => 'Spatie\Fractal\FractalServiceProvider']);
 
-                ///Add IdeaHelper, RedisManager to file app.php
-                $this->line("\n++ Add IdeaHelper, RedisManager to file config/app.php");
+                //Add IdeaHelper, RedisManager to file app.php
+                //Add Kreait to file app.php
+                $this->line("\n++ Add IdeaHelper, RedisManager to file config/app.php \n++ Add Kreait to file config/app.php");
                 $contents_app = file_get_contents(base_path('config/app.php'));
                 if (!Str::contains($contents_app, "'IdeaHelper'")) {
                     $contents_app = str_replace("'View' => Illuminate\Support\Facades\View::class,", "'View' => Illuminate\Support\Facades\View::class,\n\t\t'IdeaHelper' => App\Http\Controllers\Helpers\IdeaHelper::class,  #changed\n\t\t'RedisManager' => Illuminate\Support\Facades\Redis::class,  #changed", $contents_app);
                     file_put_contents('config/app.php', $contents_app);
                 }
 
-                ///Add Kreait to file app.php
-                $this->line("\n++ Add Kreait to file config/app.php");
-                $contents_app = file_get_contents(base_path('config/app.php'));
                 if (!Str::contains($contents_app, "Kreait\Laravel\Firebase")) {
                     $contents_app = str_replace("Lehungdev\Crmadmin\LAProvider::class,", "Lehungdev\Crmadmin\LAProvider::class,\n\t\tKreait\Laravel\Firebase\ServiceProvider::class, #changed", $contents_app);
                     file_put_contents('config/app.php', $contents_app);
                 }
+                if(!Str::contains($contents_app, "locale_id")) {
+                    $contents_app = str_replace("'locale' => 'en',", "'locale' => 'en',\n\n\t'locale_id' => '2', #changed", $contents_app);
+                    file_put_contents('config/app.php', $contents_app);
+                }
+
+                //Add Models Language to file AppServiceProvider.php
+                $this->line("\nAdd Models Language to file AppServiceProvider.php");
+                $contents_AppService = file_get_contents(base_path('app/Providers/AppServiceProvider.php'));
+                if(!Str::contains($contents_AppService, "App\Models\Language")){
+                    $contents_AppService = str_replace("use Illuminate\Support\Facades\Schema;", "use Illuminate\Support\Facades\Schema;\nuse App\Models\Language; #changed\nuse View; #changed", $contents_AppService);
+                    $contents_AppService = str_replace("Schema::defaultStringLength(191);", "Schema::defaultStringLength(191);\n\t\t\$this->language   =  Language::get(); #changed\n\t\tView::share('pvd_language', \$this->language); #changed", $contents_AppService);
+                    file_put_contents('app/Providers/AppServiceProvider.php', $contents_AppService);
+                }
+
 
                 $this->call('vendor:publish', ['--provider' => 'Kreait\Laravel\Firebase\ServiceProvider'], '--tag=config');
 

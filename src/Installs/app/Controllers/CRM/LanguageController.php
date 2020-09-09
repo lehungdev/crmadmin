@@ -221,13 +221,10 @@ class LanguageController extends Controller
                     $data->data[$i][$j] = '<a href="' . url(config('crmadmin.adminRoute') . '/languages/' . $data->data[$i][$listing_cols[0]]) . '">' . $data->data[$i][$col] . '</a>';
                 }
                 if($fields_popup[$col] != null && $fields_popup[$col]->field_type_str == "Image") {
-                    if($data->data[$i][$col] != 0) {
-                        $img = \App\Models\Upload::find($data->data[$i][$col]);
-                        if(isset($img->name)) {
-                            $data->data[$i][$j] = '<img src="'.$img->path().'?s=50">';
-                        } else {
-                            $data->data[$i][$j] = "";
-                        }
+                    if($data->data[$i][$col]){
+                        $json_image = str_replace('&quot;', '"', $data->data[$i][$col]);
+                        $json_image = json_decode($json_image);
+                        $data->data[$i][$j] = '<img src="'.url('/s50x50'.$json_image->path).'">';
                     } else {
                         $data->data[$i][$j] = "";
                     }

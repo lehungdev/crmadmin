@@ -60,15 +60,15 @@ class MenuController extends Controller
      */
     public function store(Request $request)
     {
-        if(!empty(Input::get('menu_name')))
-            $name = Input::get('menu_name');
-        else $name = Input::get('name');
-        $url = Input::get('url');
-        $icon = Input::get('icon');
-        $type = Input::get('type');
+        if(!empty($request->input('menu_name')))
+            $name = $request->input('menu_name');
+        else $name = $request->input('name');
+        $url = $request->input('url');
+        $icon = $request->input('icon');
+        $type = $request->input('type');
 
         if($type == "module") {
-            $module_id = Input::get('module_id');
+            $module_id = $request->input('module_id');
             $module = Module::find($module_id);
             if(isset($module->id)) {
                 $name = $module->name;
@@ -106,12 +106,12 @@ class MenuController extends Controller
      */
     public function update(Request $request, $id)
     {
-        if(!empty(Input::get('menu_name')))
-            $name = Input::get('menu_name');
-        else $name = Input::get('name');
-        $url = Input::get('url');
-        $icon = Input::get('icon');
-        $type = Input::get('type');
+        if(!empty($request->input('menu_name')))
+            $name = $request->input('menu_name');
+        else $name = $request->input('name');
+        $url = $request->input('url');
+        $icon = $request->input('icon');
+        $type = $request->input('type');
 
         $menu = Menu::find($id);
         $menu->name = $name;
@@ -141,9 +141,9 @@ class MenuController extends Controller
      *
      * @return mixed
      */
-    public function update_hierarchy()
+    public function update_hierarchy(Request $request)
     {
-        $parents = Input::get('jsonData');
+        $parents = $request->input('jsonData');
         $parent_id = 0;
 
         for($i = 0; $i < count($parents); $i++) {

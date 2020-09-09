@@ -495,11 +495,11 @@ class Module extends Model
                 break;
             case 'Image':
                 if($update) {
-                    $var = $table->integer($field->colname)->change();
+                    $var = $table->string($field->colname)->nullable()->change();
                 } else {
-                    $var = $table->integer($field->colname);
+                    $var = $table->string($field->colname)->nullable();
                 }
-                if($field->defaultvalue != "" && is_numeric($field->defaultvalue)) {
+                if($field->defaultvalue != "" ) { // && is_numeric($field->defaultvalue))
                     $var->default($field->defaultvalue);
                 } else if($field->required) {
                     $var->default(NULL);
@@ -1015,30 +1015,35 @@ class Module extends Model
      * @param $module_name Module Name
      * @return array Returns Array of View Column Values for Given Module
      */
-    public static function getDDArray($module_name)
+    public static function getDDArray($module_name, $language_id = null)
     {
         $module = Module::where('name', $module_name)->first();
         if(isset($module)) {
             $model_name = ucfirst(Str::singular($module_name));
             if($model_name == "User" || $model_name == "Role" || $model_name == "Permission") {
-                // $model = "App\\" . ucfirst(Str::plural($module_name));
                 $model = "App\\" . ucfirst(Str::singular($module_name));
             } else {
-                // $model = "App\\Models\\" . ucfirst(Str::plural($module_name));
                 $model = "App\\Models\\" . ucfirst(Str::singular($module_name));
             }
             $result = $model::all();
             $out = array();
             foreach($result as $row) {
                 $view_col = $module->view_col;
-                $out[$row->id] = $row->{$view_col};
+                $value = Module::getNameLanguage($row->{$view_col}, $language_id);
+                $out[$row->id] = $value;
             }
             return $out;
         } else {
             return array();
         }
     }
-
+    public static function  getNameLanguage($name, $language_id = null){
+        $array_name = json_decode(str_replace('&quot;', '"', $name), true);
+        if(is_array($array_name) and !empty($array_name[$language_id])){
+            $array_name = $array_name[$language_id];
+        } else $array_name = $name;
+        return $array_name;
+    }
     /**
      * Create Validations rules array for Laravel Validations using Module Field Context / Metadata
      * Used in CrmAdmin generated Controllers for store and update.
@@ -1177,7 +1182,7 @@ class Module extends Model
         $ftypes = ModuleFieldTypes::getFTypes2();
 
         foreach($module->fields as $field) {
-            if(isset($request->{$field['colname']}) || isset($request->{$field['colname'] . "_hidden"})) {
+            if(isset($request[$field['colname']]) || isset($request->{$field['colname'] . "_hidden"})) {
 
                 switch($ftypes[$field['field_type']]) {
                     case 'Checkbox':
@@ -1214,14 +1219,16 @@ class Module extends Model
                         $row->{$field['colname']} = $request->{$field['colname']};
                         break;
                     case 'Dropdown':
+
                         if($request->{$field['colname']} == 0) {
                             if(Str::of($field['popup_vals'])->startsWith('@')) {
                                 $request->{$field['colname']} = DB::raw('NULL');
                             } else if(Str::of($field['popup_vals'])->startsWith('[')) {
-                                $request->{$field['colname']} = "";
-                            }
+                                $request->{$field['colname']} = $request->{$field['colname']};// if($field['colname'] == 'module_table') dd('DB::raw()');
+                            } else $request->{$field['colname']} = $request->{$field['colname']};
                         }
                         $row->{$field['colname']} = $request->{$field['colname']};
+
                         break;
                     case 'Multiselect':
                         // TODO: Bug fix

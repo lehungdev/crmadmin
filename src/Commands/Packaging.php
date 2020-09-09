@@ -23,10 +23,10 @@ use Lehungdev\Crmadmin\Helpers\LAHelper;
 class Packaging extends Command
 {
     // The command signature.
-    var $modelsInstalled = ["User", "Role", "Permission", "Employee", "Department", "Language", "Upload", "Organization", "Backup"];
+    var $modelsInstalled = ["User", "Role", "Permission", "Employee", "Department", "Language", "Property",  "Category", "Upload", "Organization", "Backup"];
 
     // The command description.
-    protected $signature = 'la:packaging';
+    protected $signature = 'crm:packaging';
 
     // Copy From Folder - Package Install Files
     protected $description = '[Developer Only] - Copy CrmAdmin-Dev files to package: "lehungdev/crmadmin"';

@@ -1,0 +1,50 @@
+<IfModule mod_rewrite.c>
+    <IfModule mod_negotiation.c>
+        Options -MultiViews -Indexes
+    </IfModule>
+
+    RewriteEngine On
+#    RewriteRule ^s([0-9]+)x([0-9]+)/uploads/([a-zA-z0-9\-]+)/(.+)\.(jpg|jpeg|png|gif|bmp|JPG|JPEG|PNG|GIF|BMP)$ /public/resize.php?width=$1&height=$2&image=/public/uploads/$3/$4.$5 [L]
+#    RewriteRule ^s([0-9]+)x([0-9]+)/([a-zA-z0-9\-]+)/([0-9\-]+)/(.+)\.(jpg|jpeg|png|gif|bmp|JPG|JPEG|PNG|GIF|BMP)$ /public/resize.php?width=$1&height=$2&image=/public/uploads/$3/20$4-$5.$6 [L]
+    RewriteRule ^s([0-9]+)x([0-9]+)/uploads/([a-zA-z0-9\-]+)/(.+)\.(jpg|jpeg|png|gif|bmp|JPG|JPEG|PNG|GIF|BMP)$ /public/resize.php?width=$1&height=$2&image=/public/uploads/$3/$4.$5 [L]
+    RewriteRule ^s([0-9]+)x([0-9]+)/([a-zA-z0-9\-]+)/([0-9\-]+)/(.+)\.(jpg|jpeg|png|gif|bmp|JPG|JPEG|PNG|GIF|BMP)$ /public/resize.php?width=$1&height=$2&image=/public/uploads/$3/20$4-$5.$6 [L]
+    RewriteRule ^s([0-9]+)x([0-9]+)/([0-9]+)/([a-zA-z0-9\-]+)/([0-9\-]+)/(.+)\.(jpg|jpeg|png|gif|bmp|JPG|JPEG|PNG|GIF|BMP)$ /public/resize.php?width=$1&height=$2&image=/public/uploads/$3/$4/20$5-$6.$7 [L]
+    # Handle Authorization Header
+    RewriteCond %{HTTP:Authorization} .
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+    # Redirect Trailing Slashes If Not A Folder...
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_URI} (.+)/$
+    RewriteRule ^ %1 [L,R=301]
+
+    # Handle Front Controller...
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^ index.php [L]
+
+
+</IfModule>
+
+<Files .env>
+    Order allow,deny
+    Deny from all
+</Files>
+
+<Files composer.json>
+Order allow,deny
+Deny from all
+</Files>
+
+<Files package.json>
+Order allow,deny
+Deny from all
+</Files>
+
+<Files resize1.php>
+Order allow,deny
+Deny from all
+</Files>
+RewriteEngine on
+RewriteCond %{REQUEST_URI} !^public
+RewriteRule ^(.*)$ public/$1 [L]

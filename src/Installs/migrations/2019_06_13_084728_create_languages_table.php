@@ -30,7 +30,7 @@ class CreateLanguagesTable extends Migration
                 "minlength" => 2,
                 "maxlength" => 120,
                 "required" => false,
-                "listing_col" => false
+                "listing_col" => true
             ], [
                 "colname" => "image",
                 "label" => "Hình ảnh",
@@ -48,7 +48,7 @@ class CreateLanguagesTable extends Migration
                 "unique" => true,
                 "defaultvalue" => "",
                 "minlength" => 1,
-                "maxlength" => 3,
+                "maxlength" => 250,
                 "required" => true,
                 "listing_col" => true
             ]

@@ -10,6 +10,7 @@
 namespace App\Http\Controllers\Api\__module_name__;
 
 use League\Fractal\TransformerAbstract;
+use Lehungdev\Crmadmin\Models\Module;
 __use_model_dropdown__
 __use_model_dropdown_children__
 
@@ -24,8 +25,17 @@ class __model_name__Transformer extends TransformerAbstract
 
     public function transform($results)
     {
-        $myNewArray = array_combine($this -> fields, array_map(function($value) use ($results) {
-            $value = $results[$value];
+        $module = Module::get('__module_name__');
+        $myNewArray = array_combine($this -> fields, array_map(function($field) use ($results, $module) {
+            if(json_decode($results[$field], true)){
+                $value = json_decode($results[$field], true);
+                if(!empty($module->fields[$field])){
+                    if(!empty($module->fields[$field]['lang_active'])){
+                        $value = $value[config('app.locale_id')];
+                    }
+                }
+            }
+            else $value = $results[$field];
             return  $value;
         }, $this -> fields));
         return $myNewArray;

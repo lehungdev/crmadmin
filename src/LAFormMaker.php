@@ -66,7 +66,7 @@ class LAFormMaker
 
             $field_type = ModuleFieldTypes::find($field_type);
 
-            $out = '<div class="form-group" id="' . $field_name . '">';
+            $out = '<div class="form-group col-md-6 col-sm-6 col-xs-12" id="' . $field_name . '">';
             $required_ast = "";
 
             if(!isset($params['class'])) {
@@ -274,7 +274,7 @@ class LAFormMaker
 
 
                     $popup_vals_str = $popup_vals;
-                    if(is_string($popup_vals) && Str::startsWith($popup_vals, '@') && $popup_vals == "@categories12") {
+                    if(is_string($popup_vals) && Str::startsWith($popup_vals, '@') && $popup_vals == "@categories123") {
                         $url = Request::url();
 //                        $url_array = explode("categories", $url);
                         $url_array = explode("/", $url);
@@ -552,24 +552,22 @@ class LAFormMaker
                     }
                     // Override the edit value
                     if(isset($row) && isset($row->$field_name)) {
-                        $default_val = $row->$field_name;
-                    }
-                    if(!is_numeric($default_val)) {
-                        $default_val = 0;
+                        $json_image = str_replace('&quot;', '"', $row->$field_name);
+                        $json_image = json_decode($json_image);
+                        if(!empty($json_image->path)){
+                            $path_image = $json_image->path;
+                            $default_val = $row->$field_name;
+                        } else {
+                            $default_val = null;
+                        }
+
+                    } else {
+                        $default_val = null;
                     }
                     $out .= Form::hidden($field_name, $default_val, $params);
-
-                    if($default_val != 0) {
-                        $upload = \App\Models\Upload::find($default_val);
-                    }
-                    if(isset($upload->id)) {
-                        $path = explode("/",$upload->path);
-                        $img_name = $path[count($path) - 1];
-                        $date_append = substr($img_name, 2, 15 );
-//                        $out .= "<a class='btn btn-default btn_upload_image hide' file_type='image' selecter='" . $field_name . "'>Upload <i class='fa fa-cloud-upload'></i></a>
-//                            <div class='uploaded_image'><img src='" . url("files/" . $upload->hash . DIRECTORY_SEPARATOR . $upload->name . "?s=150") . "'><i title='Remove Image' class='fa fa-times'></i></div>";
+                    if(!empty($default_val)) {
                         $out .= "<a class='btn btn-default btn_upload_image hide' file_type='image' selecter='" . $field_name . "'>Upload <i class='fa fa-cloud-upload'></i></a>
-                            <div class='uploaded_image'><img src='" . url("/s80x80/$upload->caption/$date_append/$upload->name") . "'><i title='Remove Image' class='fa fa-times'></i></div>";
+                            <div class='uploaded_image'><img src='" . url("/s80x80/$path_image") . "'><i title='Remove Image' class='fa fa-times'></i></div>";
 
                     } else {
                         $out .= "<a class='btn btn-default btn_upload_image' file_type='image' selecter='" . $field_name . "'>Upload <i class='fa fa-cloud-upload'></i></a>
@@ -925,6 +923,9 @@ class LAFormMaker
      * @param array $params Additional Parameters for Customization
      * @return string This return html string with field inputs
      */
+
+
+     ///////////////////////////////////////////////////////
     public static function input_lang($module, $field_name, $language = [], $default_val = null, $required2 = null, $class = 'form-control', $params = [])
     {
         // Check Field Write Aceess
@@ -932,25 +933,11 @@ class LAFormMaker
 
             $row = null;
             $default_language = config('app.locale_id');
-            if(isset($module->row[$language->id])) {
-                $row = $module->row[$language->id];
-                if(isset($module->row[$default_language]))
-                    $row_default = $module->row[$default_language];
-                else {
-                    $row_default = $row;
-                }
-            } else {
-                if(isset($module->row[$default_language]))
-                    $row_default = $module->row[$default_language];
-                else if (!empty($module->row))
-                    foreach ($module->row as $value_default) {
-                        $row_default = $value_default;
-                        break;
-                    }
-
+            $language_id = $language->id;
+            if(isset($module->row)) {
+                $row_default = $module->row;
+                $row = $module->row;
             }
-
-
 
             //print_r($module->fields);
             $label = $module->fields[$field_name]['label'];
@@ -962,7 +949,7 @@ class LAFormMaker
             $required = $module->fields[$field_name]['required'];
             $popup_vals = $module->fields[$field_name]['popup_vals'];
             $lang_active_vals = $module->fields[$field_name]['lang_active'];
-            $field_name_lang = $field_name.'['.$language->id.']';
+            $field_name_lang = $field_name.'['.$language_id.']';
 
             $class_active_lang = null;
 
@@ -972,12 +959,11 @@ class LAFormMaker
 
             $field_type = ModuleFieldTypes::find($field_type);
 
-            if($field_type->name == 'Image' or $field_type->name == 'Files'){
-                $field_name_lang = $field_name.'_lang_'.$language->id;
-            }
+            // if($field_type->name == 'Image' or $field_type->name == 'Files'){
+            //     $field_name_lang = $field_name.'_lang_'.$language_id;
+            // }
 
-
-            $out = '<div class="form-group" id="' . $field_name . '">';
+            $out = '<div class="form-group col-md-6 col-sm-6 col-xs-12" id="' . $field_name . '">';
             $required_ast = "";
 
             if(!isset($params['class'])) {
@@ -1010,48 +996,29 @@ class LAFormMaker
                 $params['required'] = $required;
                 $required_ast = "*";
             }
-
-//            if($language->id == 2 and $lang_active_vals != 1)
-//                dd($row_default->$field_name);
-
+            if(!empty($lang_active_vals)){
+                if(isset($row)){
+                    if(isset($row->$field_name)){
+                        if(!empty(json_decode($row->$field_name))) {
+                            $field_value = json_decode($row->$field_name);
+                            if(isset($field_value->$language_id)){
+                                $row->$field_name_lang = $field_value->$language_id;
+                            }
+                        } else {
+                            $row->$field_name_lang = $row->$field_name;
+                        }
+                    }
+                } else if(isset($row)){
+                    $row->$field_name_lang = null;
+                }
+            } else if(isset($row->$field_name)) {
+                $row->$field_name_lang = $row->$field_name;
+            }
             //Gán giá trị không thay đổi với ngôn ngữ mặc định
-            if($lang_active_vals != 1 and !empty($row_default->$field_name) ){ //$language->id != $default_language and
-
-                if($field_name != 'locale' and $field_name != 'local_parent')
-                    $default_val = $row_default->$field_name;
-                else if($field_name == 'locale') {
-                    $default_val = $language->id;
-                    $out .= '<input type="hidden" value="'.$language->id.'" name="locale['.$language->id.']">';
-                    if(!empty($module->row[$language->id]->id))
-                        $out .= '<input type="hidden" value="'.$module->row[$language->id]->id.'" name="id['.$language->id.']">';
-                } else //if($field_name == 'local_parent')
-                {
-                    $default_val = $row_default->id;
-                }
-                if($language->id != $default_language)
-                    $params['class'] = 'form-control active_lang';
-
-            }
-            else if($field_name == 'local_parent')  {
-                if(isset($row_default->id))
-                    $default_val = $row_default->id;
-                if($language->id != $default_language)
+            if($lang_active_vals != 1 ){ // and !empty($row_default->$field_name)
+                if($language_id != $default_language)
                     $params['class'] = 'form-control active_lang';
             }
-
-            //Trường hợp thêm mới
-            if(empty($row_default)) {
-                if($field_name == 'locale') {
-                    $default_val = $language->id;
-                    $params['class'] = 'form-control active_lang';
-                    $out .= '<input type="hidden" value="'.$language->id.'" name="locale['.$language->id.']">';
-                }
-                if($language->id != $default_language and $lang_active_vals != 1)
-                    $params['class'] = 'form-control active_lang';
-
-            }
-
-
 
             switch($field_type->name) {
                 case 'Address':
@@ -1062,13 +1029,27 @@ class LAFormMaker
                     }
 
                     // Override the edit value
-                    if(isset($row) && isset($row->$field_name)) {
-                        $default_val = $row->$field_name;
+                    if(isset($row) && isset($row->$field_name_lang)) {
+                        $default_val = $row->$field_name_lang;
                     }
 
                     $params['cols'] = 30;
                     $params['rows'] = 3;
-                    $out .= Form::textarea($field_name , $default_val, $params);
+                    if($language_id == $default_language){
+                        $params['id'] = ''.$field_name.'';
+                        $params['class'] = 'form-control map-input pac-target-input';
+                    } else {
+                        $params['class'] = 'form-control active_lang';
+                    }
+
+                    $out .= Form::text($field_name_lang , $default_val, $params);
+                    if($language_id == $default_language){
+                        $out .= '<input type="hidden" name="latitude" id="'.$field_name.'_latitude" value="'.(old("latitude") ?? "0").'" />';
+                        $out .= '<input type="hidden" name="longitude" id="'.$field_name.'_longitude" value="'.(old("longitude") ?? "0").'" />';
+                        $out .= '<div id="'.$field_name.'-map-container" class="mb-2" style="width:100%;height:360px; padding-top: 15px; "><div style="width: 100%; height: 100%; position: relative; overflow: hidden;" id="'.$field_name.'-map"></div></div>';
+                        $out .= '<script src="https://maps.googleapis.com/maps/api/js?key='. env("GOOGLE_MAPS_API_KEY") .'&libraries=places&callback=initialize&language=vi&region=VN" async defer></script>';
+                        $out .= '<script src="/la-assets/js/mapInput.js"></script>';
+                    }
                     break;
                 case 'Checkbox':
                     $out .= '<label for="' . $field_name . '">' . $label . $required_ast . ' :</label>';
@@ -1082,8 +1063,8 @@ class LAFormMaker
                         $default_val = $defaultvalue;
                     }
                     // Override the edit value
-                    if(isset($row) && isset($row->$field_name)) {
-                        $default_val = $row->$field_name;
+                    if(isset($row) && isset($row->$field_name_lang)) {
+                        $default_val = $row->$field_name_lang;
                     }
 
                     $out .= Form::checkbox($field_name_lang, $field_name, $default_val, $params);
@@ -1096,8 +1077,8 @@ class LAFormMaker
                         $default_val = $defaultvalue;
                     }
                     // Override the edit value
-                    if(isset($row) && isset($row->$field_name)) {
-                        $default_val = $row->$field_name;
+                    if(isset($row) && isset($row->$field_name_lang)) {
+                        $default_val = $row->$field_name_lang;
                     }
 
                     if($params['data-rule-maxlength'] != "" && $params['data-rule-maxlength'] != 0) {
@@ -1121,8 +1102,8 @@ class LAFormMaker
                         $default_val = $defaultvalue;
                     }
                     // Override the edit value
-                    if(isset($row) && isset($row->$field_name)) {
-                        $default_val = $row->$field_name;
+                    if(isset($row) && isset($row->$field_name_lang)) {
+                        $default_val = $row->$field_name_lang;
                     }
                     $dval = $default_val;
                     $is_null = "";
@@ -1149,8 +1130,8 @@ class LAFormMaker
                     }
 
                     // Override the edit value
-                    if(isset($row) && isset($row->$field_name)) {
-                        $default_val = $row->$field_name;
+                    if(isset($row) && isset($row->$field_name_lang)) {
+                        $default_val = $row->$field_name_lang;
                     }
 
                     $is_null = "";
@@ -1179,8 +1160,8 @@ class LAFormMaker
                         $default_val = $defaultvalue;
                     }
                     // Override the edit value
-                    if(isset($row) && isset($row->$field_name)) {
-                        $default_val = $row->$field_name;
+                    if(isset($row) && isset($row->$field_name_lang)) {
+                        $default_val = $row->$field_name_lang;
                     }
 
                     if($params['data-rule-maxlength'] != "" && $params['data-rule-maxlength'] != 0) {
@@ -1210,9 +1191,10 @@ class LAFormMaker
                     if($default_val == null) {
                         $default_val = $defaultvalue;
                     }
+
                     // Override the edit value
-                    if(isset($row) && $row->$field_name) {
-                        $default_val = $row->$field_name;
+                    if(isset($row) && $row->$field_name_lang) {
+                        $default_val = $row->$field_name_lang;
                     } else if($default_val == NULL || $default_val == "" || $default_val == "NULL") {
                         // When Adding Record if we dont have default value let's not show NULL By Default
                         if($popup_vals == '@users'){
@@ -1221,7 +1203,6 @@ class LAFormMaker
                             $default_val = "0";
                         }
                     }
-
                     // Bug here - NULL value Item still shows Not null in Form
                     if($default_val == NULL) {
                         $params['disabled'] = "";
@@ -1230,105 +1211,26 @@ class LAFormMaker
 
                     $popup_vals_str = $popup_vals;
                     $url = Request::url();
-//                        $url_array = explode("categories", $url);
                     $url_array = explode("/", $url);
-                    if(is_string($popup_vals) && Str::startsWith($popup_vals, '@') && $popup_vals == "@categories" && $url_array[count($url_array) - 1] != "categories") {
-
-                        if(is_numeric($url_array[count($url_array) - 1]) || ( is_numeric($url_array[count($url_array) - 2]) and  $url_array[count($url_array) - 1] == 'edit' )){
-
-                            $id_cat = is_numeric($url_array[count($url_array) - 2]) ? $url_array[count($url_array) - 2]:$url_array[count($url_array) - 1];
-
-                            if(is_numeric($url_array[count($url_array) - 2])) {
-                                $tb_name = substr( $url_array[count($url_array) - 3],  0, strlen($url_array[count($url_array) - 3]) - 5 );
-                                $item_info = \DB::table($tb_name)->where('id',$url_array[count($url_array) - 2])->first();
-//                                dd($item_info);
-                                $id_cat = $item_info->categories_id;
-                            }
-
-
-                        } else {
-                            //Lấy danh sách module
-                            $module_table = \DB::table('module_tables')->pluck('module_table', 'id');
-                            $module_table_item = array();
-                            foreach ($module_table as $key => $value) {
-
-                                if(strpos($url, $value)){
-                                    $module_table_item[] = $key;
-                                }
-
-                            }
-
-                            $id_cat = 0;
-
-                        }
-
+                    if($popup_vals == "@categories") { // && $url_array[count($url_array) - 1] != "categories"
                         // Get Module / Table Name
-                        $json = str_ireplace("@", "", $popup_vals);
-                        $table_name = strtolower(Str::plural($json));
-                        // Search Module
-                        $module = Module::getByTable($table_name);
-                        $module_table_item = array();
-                        if(!empty($id_cat)){
-                            $cat_info = \DB::table($table_name)->where('id',$id_cat)->get();
-                            $module_table_item[] = $cat_info[0]->module_table_id;
+                        $table_name = str_ireplace("@", "", $popup_vals);
 
-                            //Lấy danh sách module
-                            $module_table = \DB::table('module_tables')->pluck('module_table', 'id');
-                            foreach ($module_table as $key => $value) {
+                        if(isset($row) && !empty($row->getTable())){
+                            $module_table_item = $row->getTable();
+                        } else $module_table_item = $url_array[count($url_array) - 1];
 
-                                if($module_table[$cat_info[0]->module_table_id] == $value ){
-                                    $module_table_item[] = $key;
-                                }
+                        $allCategories = \App\Models\Category::with(['category', 'children'])->publish()->orderBy('parent', 'asc')->orderBy('hierarchy', 'asc')->get();
 
-                            }
-
-                        }
-
-                        if(!empty($module_table_item))
-                            $categories = \DB::table($table_name)->where("status", 1)->where("deleted_at", null)->whereIn('module_table_id',$module_table_item)->get();
-                        else
-                            $categories = \DB::table($table_name)->where("status", 1)->where("deleted_at", null)->get();
-
-                        $popup_vals = LAFormMaker::showCategories($categories, count($categories), $id_cat);
                         $result_name = array();
-                        if(empty($cat_info)){
-                            $result_name[0] = 'Chọn nhóm';
-                        } else {
-                            $result_name[0] = 'Chọn nhóm';
-                            if(!empty($popup_vals))
-                                $result_name[''.$cat_info[0]->name] = [];
-                            else $result_name[$cat_info[0]->id] = $cat_info[0]->name;
-                        }
-                        foreach ($popup_vals as $key =>$value ){
-                            $string = '';
-                            for($i=0; $i <= $value->level; $i++){
-                                $string = $string.'&nbsp; &nbsp;';
-                            }
-                            if($key < 1){
-                                $result_name[$value->id] = $string.$string.$value->name_cat;
-                            }
-                            else if (isset($value->stt) and strpos($value->stt, $popup_vals[$key-1]->stt) !== false and $value->stt != $popup_vals[$key-1]->stt ) {
-                                if($value->level > 1){
-                                    $result_name['&nbsp; &nbsp; &nbsp; '.$string.$popup_vals[$key-1]->name] = [];
-                                } else
-                                    $result_name[' '.$string.$popup_vals[$key-1]->name] = [];
-                                unset($result_name[$popup_vals[$key-1]->id]);
-                                $result_name[$value->id] =  ' '.$string.$string.$value->name_cat;
-                            } else {
-                                if($value->level > 1) {
-                                    $result_name[$value->id] = $string . $string . $value->name_cat;
-                                } else  $result_name[$value->id] = '&nbsp; '.$string . $string . $value->name_cat;
-                            }
-                            $string = '';
-                        }
-
-                        $popup_vals = $result_name;
-
+                        $result_name[0] = 'None';
+                        $popup_vals = LAFormMaker::showCategories($allCategories, $module_table_item, $language_id);
+                        // array_merge
+                        $popup_vals = array_merge($result_name, $popup_vals);
                     }
                     else {
                         if ($popup_vals != "") {
-//                            $popup_vals = LAFormMaker::process_values($popup_vals);
-                            $popup_vals = LAFormMaker::process_values($popup_vals, $default_language,$language->id);
+                            $popup_vals = LAFormMaker::process_values($popup_vals, $language_id);
                         } else {
                             $popup_vals = array();
                         }
@@ -1354,8 +1256,8 @@ class LAFormMaker
                         $default_val = $defaultvalue;
                     }
                     // Override the edit value
-                    if(isset($row) && $row->$field_name) {
-                        $default_val = $row->$field_name;
+                    if(isset($row) && $row->$field_name_lang) {
+                        $default_val = $row->$field_name_lang;
                     } else if($default_val == NULL || $default_val == "" || $default_val == "NULL") {
                         // When Adding Record if we dont have default value let's not show NULL By Default
                         $default_val = "0";
@@ -1368,7 +1270,7 @@ class LAFormMaker
 
                     $popup_vals_str = $popup_vals;
                     if($popup_vals != "") {
-                        $popup_vals = LAFormMaker::process_values($popup_vals, $default_language, $language->id);
+                        $popup_vals = LAFormMaker::process_values($popup_vals, $language_id);
                     } else {
                         $popup_vals = array();
                     }
@@ -1386,8 +1288,8 @@ class LAFormMaker
                         $default_val = $defaultvalue;
                     }
                     // Override the edit value
-                    if(isset($row) && isset($row->$field_name)) {
-                        $default_val = $row->$field_name;
+                    if(isset($row) && isset($row->$field_name_lang)) {
+                        $default_val = $row->$field_name_lang;
                     }
 
                     $params['data-rule-email'] = "true";
@@ -1400,8 +1302,8 @@ class LAFormMaker
                         $default_val = $defaultvalue;
                     }
                     // Override the edit value
-                    if(isset($row) && isset($row->$field_name)) {
-                        $default_val = $row->$field_name;
+                    if(isset($row) && isset($row->$field_name_lang)) {
+                        $default_val = $row->$field_name_lang;
                     }
                     if(!is_numeric($default_val)) {
                         $default_val = 0;
@@ -1427,8 +1329,8 @@ class LAFormMaker
                         $default_val = $defaultvalue;
                     }
                     // Override the edit value
-                    if(isset($row) && isset($row->$field_name)) {
-                        $default_val = $row->$field_name;
+                    if(isset($row) && isset($row->$field_name_lang)) {
+                        $default_val = $row->$field_name_lang;
                     }
                     if(is_array($default_val)) {
                         $default_val = json_encode($default_val);
@@ -1471,8 +1373,8 @@ class LAFormMaker
                         $default_val = $defaultvalue;
                     }
                     // Override the edit value
-                    if(isset($row) && isset($row->$field_name)) {
-                        $default_val = $row->$field_name;
+                    if(isset($row) && isset($row->$field_name_lang)) {
+                        $default_val = $row->$field_name_lang;
                     }
 
 //                    if($params['data-rule-maxlength'] != "" && $params['data-rule-maxlength'] != 0) {
@@ -1494,44 +1396,42 @@ class LAFormMaker
                         $default_val = $defaultvalue;
                     }
                     // Override the edit value
-                    if(isset($row) && isset($row->$field_name)) {
-                        $default_val = $row->$field_name;
+                    if(isset($row) && isset($row->$field_name_lang)) {
+                        $default_val = $row->$field_name_lang;
                     }
                     $params['class'] = 'htmlbox';
                     $out .= Form::textarea($field_name_lang, $default_val, $params);
                     break;
                 case 'Image':
-                    $out .= '<label for="' . $field_name . '" style="display:block;">' . $label . $required_ast . ' :</label>';
-
+                    $out .= '<label for="' . $field_name .'_'. $language_id . '" style="display:block;">' . $label . $required_ast . ' :</label>';
                     if($default_val == null) {
                         $default_val = $defaultvalue;
                     }
                     // Override the edit value
-                    if(isset($row) && isset($row->$field_name)) {
-                        $default_val = $row->$field_name;
+                    if(isset($row) && isset($row->$field_name_lang)) {
+                        $json_image = str_replace('&quot;', '"', $row->$field_name_lang);
+                        $json_image = json_decode($json_image);
+                        if(!empty($json_image->path)){
+                            $path_image = $json_image->path;
+                            $default_val = $row->$field_name_lang;
+                        } else {
+                            $default_val = null;
+                        }
+                    } else {
+                        $default_val = null;
                     }
-                    if(!is_numeric($default_val)) {
-                        $default_val = 0;
-                    }
-                    $params['class'] = 'form-control '.$field_name_lang;
-                    $out .= Form::hidden($field_name_lang, $default_val, $params);
 
-                    if($default_val != 0) {
-                        $upload = \App\Models\Upload::find($default_val);
-                    }
-                    if(isset($upload->id)) {
-                        $path = explode("/",$upload->path);
-                        $img_name = $path[count($path) - 1];
-                        $date_append = substr($img_name, 2, 15 );
-//                        $out .= "<a class='btn btn-default btn_upload_image hide' file_type='image' selecter='" . $field_name . "'>Upload <i class='fa fa-cloud-upload'></i></a>
-//                            <div class='uploaded_image'><img src='" . url("files/" . $upload->hash . DIRECTORY_SEPARATOR . $upload->name . "?s=150") . "'><i title='Remove Image' class='fa fa-times'></i></div>";
-                        $out .= "<a class='btn btn-default btn_upload_image hide' file_type='image' selecter='" . $field_name_lang . "'>Upload <i class='fa fa-cloud-upload'></i></a>
-                            <div class='uploaded_image'><img src='" . url("/s80x80/$upload->caption/$date_append/$upload->name") . "'><i title='Remove Image' class='fa fa-times'></i></div>";
+                    $params['class'] = 'form-control '.$field_name_lang;
+                    $out .= Form::hidden($field_name .'_'.$language_id, $default_val, $params);
+                    if(!empty($default_val)) {
+                        $out .= "<a class='btn btn-default btn_upload_image hide' file_type='image' selecter='" . $field_name .'_'.$language_id . "'>Upload <i class='fa fa-cloud-upload'></i></a>
+                            <div class='uploaded_image'><img src='" . url("/s80x80/$path_image") . "'><i title='Remove Image' class='fa fa-times'></i></div>";
 
                     } else {
-                        $out .= "<a class='btn btn-default btn_upload_image' file_type='image' selecter='" . $field_name_lang . "'>Upload <i class='fa fa-cloud-upload'></i></a>
+                        $out .= "<a class='btn btn-default btn_upload_image' file_type='image' selecter='" . $field_name .'_'.$language_id . "'>Upload <i class='fa fa-cloud-upload'></i></a>
                             <div class='uploaded_image hide'><img src=''><i title='Remove Image' class='fa fa-times'></i></div>";
                     }
+
 
                     break;
                 case 'Integer':
@@ -1551,8 +1451,8 @@ class LAFormMaker
                         $default_val = $defaultvalue;
                     }
                     // Override the edit value
-                    if(isset($row) && isset($row->$field_name)) {
-                        $default_val = $row->$field_name;
+                    if(isset($row) && isset($row->$field_name_lang)) {
+                        $default_val = $row->$field_name_lang;
                     }
                     // $params['min'] = "0"; // Required for Non-negative numbers
                     $out .= Form::number($field_name_lang, $default_val, $params);
@@ -1564,8 +1464,8 @@ class LAFormMaker
                         $default_val = $defaultvalue;
                     }
                     // Override the edit value
-                    if(isset($row) && isset($row->$field_name)) {
-                        $default_val = $row->$field_name;
+                    if(isset($row) && isset($row->$field_name_lang)) {
+                        $default_val = $row->$field_name_lang;
                     }
 
                     $out .= Form::text($field_name_lang, $default_val, $params);
@@ -1586,12 +1486,12 @@ class LAFormMaker
                         }
                     }
                     // Override the edit value
-                    if(isset($row) && isset($row->$field_name)) {
-                        $default_val = json_decode($row->$field_name);
+                    if(isset($row) && isset($row->$field_name_lang)) {
+                        $default_val = json_decode($row->$field_name_lang);
                     }
 
                     if($popup_vals != "") {
-                        $popup_vals = LAFormMaker::process_values($popup_vals, $default_language, $language->id);
+                        $popup_vals = LAFormMaker::process_values($popup_vals, $language_id);
                     } else {
                         $popup_vals = array();
                     }
@@ -1605,8 +1505,8 @@ class LAFormMaker
                         $default_val = $defaultvalue;
                     }
                     // Override the edit value
-                    if(isset($row) && isset($row->$field_name)) {
-                        $default_val = $row->$field_name;
+                    if(isset($row) && isset($row->$field_name_lang)) {
+                        $default_val = $row->$field_name_lang;
                     }
 
                     $out .= Form::text($field_name_lang, $default_val, $params);
@@ -1627,12 +1527,12 @@ class LAFormMaker
                         $default_val = $defaultvalue;
                     }
                     // Override the edit value
-                    if(isset($row) && isset($row->$field_name)) {
-                        $default_val = $row->$field_name;
+                    if(isset($row) && isset($row->$field_name_lang)) {
+                        $default_val = $row->$field_name_lang;
                     }
 
                     if(Str::startsWith($popup_vals, '@')) {
-                        $popup_vals = LAFormMaker::process_values($popup_vals, $default_language, $language->id);
+                        $popup_vals = LAFormMaker::process_values($popup_vals, $language_id);
                         $out .= '<div class="radio">';
                         foreach($popup_vals as $key => $value) {
                             $sel = false;
@@ -1655,7 +1555,7 @@ class LAFormMaker
                             if($default_val != "" && $default_val == $value) {
                                 $sel = true;
                             }
-                            $out .= '<label>' . (Form::radio($field_name_lang, $value, $sel)) . ' ' . $value . ' </label>';
+                            $out .= '<label>' . (Form::radio($field_name_lang, $value, $sel)) . ' ' . $value . '</label>';
                         }
                         $out .= '</div>';
                         break;
@@ -1667,8 +1567,8 @@ class LAFormMaker
                         $default_val = $defaultvalue;
                     }
                     // Override the edit value
-                    if(isset($row) && isset($row->$field_name)) {
-                        $default_val = $row->$field_name;
+                    if(isset($row) && isset($row->$field_name_lang)) {
+                        $default_val = $row->$field_name_lang;
                     }
                     $out .= Form::text($field_name_lang, $default_val, $params);
                     break;
@@ -1685,8 +1585,8 @@ class LAFormMaker
                     unset($params['placeholder']);
 
                     // Override the edit value
-                    if(isset($row) && isset($row->$field_name)) {
-                        $default_val = json_decode($row->$field_name);
+                    if(isset($row) && isset($row->$field_name_lang)) {
+                        $default_val = json_decode($row->$field_name_lang);
                     }
 
                     if($default_val == null) {
@@ -1703,7 +1603,7 @@ class LAFormMaker
                             $default_val = array();
                         }
                     }
-                    $default_val = LAFormMaker::process_values($default_val, $default_language, $language->id);
+                    $default_val = LAFormMaker::process_values($default_val, $language_id);
                     $out .= Form::select($field_name_lang . "[]", $default_val, $default_val, $params);
                     break;
                 case 'Textarea':
@@ -1721,8 +1621,8 @@ class LAFormMaker
                         $default_val = $defaultvalue;
                     }
                     // Override the edit value
-                    if(isset($row) && isset($row->$field_name)) {
-                        $default_val = $row->$field_name;
+                    if(isset($row) && isset($row->$field_name_lang)) {
+                        $default_val = $row->$field_name_lang;
                     }
 
                     $out .= Form::textarea($field_name_lang, $default_val, $params);
@@ -1735,8 +1635,8 @@ class LAFormMaker
                         $default_val = $defaultvalue;
                     }
                     // Override the edit value
-                    if(isset($row) && isset($row->$field_name)) {
-                        $default_val = $row->$field_name;
+                    if(isset($row) && isset($row->$field_name_lang)) {
+                        $default_val = $row->$field_name_lang;
                     }
 
                     $out .= Form::text($field_name_lang, $default_val, $params);
@@ -1753,8 +1653,8 @@ class LAFormMaker
                         $default_val = $defaultvalue;
                     }
                     // Override the edit value
-                    if(isset($row) && isset($row->$field_name)) {
-                        $default_val = $row->$field_name;
+                    if(isset($row) && isset($row->$field_name_lang)) {
+                        $default_val = $row->$field_name_lang;
                     }
 
                     $params['cols'] = 30;
@@ -1775,8 +1675,8 @@ class LAFormMaker
                         $default_val = $defaultvalue;
                     }
                     // Override the edit value
-                    if(isset($row) && isset($row->$field_name)) {
-                        $default_val = $row->$field_name;
+                    if(isset($row) && isset($row->$field_name_lang)) {
+                        $default_val = $row->$field_name_lang;
                     }
 
                     $params['cols'] = 30;
@@ -1793,8 +1693,8 @@ class LAFormMaker
                         $default_val = $defaultvalue;
                     }
                     // Override the edit value
-                    if(isset($row) && isset($row->$field_name)) {
-                        $default_val = $row->$field_name;
+                    if(isset($row) && isset($row->$field_name_lang)) {
+                        $default_val = $row->$field_name_lang;
                     }
 
                     $params['data-rule-url'] = "true";
@@ -1809,8 +1709,8 @@ class LAFormMaker
                         $default_val =  Auth::user()->id;
                     }
                     // Override the edit value
-                    if(isset($row) && isset($row->$field_name)) {
-                        $default_val = $row->$field_name;
+                    if(isset($row) && isset($row->$field_name_lang)) {
+                        $default_val = $row->$field_name_lang;
                     }
 
                     $out .= Form::hidden($field_name_lang, $default_val, $params);
@@ -1836,8 +1736,8 @@ class LAFormMaker
                     }
 
                     // Override the edit value
-                    if(isset($row) && $row->$field_name) {
-                        $default_val = $row->$field_name;
+                    if(isset($row) && $row->$field_name_lang) {
+                        $default_val = $row->$field_name_lang;
                     } else if($default_val == NULL || $default_val == "" || $default_val == "NULL") {
                         // When Adding Record if we dont have default value let's not show NULL By Default
                         $default_val = "0";
@@ -1850,7 +1750,7 @@ class LAFormMaker
 
                     $popup_vals_str = $popup_vals;
                     if($popup_vals != "") {
-                        $popup_vals = LAFormMaker::process_values($popup_vals, $default_language, $language->id);
+                        $popup_vals = LAFormMaker::process_values($popup_vals, $language_id);
                     } else {
                         $popup_vals = array();
                     }
@@ -1875,7 +1775,7 @@ class LAFormMaker
      * get data from module / table whichever is found if starts with '@'
      **/
     // $values = LAFormMaker::process_values($data);
-    public static function process_values($json, $language_default = null, $language_id = null)
+    public static function process_values($json, $language_id = null)
     {
         $out = array();
         // Check if populated values are from Module or Database Table
@@ -1885,9 +1785,9 @@ class LAFormMaker
             $json = str_ireplace("@", "", $json);
             $table_name = strtolower(Str::plural($json));
             // Search Module
-            $module = Module::getByTable($table_name, $language_default, $language_id);
+            $module = Module::getByTable($table_name);
             if(isset($module->id)) {
-                $out = Module::getDDArray($module->name, $language_default, $language_id); // if($table_name == 'properties_cats' and $language_id == 2 ) dd($out);
+                $out = Module::getDDArray($module->name, $language_id); // if($table_name == 'properties_cats' and $language_id == 2 ) dd($out);
             } else {
                 // Search Table if no module found
                 if(Schema::hasTable($table_name)) {
@@ -1923,7 +1823,8 @@ class LAFormMaker
                         if($view_col != "") {
                             // retrieve rows of table
                             foreach($result as $row) {
-                                $out[$row->id] = $row->$view_col;
+                                $array_name = LAFormMaker::getNameLanguage($row->$view_col);
+                                $out[$row->id] = $array_name;
                             }
                         } else {
                             // Failed to find view column name
@@ -1939,6 +1840,7 @@ class LAFormMaker
             $array = json_decode($json);
             if(is_array($array)) {
                 foreach($array as $value) {
+                    $value = LAFormMaker::getNameLanguage($value);
                     $out[$value] = $value;
                 }
             } else {
@@ -1946,13 +1848,21 @@ class LAFormMaker
             }
         } else if(is_array($json)) {
             foreach($json as $value) {
+                $value = LAFormMaker::getNameLanguage($value);
                 $out[$value] = $value;
             }
         }
+        // dd($out);
         return $out;
     }
 
-
+    public static function  getNameLanguage($name, $language_id = null){
+        $array_name = json_decode(str_replace('&quot;', '"', $name), true);
+        if(is_array($array_name) and isset($language_id) and  !empty($array_name[$language_id])){
+            $array_name = $array_name[$language_id];
+        } else $array_name = $name;
+        return $array_name;
+    }
 
     /**
      * lấy dữ liệu Categories theo cấp con
@@ -1963,95 +1873,58 @@ class LAFormMaker
      * @param $stt Cấp
      * @param $idchar id cha
      **/
-    public static function  showCategories($categories, $count, $parent_id = 0, $char = '' , $result = array(), $level = 0, $stt1 = 0, $idchar = '', $hierarchy_string = '', $hierarchy = '',  $dem = 0, $children = array()) //, $cate_child = array()
+    public static function  showCategories($allCategories, $module_table_item = null, $language_id = null)
     {
-        foreach ($categories as $key => $item)
-        {
-
-            if($level == 0){
-                $idchar = $parent_id;
-                $hierarchy_string = $parent_id;
-//                if ($item->parent == null ) {
-//                    $item->level = $level;
-//                    $item->name_cat = $char . $item->name;
-//                    $item->stt = ($item->id < 10) ? '0'.$parent_id : $parent_id;
-//                    $result[$item->id] = $item;
-//                }
-            }
-
-            if ($item->parent == $parent_id  )
-            {
-                $dem = $dem + 1;
-                $idchar_array = explode(".", $idchar);
-                $hierarchy_string_array = explode(",", $hierarchy_string);
-                $hierarchy1 = '';
-
-                for ($i=0; $i<= $level; $i++){
-                    $hierarchy_item = ($hierarchy_string_array[$i] < 10) ? '0'.$hierarchy_string_array[$i] : $hierarchy_string_array[$i];
-                    if($i==0){
-                        $idchar         = $idchar_array[0];
-                        $hierarchy1   = $hierarchy_item;
-                        $hierarchy    = $hierarchy_string_array[0];
+        $arrayLevelCat = [];
+        foreach ($allCategories as $item){
+            if(empty($item->category) and $item->module_table == $module_table_item || $module_table_item == 'categories' ){
+                if(!empty( $item->children)){
+                    $array_name = LAFormMaker::getNameLanguage($item->name, $language_id);
+                    ////
+                    if($module_table_item == 'categories'){
+                        $arrayLevelCat[$item->id] = ''.$array_name;
+                    } else{
+                        $arrayLevelCat[''.$array_name] = [];
                     }
-                    else {
-                        $idchar         = $idchar.'.'.$idchar_array[$i];
-                        $hierarchy1   = $hierarchy1.','.$hierarchy_item;
-                        $hierarchy    = $hierarchy.','.$hierarchy_string_array[$i];
+                    foreach ($item->children as $item_children_lv1){
+                        if(!empty($item_children_lv1->publish)){
+                            $item_name_lv1 = LAFormMaker::getNameLanguage($item_children_lv1->name, $language_id);
+                            $i = 0;
+                            foreach ($allCategories as $item_children_lv2){
+                                if($item_children_lv2->parent == $item_children_lv1->id and !empty($item_children_lv2->publish)){
+                                    $i++;
+                                    if($i == 1) {
+                                        if($module_table_item == 'categories'){
+                                            $arrayLevelCat[$item_children_lv1->id] = '&#187; &#187; &nbsp; &nbsp;'.$item_name_lv1;
+                                        } else{
+                                            $arrayLevelCat['&#187; &#187; &nbsp; &nbsp;'.$item_name_lv1] = [];
+                                        }
+                                    }
+                                    $item_name_lv2 = LAFormMaker::getNameLanguage($item_children_lv2->name, $language_id);
+
+                                    $arrayLevelCat[$item_children_lv2->id] = '&#187; &#187; &#187; &#187; &nbsp; &nbsp;'.$item_name_lv2;
+
+                                    foreach ($allCategories as $item_children_lv3){
+                                        if($item_children_lv3->parent == $item_children_lv2->id and !empty($item_children_lv3->publish)){
+                                            $item_name_lv3 = LAFormMaker::getNameLanguage($item_children_lv3->name, $language_id);
+                                            $arrayLevelCat[$item_children_lv3->id] = '&#187; &#187; &#187; &#187; &#187; &#187; &nbsp; &nbsp;'.$item_name_lv3;
+                                        }
+                                    }
+                                }
+                                if($i>0 and $item_children_lv2->parent != $item_children_lv1->id) break;
+                            }
+                            if($i == 0){
+                                $arrayLevelCat[$item_children_lv1->id] = '&#187; &#187; &nbsp; &nbsp;'.$item_name_lv1;
+                            }
+                        }
                     }
+                } else {
+                    $arrayLevelCat[$item->id] = '<i class="fa fa-caret-down"></i>'.$item->name;
                 }
-
-                $idchar = $idchar.'.'.$item->id;
-                $hierarchy1 = ($item->hierarchy < 10) ? $hierarchy1.',0'.$item->hierarchy : $hierarchy1.','.$item->hierarchy ;
-                $hierarchy = $hierarchy.','.$item->hierarchy;
-
-                $item->id_parent    = $idchar;
-                $item->name_cat      = $char.$item->name;
-                $item->stt          = $hierarchy1;
-                $item->level        = $level;
-
-                // Xóa chuyên mục đã lặp
-                unset($categories[$key]);
-
-
             }
-//else {
-//                $item->level        = $level;
-//                $item->name_cat     = $char.$item->name;
-//                $item->stt    = $item->hierarchy;
-//                $result[$item->id] = $item;
-//            }
-            if(!empty($item->id_parent)){
-                $result[$item->id] = $item;
-                $stt1 = $stt1+1;
-            }
-            if ($item->parent == $parent_id)
-            {
-                LAFormMaker::showCategories($categories, $count, $item->id, $char, $result, $level + 1, $stt1, $idchar, $hierarchy, $hierarchy,   $dem, $children); // . '&nbsp; &nbsp; &nbsp; &nbsp; '
-            }
-        }
-        if( $level == 0){
-            $result_sort = array();
-            foreach ($result as $key => $row)
-            {
-                    $result_sort[$key] = $row->stt;
-            }
-            array_multisort($result_sort, SORT_ASC, $result);
-            //return $result;
-            $result_name = array();
-            $result_name[] = 'Chọn nhóm';
-            foreach ($result as $key=>$value) {
-                if(isset($value->name_cat))
-                    $result_name[$value->id] = $value->name_cat;
-                else $result_name[$value->id] = $value->name;
-            }
-//            foreach ($result as $ke=>$val) {
-//                echo  $val->name_cat.'-'.$val->stt.'<br/>';
-//            }
-//            return $result_name;
-            return $result;
-        }
-
-
+            if(!empty($item->category)) break;
+        };
+        return $arrayLevelCat;
     }
 
 
@@ -2081,7 +1954,7 @@ class LAFormMaker
             }
 
             $out = '<div class="form-group"  id="' . $field_name . '">';
-            $out .= '<label for="' . $field_name . '" class="col-md-4 col-sm-6 col-xs-6">' . $label . ' :</label>';
+            $out .= '<label for="' . $field_name . '" class="col-md-6 col-sm-6 col-xs-12">' . $label . ' :</label>';
 
             $value = $row->$field_name;
 

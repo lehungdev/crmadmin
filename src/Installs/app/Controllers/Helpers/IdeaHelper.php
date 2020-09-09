@@ -4,12 +4,13 @@ namespace App\Http\Controllers\Helpers;
 
 use DB;
 use Log;
-use Dwij\Laraadmin\Models\Module;
-use Dwij\Laraadmin\Models\ModuleFields;
+use Lehungdev\Crmadmin\Models\Module;
+use Lehungdev\Crmadmin\Models\ModuleFields;
 use App\Models\Category;
 use App\Models\Categories_article;
 use App\Models\Upload;
 use App\Models\Language;
+use Collective\Html\FormFacade;
 // use Stichoza\GoogleTranslate\TranslateClient;
 use Stichoza\GoogleTranslate\GoogleTranslate;
 class IdeaHelper
@@ -29,88 +30,54 @@ class IdeaHelper
 
         $listing_cols = ModuleFields::getModuleFields('Categories');
 
-        //Data langgue
-        $menu_lang = array_filter($cat_all, function($cat_item) use ($menu,  $module_table_id) {
-            if($cat_item['local_parent'] == $menu['id'] or $cat_item['id'] ==  $menu['id']){
-                return $cat_item;
-            }
-        });
-
-        //Lọc dữ liệu cần theo ModuleFields
-        foreach ($menu_lang as $key => $value){
-            $value_true = array();
-            foreach ($listing_cols as $key_fields => $module_fields_item){
-                //Xử lý lấy ảnh khi type = image
-                if(!empty($value[$key_fields]) and !empty($module_fields_item) and $module_fields_item->field_type == 12){
-                    $value_true[$key_fields] = $value[$key_fields];
-                    $value_true[$key_fields.'_img'] = IdeaHelper::pathImage($value[$key_fields], '50x50');
-                } else if(!empty($module_fields_item))
-                    $value_true[$key_fields] = $value[$key_fields];
-            }
-            $value_true['id'] = $value['id'];
-            if(count($menu_lang) == 1)
-                $value_true['local_parent'] = $value['id'];
-                $value_true['slug'] = null;
-            $menu_lang_locale[$value_true['locale']] = $value_true;
-            unset($cat_all[$key]);
-        }
         //Lấy danh sách nhóm con
-        $childrens = array_filter($cat_all, function($cat_item) use ($menu, $module_table_id) {
-            if($cat_item['parent'] == $menu['id'] and !empty($module_table_id) and $cat_item['module_table_id'] ==  $module_table_id){
-                return $cat_item;
-            } else if($cat_item['parent'] == $menu['id']){
-                return $cat_item;
-            }
-        });
-
+        if(isset($menu['children'])){
+            $childrens = $menu['children'];
+        } else {
+            $childrens = [];
+        }
         //Xử lý url cat table
-        if(!empty($module_tables)){
-            if(  $module_tables[$menu['module_table_id']] == 'real_estates'){
-                $module_table_url  = $module_tables[$menu['module_table_id']].'/' . $menu['id'];
-            }
-            else {
-                if(count($childrens) > 0 ||  $menu['module_table_id'] == null) {
-                    $module_table_url  = $module_tables[$menu['module_table_id']];
+        if(!empty($menu['module_table'])){
+            $module_table_url  = $menu['module_table'].'/' . $menu['id'];
+            if(isset($menu['children'])){
+                for($i = 0; $i < count($childrens); $i++){
+                    $childrens[$i]['module_table'] = $menu['module_table'];
                 }
-                else $module_table_url  = $module_tables[$menu['module_table_id']].'/'. $menu['id'];
-
             }
         } else {
-            if($menu['module_table_id'] == 1 )
-                $module_table_url  = $url.'/' . $menu['id'];
-            else {
-                if($url == 'categories')
-                    $module_table_url  = $url;
-                else $module_table_url  = $url.'/' . $menu['id'];
-            }
+            $module_table_url  = $url.'/' . $menu['id'];
         }
 
         //////////////////////////////////////
-        $name_cat = !empty($menu_lang_locale[config('app.locale_id')])? $menu_lang_locale[config('app.locale_id')]['name']: $menu['name'];
+        if(!empty(json_decode($menu['name']))){
+            $name_cat = json_decode($menu['name'], true);
+            $name_cat = $name_cat[config('app.locale_id')];
+        } else $name_cat = $menu['name'];
+
         if(count($childrens) > 0)
             $editing1 = '<a id="display_sub'.$menu['id'].'" class="display_sub btn-success btn pull-right" style="display: block;"><i class="fa fa-minus"></i></a>';
         else $editing1 = '';
 
 
-        $editing = \Collective\Html\FormFacade::open(['route' => [config('laraadmin.adminRoute').'.categories.destroy', $menu['id']], 'method' => 'delete', 'style'=>'display:inline']);
+        $editing = FormFacade::open(['route' => [config('crmadmin.adminRoute').'.categories.destroy', $menu['id']], 'method' => 'delete', 'style'=>'display:inline']);
         $editing .= $editing1;
         $editing .= '<button class="btn btn-xs btn-danger pull-right"><i class="fa fa-times"></i></button>';
         $editing .= '<a menu_id="'.$menu['id'].'" status="2" class="addModuleMenu btn btn-danger pull-right"><i class="fa fa-minus"></i></a>';
-        $editing .= \Collective\Html\FormFacade::close();
+        $editing .= FormFacade::close();
 
-        $editing .= '<a class="editMenuBtn btn btn-xs btn-success pull-right" menu_id="'.$menu['id'].'" info=\''.json_encode($menu_lang_locale, JSON_UNESCAPED_UNICODE ).'\'><i class="fa fa-edit"></i></a>';
+        $editing .= '<a class="editMenuBtn btn btn-xs btn-success pull-right" menu_id="'.$menu['id'].'" info=\''.json_encode($menu ?? '', JSON_UNESCAPED_UNICODE ).'\'><i class="fa fa-edit"></i></a>';
 
 
 
         $str = '<li class="dd-item dd3-item" data-id="'.$menu['id'].'">
-			        <div class="dd-handle dd3-handle"></div>
-			        <div class="dd3-content"><a href="' . url(config('laraadmin.adminRoute') . '/'.$module_table_url) . '" ><i class="fa '.$menu['icon'].'"></i> '.$name_cat.' '.$editing.'</a></div>'; //url(config('ideaadmin.adminRoute') . '/categories/' . $menu['id'])
+			        <div class="dd-handle dd3-handle"><i class="fa '.$menu['icon'].'"></i></div>
+			        <div class="dd3-content"><a href="' . url(config('crmadmin.adminRoute') . '/'.$module_table_url) . '" > '.$name_cat.' '.$editing.'</a></div>';
 
             if(count($childrens) > 0) {
                 $str .= '<ol class="dd-list" style="display: block;">';
                     foreach($childrens as $children) {
-                        if($children['locale'] == config('app.locale_id') ){
-                             $menu_show1 = IdeaHelper::print_menu_editor($children, 'categories', $cat_all, $module_tables);
+                        if(!empty($children->publish)){
+                            $menu_show1 = IdeaHelper::print_menu_editor($children, 'categories', $cat_all, $module_tables);
                             $str .= $menu_show1['string'];
                         }
                     }
@@ -490,15 +457,12 @@ class IdeaHelper
      * @param   $size image
      * */
 
-    public static function pathImage($id, $size){
-        $img = Upload::find($id);
-        if(!empty($img)){
-            $path = explode("/",$img->path);
-            $img_name = $path[count($path) - 1];
-            $date_append = substr($img_name, 2, 15 );
-            return url("/s".$size."/$img->caption/$date_append/$img->name");
-        } else return '';
-
+    public static function pathImage($value, $size){ //dd($value);
+        $json_path = json_decode($value);
+        $path = $json_path->path;
+        if(!empty($path)){
+            return url('/s'.$size.''.$path);
+        }
     }
 
     /*

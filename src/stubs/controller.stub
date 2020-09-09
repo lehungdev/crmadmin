@@ -22,6 +22,7 @@ use Lehungdev\Crmadmin\Models\Module;
 use Lehungdev\Crmadmin\Models\ModuleFields;
 
 use App\Models\__model_name__;
+use App\Models\Language;
 
 class __controller_class_name__ extends Controller
 {
@@ -35,6 +36,7 @@ class __controller_class_name__ extends Controller
     public function index()
     {
         $module = Module::get('__module_name__');
+        $pvd_language = Language::get();
 
         if(Module::hasAccess($module->id)) {
             return View('crm.__view_folder__.index', [
@@ -66,6 +68,36 @@ class __controller_class_name__ extends Controller
     public function store(Request $request)
     {
         if(Module::hasAccess("__module_name__", "create")) {
+
+            $module = Module::get('__module_name__');
+            $pvd_language = Language::get();
+
+            foreach($module->fields as $key_field => $field){
+                if(!empty($field['lang_active']) and isset($request->$key_field)){
+                    if($field['label'] == 'Image'){
+                        $value_image = [];
+                        foreach ($pvd_language as $key_lang => $value_lang){
+                            $field_image = $key_field.'_'.$value_lang->id;
+                            $value_image[$value_lang->id] = $request->$field_image;
+                            unset($request->$field_image);
+                        }
+                        $request->merge([$key_field=>$value_image]);
+                    } else {
+                        $request->merge([$key_field=>json_encode($request->$key_field, JSON_UNESCAPED_UNICODE)]);
+                    }
+
+                } else {
+                    if(isset($request->$key_field)){
+                        $request->merge([$key_field=>$request->$key_field[config('app.locale_id')]]) ;
+                    } else {
+                        if($field['label'] == 'Image'){
+                            $field_image = $key_field.'_'.config('app.locale_id');
+                            $request->merge([$key_field=>$request->$field_image]) ;
+                            unset($request->$field_image);
+                        } else $request->merge([$key_field=>$request->$key_field]);
+                    }
+                }
+            }
 
             $rules = Module::validateRules("__module_name__", $request);
 
@@ -157,6 +189,37 @@ class __controller_class_name__ extends Controller
     {
         if(Module::hasAccess("__module_name__", "edit")) {
 
+            $module = Module::get('__module_name__');
+            $pvd_language = Language::get();
+
+            foreach($module->fields as $key_field => $field){
+                if(!empty($field['lang_active']) and isset($request->$key_field)){
+                    if($field['label'] == 'Image'){
+                        $value_image = [];
+                        foreach ($pvd_language as $key_lang => $value_lang){
+                            $field_image = $key_field.'_'.$value_lang->id;
+                            $value_image[$value_lang->id] = $request->$field_image;
+                            unset($request->$field_image);
+                        }
+                        $request->merge([$key_field=>$value_image]);
+                    } else {
+                        $request->merge([$key_field=>json_encode($request->$key_field, JSON_UNESCAPED_UNICODE)]);
+                    }
+
+                } else {
+                    if(isset($request->$key_field)){
+                        $request->merge([$key_field=>$request->$key_field[config('app.locale_id')]]) ;
+                    } else {
+                        if($field['label'] == 'Image'){
+                            $field_image = $key_field.'_'.config('app.locale_id');
+                            $request->merge([$key_field=>$request->$field_image]) ;
+                            unset($request->$field_image);
+                        } else $request->merge([$key_field=>$request->$key_field]);
+                    }
+
+                }
+            }
+
             $rules = Module::validateRules("__module_name__", $request, true, $id);
 
             $validator = Validator::make($request->all(), $rules);
@@ -238,36 +301,85 @@ class __controller_class_name__ extends Controller
             $data->data[$i] =(array)$data->data[$i];
             for($j = 0; $j < count($listing_cols); $j++) {
                 $col = $listing_cols[$j];
+
+                //Set value langue
+                if(!empty($module->fields[$col]) and !empty($module->fields[$col]['lang_active'])){
+                    $data_col = json_decode(str_replace('&quot;', '"', $data->data[$i][$col]), true);
+                    if(!empty($data_col)){
+                        $data->data[$i][$col] = $data_col[config('app.locale_id')];
+                    }
+                }//End set value langue
+
                 $data->data[$i][$j] = $data->data[$i][$col];
                 if($fields_popup[$col] != null && Str::of($fields_popup[$col]->popup_vals)->startsWith('@')) {
-                    $data->data[$i][$j] = ModuleFields::getFieldValue($fields_popup[$col], $data->data[$i][$col]);
+                    $fieldValue = ModuleFields::getFieldValue($fields_popup[$col], $data->data[$i][$col]);
+                    if(isset($fieldValue)){
+                        $data_col = json_decode(str_replace('&quot;', '"', $fieldValue), true);
+                        if(!empty($data_col) and isset($data_col[config('app.locale_id')])){
+                            $data->data[$i][$j] = '<small class="label label-primary"><i class="fa fa-caret-right"></i> '. $data_col[config('app.locale_id')] .'</small> ';
+                        } else  $data->data[$i][$j] = '<small class="label label-primary"><i class="fa fa-caret-right"></i> '. $fieldValue .'</small> ';
+                    }
+                    else $data->data[$i][$j] = '';
                 }
+
                 if($col == $module->view_col) {
                     $data->data[$i][$j] = '<a href="' . url(config('crmadmin.adminRoute') . '/__route_resource__/' . $data->data[$i][$listing_cols[0]]) . '">' . $data->data[$i][$col] . '</a>';
                 }
-                if($fields_popup[$col] != null && $fields_popup[$col]->field_type_str == "Image") {
-                    if($data->data[$i][$col] != 0) {
-                        $img = \App\Models\Upload::find($data->data[$i][$col]);
-                        if(isset($img->name)) {
-                            $data->data[$i][$j] = '<img src="'.$img->path().'?s=50">';
-                        } else {
-                            $data->data[$i][$j] = "";
-                        }
+
+                //Path field Image
+                 if($fields_popup[$col] != null && $fields_popup[$col]->field_type_str == "Image") {
+                    if($data->data[$i][$col]){
+                        $json_image = str_replace('&quot;', '"', $data->data[$i][$col]);
+                        $json_image = json_decode($json_image);
+                        $data->data[$i][$j] = '<img src="'.url('/s50x50'.$json_image->path).'">';
                     } else {
                         $data->data[$i][$j] = "";
                     }
                 }
 
+                //Field CheckBox
                 if(!empty($module->fields[$col]) && $module->fields[$col]['field_type'] == 2){
-                    if(!empty($data->data[$i][$col])){
-                        $switch = 'Off';
-                    } else $switch = 'On';
-                    $data->data[$i][$j] = '<div class="Switch Ajax '. $col .' Round '. $switch .'" switchName="'. $col .'" " switchId="'. $data->data[$i][$listing_cols[0]] .'" style="vertical-align:top;margin-left:10px;"><div class="Toggle"></div></div>';
+                    if(Module::hasFieldAccess("__module_name__", $col, "write")){
+                        if(!empty($data->data[$i][$col])){
+                            $switch = 'Off';
+                        } else $switch = 'On';
+                        $data->data[$i][$j] = '<div class="Switch Ajax '. $col .' Round '. $switch .'" switchName="'. $col .'" " switchId="'. $data->data[$i][$listing_cols[0]] .'" style="vertical-align:top;margin-left:10px;"><div class="Toggle"></div></div>';
+                    } else {
+                        if(!empty($data->data[$i][$col])){
+                            if($data->data[$i][$col] == 1){
+                                $classStatus = 'success';
+                                $status = $module->fields[$col]['colname'];
+                            } else{
+                                $classStatus = 'warning';
+                                $status = 'Chờ '. $module->fields[$col]['colname'];
+                            }
+                        } else {
+                            $classStatus = 'danger';
+                            $status = 'Not '. $module->fields[$col]['colname'];
+                        }
+                        $data->data[$i][$j] = '<small class="label label-'. $classStatus .'">'. Str::ucfirst($status) .'</small> ';
+                    }
                 }
 
-                // else if($col == "author") {
-                //    $data->data[$i][$col];
-                // }
+                //Field Multiselect
+                if(!empty($module->fields[$col]) && $module->fields[$col]['field_type'] == 15){
+                    $popup_vals = str_replace('@', '', $module->fields[$col]['popup_vals']);
+                    $json = str_replace('&quot;', '"', $data->data[$i][$col]);
+                    $values_json = DB::table($popup_vals)->whereIn('id',json_decode($json))->pluck('name');
+                    $data->data[$i][$j] = '';
+                    foreach($values_json as $value_json){
+                        $data->data[$i][$j] .= '<small class="label label-primary">'. $value_json .'</small> ';
+                    }
+                }
+
+                if(!empty($module->fields[$col]) && $module->fields[$col]['field_type'] == 20){
+                    $values_json = json_decode(str_replace('&quot;', '"', $data->data[$i][$col]), true);
+                    $data->data[$i][$j] = '';
+                    foreach($values_json as $value_json){
+                        $data->data[$i][$j] .= '<small class="label label-primary">'. $value_json .'</small> ';
+                    }
+                }
+
                 if( $col!== 'id')
                     unset($data->data[$i][$col]);
             }

@@ -41,7 +41,8 @@ Route::group(['as' => $as, 'middleware' => ['auth', 'permission:ADMIN_PANEL']], 
 	/* ================== Uploads ================== */
 	Route::resource(config('crmadmin.adminRoute') . '/uploads', 'CRM\UploadsController');
 	Route::post(config('crmadmin.adminRoute') . '/upload_files', 'CRM\UploadsController@upload_files');
-	Route::get(config('crmadmin.adminRoute') . '/uploaded_files', 'CRM\UploadsController@uploaded_files');
+    Route::get(config('crmadmin.adminRoute') . '/uploaded_files', 'CRM\UploadsController@uploaded_files');
+    Route::get(config('crmadmin.adminRoute') . '/uploaded_files/{folder_end}', 'CRM\UploadsController@uploaded_files')->where(['folder_end' => '[a-zA-z0-9\-]+']);
 	Route::post(config('crmadmin.adminRoute') . '/uploads_update_caption', 'CRM\UploadsController@update_caption');
 	Route::post(config('crmadmin.adminRoute') . '/uploads_update_filename', 'CRM\UploadsController@update_filename');
 	Route::post(config('crmadmin.adminRoute') . '/uploads_update_public', 'CRM\UploadsController@update_public');
@@ -78,5 +79,17 @@ Route::group(['as' => $as, 'middleware' => ['auth', 'permission:ADMIN_PANEL']], 
 	Route::resource(config('crmadmin.adminRoute') . '/backups', 'CRM\BackupsController');
 	Route::get(config('crmadmin.adminRoute') . '/backup_dt_ajax', 'CRM\BackupsController@dtajax');
 	Route::post(config('crmadmin.adminRoute') . '/create_backup_ajax', 'CRM\BackupsController@create_backup_ajax');
-	Route::get(config('crmadmin.adminRoute') . '/downloadBackup/{id}', 'CRM\BackupsController@downloadBackup');
+    Route::get(config('crmadmin.adminRoute') . '/downloadBackup/{id}', 'CRM\BackupsController@downloadBackup');
+
+    /* ================== Categories ================== */
+    Route::resource(config('crmadmin.adminRoute') . '/categories', 'CRM\CategoryController');
+    Route::get(config('crmadmin.adminRoute') . '/category_dt_ajax', 'CRM\CategoryController@dtajax');
+    Route::post(config('crmadmin.adminRoute') . '/category_field_switch', 'CRM\CategoryController@dtswitch');
+    Route::post(config('crmadmin.adminRoute') .'/ca_menus/update_hierarchy', 'CRM\CategoryController@update_hierarchy');
+    Route::post(config('crmadmin.adminRoute') . '/categories/add', 'CRM\CategoryController@update_status');
+
+    /* ================== Properties ================== */
+    Route::resource(config('crmadmin.adminRoute') . '/properties', 'CRM\PropertyController');
+    Route::get(config('crmadmin.adminRoute') . '/property_dt_ajax', 'CRM\PropertyController@dtajax');
+    Route::post(config('crmadmin.adminRoute') . '/property_field_switch', 'CRM\PropertyController@dtswitch');
 });

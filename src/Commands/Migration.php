@@ -23,11 +23,11 @@ use Lehungdev\Crmadmin\CodeGenerator;
 class Migration extends Command
 {
     // The command signature.
-    protected $signature = 'la:migration {table} {--generate}';
-    
+    protected $signature = 'crm:migration {table} {--generate}';
+
     // The command description.
     protected $description = 'Generate Migrations for CrmAdmin';
-    
+
     /**
      * Generate a Migration file either sample or from DB Context
      *

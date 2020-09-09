@@ -27,11 +27,10 @@
         @if(isset($pvd_language))
             <ul data-toggle="ajax-tab" class="nav nav-tabs profile" role="tablist">
                 <li class=""><a href="{{ url(config('crmadmin.adminRoute') . '/__db_table_name__') }}" class="close" data-dismiss="modal" aria-label="Close"  data-toggle="tooltip" data-placement="right" title="Close"><i class="fa fa-chevron-left"></i></a></li>
-                    @foreach ($pvd_language as $key=>$value)
-                        <?php $class =  ($value->id == config('app.locale_id')) ? 'active' : ''; ?>
-                        <li class="{{$class}}"><a role="tab" data-toggle="tab" class="{{$class}}" href="#tab-{{$value->locale}}" data-target="#tab-{{$value->locale}}"><img src="{{ IdeaHelper::pathImage($value->image,"30x20") }}" style="width: 30px; padding-right: 3px;" /> {{$value->name}}</a></li>
-                    @endforeach
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="margin-top: -14px; margin-right: -9px;"><span aria-hidden="true">&times;</span></button>
+                @foreach ($pvd_language as $key=>$value)
+                    <?php $class =  ($value->id == config('app.locale_id')) ? 'active' : ''; ?>
+                    <li class="{{$class}}"><a role="tab" data-toggle="tab" class="{{$class}}" href="#tab-{{$value->locale}}" data-target="#tab-{{$value->locale}}"  style='padding: 10px 5px;'><img src="{{ IdeaHelper::pathImage($value->image,"30x20") }}" style="width: 30px; padding-right: 3px;" /> {{$value->name}}</a></li>
+                @endforeach
             </ul>
         @endif
     </div>
@@ -42,31 +41,29 @@
                     <?php $class_active = (!empty($value_lang->id == config('app.locale_id'))) ? 'active': '';  ?>
                     <div role="tabpanel" class="tab-pane {{$class_active ?? '' }} fade in" id="tab-{{$value_lang->locale}}">
                         <div class="tab-content">
-                            <div class="panel-default panel-heading">
-                                <h4>{{$value_lang->name}}</h4>
-                            </div>
-
                             <div class="box-body">
                                 <div class="row">
-                                    <div class="col-md-8 col-md-offset-2">
-
-                                        @la_form_language($module,[], $value_lang)
-
+                                    <div class="col-md-12">
+                                        <div class="row">
+                                            @la_form_language($module,[], $value_lang)
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 @endforeach
-                <div class="col-md-8 col-md-offset-2">
-                    <div class="form-group">
-                        {!! Form::submit( 'Update', ['class'=>'btn btn-success pull-right']) !!} <a href="{{ url(config('crmadmin.adminRoute') . '/__db_table_name__') }}" class="btn btn-default pull-left">Cancel</a>
+                <div class="modal-footer">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            {!! Form::submit( 'Update', ['class'=>'btn btn-success pull-right']) !!} <a href="{{ url(config('crmadmin.adminRoute') . '/__db_table_name__') }}" class="btn btn-default pull-left">Cancel</a>
+                        </div>
                     </div>
                 </div>
             @else
                 <div class="box-body">
                     <div class="row">
-                        <div class="col-md-8 col-md-offset-2">
+                        <div class="col-md-12">
 
                             @la_form($module)
 
@@ -87,12 +84,21 @@
 
 @endsection
 
+@push('styles')
+<link rel="stylesheet" type="text/css" href="{{ asset('la-assets/plugins/iCheck/flat/green.css') }}"/>
+@endpush
 @push('scripts')
+<script src="{{ asset('la-assets/plugins/iconpicker/fontawesome-iconpicker.js') }}"></script>
+<script src="{{ asset('la-assets/plugins/iCheck/icheck.min.js') }}"></script>
 <script>
+    //Flat red color scheme for iCheck
+    $('input[type="radio"]').iCheck({
+      checkboxClass: 'icheckbox_flat-green',
+      radioClass   : 'iradio_flat-green'
+    })
     $(function () {
-        $("#__singular_var__-edit-form").validate({
-
-        });
+        $('#icon input').iconpicker();
+        $("#property-edit-form").validate({ });
 
         $("select.active_lang" ).prop("disabled", 'true');
         $("input.active_lang" ).prop("disabled", 'true');
