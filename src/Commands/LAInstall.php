@@ -404,7 +404,7 @@ class LAInstall extends Command
                 $contents_AppService = file_get_contents(base_path('app/Providers/AppServiceProvider.php'));
                 if(!Str::contains($contents_AppService, "App\Models\Language")){
                     $contents_AppService = str_replace("use Illuminate\Support\ServiceProvider;", "use Illuminate\Support\ServiceProvider;\nuse Illuminate\Support\Facades\Schema; #changed\nuse App\Models\Language; #changed\nuse View; #changed", $contents_AppService);
-                    $contents_AppService = str_replace("public function register()\n", "public function register()\n\t{\n\t\tSchema::defaultStringLength(191); #changed\n\t\t\$this->language   =  Language::get(); #changed\n\t\tView::share('pvd_language', \$this->language); #changed", $contents_AppService);
+                    $contents_AppService = str_replace("public function boot()\n", "public function boot()\n\t{\n\t\tSchema::defaultStringLength(191); #changed\n\t\t\$this->language   =  Language::get(); #changed\n\t\tView::share('pvd_language', \$this->language); #changed", $contents_AppService);
                     $contents_AppService = str_replace("#changed    {", "#changed", $contents_AppService);
                     file_put_contents('app/Providers/AppServiceProvider.php', $contents_AppService);
                 }

@@ -459,10 +459,13 @@ class IdeaHelper
 
     public static function pathImage($value, $size){ //dd($value);
         $json_path = json_decode($value);
-        $path = $json_path->path;
-        if(!empty($path)){
-            return url('/s'.$size.''.$path);
+        if(!empty($json_path) and !empty($json_path->path)){
+            $path = $json_path->path;
+            if(!empty($path)){
+                return url('/s'.$size.''.$path);
+            }
         }
+
     }
 
     /*
