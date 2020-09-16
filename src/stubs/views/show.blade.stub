@@ -27,8 +27,8 @@
         </div>
         <div class="col-md-3">
             <div class="dats1"><div class="label2">Admin</div></div>
-            <div class="dats1"><i class="fa fa-envelope-o"></i> superadmin@gmail.com</div>
-            <div class="dats1"><i class="fa fa-map-marker"></i> Pune, India</div>
+            <div class="dats1"><i class="fa fa-envelope-o"></i> lehung.hut@gmail.com</div>
+            <div class="dats1"><i class="fa fa-map-marker"></i> Hà Nội, Việt Nam</div>
         </div>
         <div class="col-md-4">
             <!--

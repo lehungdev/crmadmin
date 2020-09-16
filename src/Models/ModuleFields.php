@@ -26,15 +26,15 @@ use Lehungdev\Crmadmin\Models\Module;
 class ModuleFields extends Model
 {
     protected $table = 'module_fields';
-    
+
     protected $fillable = [
         "colname", "label", "module", "field_type", "unique", "defaultvalue", "minlength", "maxlength", "required", "listing_col", "popup_vals", "lang_active"
     ];
-    
+
     protected $hidden = [
-    
+
     ];
-    
+
     /**
      * Create Module Field by $request
      * Method used in "Module Manager" via FieldController
@@ -72,7 +72,7 @@ class ModuleFields extends Model
                 } else if(in_array($request->field_type, [14])) {
                     $request->maxlength = 20;
                 }
-                else if(in_array($request->field_type, [3, 6, 10, 13])) {
+                else if(in_array($request->field_type, [3, 6, 10, 13, 27])) {
                     $request->maxlength = 11;
                 }
             }
@@ -148,10 +148,10 @@ class ModuleFields extends Model
         }
 
         $field->save();
-        
+
         return $field->id;
     }
-    
+
     /**
      * Update Module Field Context / Metadata
      * Method used in "Module Manager" via FieldController
@@ -162,9 +162,9 @@ class ModuleFields extends Model
     public static function updateField($id, $request)
     {
         $module_id = $request->module_id;
-        
+
         $field = ModuleFields::find($id);
-        
+
         // Update the Schema
         // Change Column Name if Different
         $module = Module::find($module_id);
@@ -173,9 +173,9 @@ class ModuleFields extends Model
                 $table->renameColumn($field->colname, $request->colname);
             });
         }
-        
+
         $isFieldTypeChange = false;
-        
+
         // Update Context in ModuleFields
         $field->colname = $request->colname;
         $field->label = $request->label;
@@ -202,7 +202,7 @@ class ModuleFields extends Model
             } else if(in_array($request->field_type, [14])) {
                 $request->maxlength = 20;
             }
-            else if(in_array($request->field_type, [3, 6, 10, 13, 26])) {
+            else if(in_array($request->field_type, [3, 6, 10, 13, 26, 27])) {
                 $request->maxlength = 11;
             }
         }
@@ -240,14 +240,14 @@ class ModuleFields extends Model
             $field->popup_vals = "";
         }
         $field->save();
-        
+
         $field->module_obj = $module;
-        
+
         Schema::table($module->name_db, function ($table) use ($field, $isFieldTypeChange) {
             Module::create_field_schema($table, $field, true, $isFieldTypeChange);
         });
     }
-    
+
     /**
      * Get Array of Fields for given Module
      *
@@ -259,10 +259,10 @@ class ModuleFields extends Model
         $module = Module::where('name', $moduleName)->first();
         $fields = DB::table('module_fields')->where('module', $module->id)->get();
         $ftypes = ModuleFieldTypes::getFTypes();
-        
+
         $fields_popup = array();
         $fields_popup['id'] = null;
-        
+
         // Set field type (e.g. Dropdown/Taginput) in String Format to field Object
         foreach($fields as $f) {
             $f->field_type_str = array_search($f->field_type, $ftypes);
@@ -270,7 +270,7 @@ class ModuleFields extends Model
         }
         return $fields_popup;
     }
-    
+
     /**
      * Get Field Value when its associated with another Module / Table via "@"
      * e.g. "@employees"
@@ -303,7 +303,7 @@ class ModuleFields extends Model
             return $value_id;
         }
     }
-    
+
     /**
      * Exclude the Columns form given list ($listing_cols) if don't have field View Access
      * and return remaining Columns

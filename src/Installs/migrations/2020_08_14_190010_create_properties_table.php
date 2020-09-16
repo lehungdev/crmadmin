@@ -106,7 +106,7 @@ class CreatePropertiesTable extends Migration
                 "popup_vals" => "@users",
             ]
         ]);
-        
+
         /*
         Module::generate("Module_Name", "Table_Name", "view_column_name" "Fields_Array");
 
@@ -124,7 +124,7 @@ class CreatePropertiesTable extends Migration
             "popup_vals" => ["Employee", "Client"]
         ]
         # Format Details: Check http://ideagroup.vn/docs/migrations_cruds#schema-ui-types
-        
+
         colname: Database column name. lowercase, words concatenated by underscore (_)
         label: Label of Column e.g. Name, Cost, Is Public
         field_type: It defines type of Column in more General way.
@@ -137,7 +137,7 @@ class CreatePropertiesTable extends Migration
         popup_vals: These are values for MultiSelect, TagInput and Radio Columns. Either connecting @tables or to list []
         */
     }
-    
+
     /**
      * Reverse the migrations.
      *

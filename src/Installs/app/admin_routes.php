@@ -18,13 +18,17 @@ $as = "";
 if(\Lehungdev\Crmadmin\Helpers\LAHelper::laravel_ver() != 5.3) {
 	$as = config('crmadmin.adminRoute').'.';
 
-	// Routes for Laravel 5.5
-    Route::get('/logout', 'Auth\LoginController@logout');
+	// Routes for Laravel
+    // Route::get('/logout', 'Auth\LoginController@logout');
 
     // Authentication Routes...
     Route::get('login', 'Auth\LoginController@showLoginForm')->name('login');
     Route::post('login', 'Auth\LoginController@login');
     Route::post('logout', 'Auth\LoginController@logout')->name('logout');
+
+    Route::get('register', 'Auth\RegisterController@showRegistrationForm')->name('register');
+    Route::post('register', 'Auth\RegisterController@create');
+
 }
 
 Route::group(['as' => $as, 'middleware' => ['auth', 'permission:ADMIN_PANEL']], function () {
@@ -70,6 +74,8 @@ Route::group(['as' => $as, 'middleware' => ['auth', 'permission:ADMIN_PANEL']], 
 	/* ================== Organizations ================== */
 	Route::resource(config('crmadmin.adminRoute') . '/organizations', 'CRM\OrganizationController');
     Route::get(config('crmadmin.adminRoute') . '/organization_dt_ajax', 'CRM\OrganizationController@dtajax');
+    Route::post(config('crmadmin.adminRoute') . '/organization_field_switch', 'CRM\OrganizationController@dtswitch');
+    Route::post(config('crmadmin.adminRoute') . '/organization_field_slider_switch', 'CRM\OrganizationController@dtSlideSwitch');
 
     /* ================== Languages ================== */
     Route::resource(config('crmadmin.adminRoute') . '/languages', 'CRM\LanguageController');
@@ -92,4 +98,6 @@ Route::group(['as' => $as, 'middleware' => ['auth', 'permission:ADMIN_PANEL']], 
     Route::resource(config('crmadmin.adminRoute') . '/properties', 'CRM\PropertyController');
     Route::get(config('crmadmin.adminRoute') . '/property_dt_ajax', 'CRM\PropertyController@dtajax');
     Route::post(config('crmadmin.adminRoute') . '/property_field_switch', 'CRM\PropertyController@dtswitch');
+
+
 });

@@ -1048,7 +1048,7 @@ class LAFormMaker
                         $out .= '<input type="hidden" name="longitude" id="'.$field_name.'_longitude" value="'.(old("longitude") ?? "0").'" />';
                         $out .= '<div id="'.$field_name.'-map-container" class="mb-2" style="width:100%;height:360px; padding-top: 15px; "><div style="width: 100%; height: 100%; position: relative; overflow: hidden;" id="'.$field_name.'-map"></div></div>';
                         $out .= '<script src="https://maps.googleapis.com/maps/api/js?key='. env("GOOGLE_MAPS_API_KEY") .'&libraries=places&callback=initialize&language=vi&region=VN" async defer></script>';
-                        $out .= '<script src="/la-assets/js/mapInput.js"></script>';
+                        $out .= '<script src="'.asset("la-assets/js/mapInput.js").'"></script>';
                     }
                     break;
                 case 'Checkbox':
@@ -1069,6 +1069,25 @@ class LAFormMaker
 
                     $out .= Form::checkbox($field_name_lang, $field_name, $default_val, $params);
                     $out .= '<div class="Switch Round On" style="vertical-align:top;margin-left:10px;"><div class="Toggle"></div></div>';
+                    break;
+                    case 'CheckboxActive':
+                        $out .= '<label for="' . $field_name . '">' . $label . $required_ast . ' :</label>';
+                        // $out .= '<input type="hidden" value="false" name="' . $field_name . '_hidden[]">';
+
+                        // ############### Remaining
+                        unset($params['placeholder']);
+                        unset($params['data-rule-maxlength']);
+
+                        if($default_val == null) {
+                            $default_val = $defaultvalue;
+                        }
+                        // Override the edit value
+                        if(isset($row) && isset($row->$field_name_lang)) {
+                            $default_val = $row->$field_name_lang;
+                        }
+
+                        // $out .= Form::checkbox($field_name_lang, $field_name, $default_val, $params);
+                        $out .= '<div style="max-width: 125px;"><input type="text" name="'. $field_name_lang .'" value="'.$default_val.'" data-slider-value="'.$default_val.'" class="slider form-control" data-slider-min="0" data-slider-max="2" data-slider-step="1" data-slider-orientation="horizontal"  data-slider-id="'.$field_name_lang.'"></div>';
                     break;
                 case 'Currency':
                     $out .= '<label for="' . $field_name . '">' . $label . $required_ast . ' :</label>';

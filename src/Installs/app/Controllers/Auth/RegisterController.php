@@ -47,11 +47,11 @@ class RegisterController extends Controller
         $roleCount = Role::count();
 		if($roleCount != 0) {
 			$userCount = User::count();
-			if($userCount == 0) {
+			// if($userCount == 0) {
 				return view('auth.register');
-			} else {
-				return redirect('login');
-			}
+			// } else {
+			// 	return redirect('login');
+			// }
 		} else {
 			return view('errors.error', [
 				'title' => 'Migration not completed',
@@ -85,7 +85,7 @@ class RegisterController extends Controller
     {
         // TODO: This is Not Standard. Need to find alternative
         Eloquent::unguard();
-        
+
         $employee = Employee::create([
             'name' => $data['name'],
             'designation' => "Super Admin",
@@ -94,15 +94,15 @@ class RegisterController extends Controller
             'email' => $data['email'],
             'gender' => 'Male',
             'dept' => "1",
-            'city' => "Pune",
-            'address' => "Karve nagar, Pune 411030",
+            'city' => "Hà Nội",
+            'address' => "72 Lạc Nghiệp, Hai Bà Trưng",
             'about' => "About user / biography",
             'date_birth' => date("Y-m-d"),
             'date_hire' => date("Y-m-d"),
             'date_left' => date("Y-m-d"),
             'salary_cur' => 0,
         ]);
-        
+
         $user = User::create([
             'name' => $data['name'],
             'email' => $data['email'],
@@ -112,7 +112,7 @@ class RegisterController extends Controller
         ]);
         $role = Role::where('name', 'SUPER_ADMIN')->first();
         $user->attachRole($role);
-    
+
         return $user;
     }
 }

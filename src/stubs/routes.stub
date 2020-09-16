@@ -2,4 +2,5 @@
     Route::resource(config('crmadmin.adminRoute') . '/__db_table_name__', 'CRM\__controller_class_name__');
     Route::get(config('crmadmin.adminRoute') . '/__singular_var___dt_ajax', 'CRM\__controller_class_name__@dtajax');
     Route::post(config('crmadmin.adminRoute') . '/__singular_var___field_switch', 'CRM\__controller_class_name__@dtswitch');
+    Route::post(config('crmadmin.adminRoute') . '/__singular_var___field_slider_switch', 'CRM\__controller_class_name__@dtSlideSwitch');
 });

@@ -54,7 +54,7 @@ class CodeGenerator
         $listing_cols_dropdown = "";
         foreach ($config->module->fields as $field) {
             $listing_cols .= "'" . $field['colname'] . "', ";
-            if ($field['field_type'] == 7) {
+            if ($field['field_type'] == 7  and Str::startsWith($field['popup_vals'], '@')) {
                 $listing_cols_dropdown .= "'" . str_replace('_id', '', $field['colname']) . "', ";
             }
         }
@@ -98,7 +98,7 @@ class CodeGenerator
         $listing_cols_dropdown = "";
         foreach ($config->module->fields as $field) {
             $listing_cols .= "'" . $field['colname'] . "', ";
-            if ($field['field_type'] == 7) {
+            if ($field['field_type'] == 7  and Str::startsWith($field['popup_vals'], '@')) {
                 $listing_cols_dropdown .= "'" . str_replace('_id', '', $field['colname']) . "', ";
             }
         }
@@ -146,7 +146,7 @@ class CodeGenerator
         foreach ($config->module->fields as $field) {
 
             $listing_cols .= "'" . $field['colname'] . "', ";
-            if ($field['field_type'] == 7) {
+            if ($field['field_type'] == 7  and Str::startsWith($field['popup_vals'], '@')) {
                 $use_model_belongsTo_parent = "";
                 $popup_vals = Str::ucfirst(Str::singular(str_replace('@', '', $field['popup_vals'])));
                 $listing_cols_dropdown .= "'" . Str::lower($popup_vals) . "', ";
@@ -244,12 +244,15 @@ class CodeGenerator
         $use_model_belongsTo = "";
 
         foreach ($config->module->fields as $field) {
-            if ($field['field_type'] == 7) {
+            if ($field['field_type'] == 7 and Str::startsWith($field['popup_vals'], '@')) {
                 $use_model_hasMany = "";
                 $module = Module::where('name_db', str_replace('@', '', $field['popup_vals']))->first();
-                $use_model_belongsTo .= "\n\tpublic function " . Str::lower($module->model) . "()\n\t{";
-                $use_model_belongsTo .= "\n\t\t\treturn \$this->belongsTo(" . $module->model . "::class, '". $field['colname'] ."');";
-                $use_model_belongsTo .= "\n\t}\n";
+                if($module){
+                    $use_model_belongsTo .= "\n\tpublic function " . Str::lower($module->model) . "()\n\t{";
+                    $use_model_belongsTo .= "\n\t\t\treturn \$this->belongsTo(" . $module->model . "::class, '". $field['colname'] ."');";
+                    $use_model_belongsTo .= "\n\t}\n";
+                }
+
 
                 // ============================ Get parent ============================
                 $path_parent = base_path('app/Models/' . $module->model . ".php");

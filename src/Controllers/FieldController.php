@@ -40,25 +40,85 @@ class FieldController extends Controller
 
         $module = Module::find($request->module_id);
         $module_id = $request->module_id;
+        // if(!$module->is_gen){
+            $field_module = ModuleFields::where('colname', "user_id")->where('module', $module_id)->first();
+            if(empty($field_module)){
+                $field_user_value = [
+                    "module_id" => $module_id,
+                    "colname" => "user_id",
+                    "label" => "User create",
+                    "field_type" => 7,
+                    "unique" => false,
+                    "defaultvalue" => 0,
+                    "minlength" => null,
+                    "maxlength" => null,
+                    "required" => false,
+                    "listing_col" => true,
+                    "lang_active" => 0,
+                    "popup_value_type" => "table",
+                    "popup_vals_table" => "users"
+                ];
+            } else {
+                $field_user_value = [];
+            }
+            $field_active_module = ModuleFields::where('colname', "is_active")->where('module', $module_id)->first();
+            if(empty($field_active_module)){
+                $field_active_value =  [
+                    "module_id" => $module_id,
+                    "colname" => "is_active",
+                    "label" => "Kích hoạt",
+                    "field_type" => 2,
+                    "unique" => false,
+                    "defaultvalue" => 0,
+                    "minlength" => 0,
+                    "maxlength" => 1,
+                    "required" => false,
+                    "lang_active" => 0,
+                    "listing_col" => true
+                ];
+            } else {
+                $field_active_value = [];
+            }
 
+            $field_public_module = ModuleFields::where('colname', "is_public")->where('module', $module_id)->first();
+            if(empty($field_public_module)){
+                $field_public_value =  [
+                    "module_id" => $module_id,
+                    "colname" => "is_public",
+                    "label" => "Duyệt bài",
+                    "field_type" => 27,
+                    "unique" => false,
+                    "defaultvalue" => 0,
+                    "minlength" => 0,
+                    "maxlength" => 1,
+                    "required" => false,
+                    "is_public" => 0,
+                    "lang_active" => 0,
+                    "listing_col" => true
+                ];
+            } else {
+                $field_public_value = [];
+            }
+        // };
         $field_id = ModuleFields::createField($request);
-//        dd($field_id);
         // Give Default Full Access to Super Admin
         $role = \App\Role::where("name", "SUPER_ADMIN")->first();
         Module::setDefaultFieldRoleAccess($field_id, $role->id, "full");
+        if(!empty($field_active_value)){
+            $field_active_id = ModuleFields::createField((object) $field_active_value);
+            Module::setDefaultFieldRoleAccess($field_active_id, $role->id, "full");
+        }
+        if(!empty($field_public_value)){
+            $field_public_id = ModuleFields::createField((object) $field_public_value);
+            Module::setDefaultFieldRoleAccess($field_public_id, $role->id, "full");
+        }
+        if(!empty($field_user_value)){
+            $field_user_id = ModuleFields::createField((object) $field_user_value);
+            Module::setDefaultFieldRoleAccess($field_user_id, $role->id, "full");
+        }
 
-        //Create module langguege
-        // $module_lang = Module::find($request->module_id + 1);
 
-        // if($module_lang->name == $module->name.'_langs' and !empty($request->lang_active)){
-        //     $module_lang_id     = $request->module_id + 1;
-        //     $request->module_id = $request->module_id + 1;
-        //     $field_id = ModuleFields::createField($request);
 
-        //     // Give Default Full Access to Super Admin
-        //     $role = \App\Role::where("name", "SUPER_ADMIN")->first();
-        //     Module::setDefaultFieldRoleAccess($field_id, $role->id, "full");
-        // }
 
         return redirect()->route(config('crmadmin.adminRoute') . '.modules.show', [$module_id]);
     }

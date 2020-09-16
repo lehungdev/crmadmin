@@ -64,6 +64,7 @@ trait Filterable
             case 23:
             case 25:
             case 26:
+            case 27:
                 $value =  $module_field -> value;
                 $query = $query->where($module_field -> colname, 'LIKE', '%' . $value . '%');
                 break;

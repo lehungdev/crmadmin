@@ -53,6 +53,7 @@ class CreateModuleFieldTypesTable extends Migration
         ModuleFieldTypes::create(["name" => "Files"]);
         ModuleFieldTypes::create(["name" => "Text"]);
         ModuleFieldTypes::create(["name" => "LongText"]);
+        ModuleFieldTypes::create(["name" => "CheckboxActive"]);
     }
 
     /**

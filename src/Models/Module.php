@@ -296,6 +296,19 @@ class Module extends Model
                     $field->defaultvalue = false;
                 }
                 break;
+            case 'CheckboxActive':
+                $var = null;
+                if($update) {
+                    $var = $table->boolean($field->colname)->change();
+                } else {
+                    $var = $table->boolean($field->colname);
+                }
+                if($field->defaultvalue != "") {
+                    $var->default($field->defaultvalue);
+                } else {
+                    $var->default("0");
+                }
+                break;
             case 'Currency':
                 if($update) {
                     $var = $table->double($field->colname, 15, 2)->change();

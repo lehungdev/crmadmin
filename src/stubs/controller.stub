@@ -280,6 +280,27 @@ class __controller_class_name__ extends Controller
         }
     }
 
+
+    /**
+     * Server side Datatable fetch via slide switch
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function dtSlideSwitch(Request $request)
+    {
+        if(Module::hasFieldAccess("__module_name__", $request->sliderField, "write")){
+            $item = __model_name__::find($request->sliderId); //dd($item->id);
+            if(isset($item->id)) {
+                $item[$request['sliderField']] = $request->sliderValue;
+                $item->save();
+                return response()->json(['status' => 'success', 'message' => "__model_name__ field  slide switch ". $request->sliderField ." saved to " . $request->sliderId.$item[$request['sliderField']] ]);
+            } else {
+                return response()->json(['status' => 'failed', 'message' => "__model_name__ field not found"]);
+            }
+        } dd($request);
+    }
+
     /**
      * Server side Datatable fetch via Ajax
      *
@@ -304,10 +325,15 @@ class __controller_class_name__ extends Controller
 
                 //Set value langue
                 if(!empty($module->fields[$col]) and !empty($module->fields[$col]['lang_active'])){
+
                     $data_col = json_decode(str_replace('&quot;', '"', $data->data[$i][$col]), true);
-                    if(!empty($data_col)){
+                    if($module->fields[$col]['field_type'] == 20 || $module->fields[$col]['field_type'] == 15123){
+                        $data_col = (array) json_decode($data_col);
+                    }
+                    if(!empty($data_col) and is_array($data_col)){
                         $data->data[$i][$col] = $data_col[config('app.locale_id')];
                     }
+
                 }//End set value langue
 
                 $data->data[$i][$j] = $data->data[$i][$col];
@@ -373,12 +399,27 @@ class __controller_class_name__ extends Controller
                 }
 
                 if(!empty($module->fields[$col]) && $module->fields[$col]['field_type'] == 20){
-                    $values_json = json_decode(str_replace('&quot;', '"', $data->data[$i][$col]), true);
+                    if(!is_array($data->data[$i][$col])){
+                        $values_json =  json_decode(str_replace('&quot;', '"', $data->data[$i][$col]), true);
+                    }
+                    else {
+                        $values_json = $data->data[$i][$col];
+                    }
                     $data->data[$i][$j] = '';
-                    foreach($values_json as $value_json){
-                        $data->data[$i][$j] .= '<small class="label label-primary">'. $value_json .'</small> ';
+                    if(is_array($values_json)){
+                        foreach($values_json as $value_json){
+                            $data->data[$i][$j] .= '<small class="label label-primary">'. $value_json .'</small> ';
+                        }
+                    } else {
+                        $data->data[$i][$j] .= $data->data[$i][$j] .= '<small class="label label-primary">'. $values_json .'</small> ';
                     }
                 }
+
+                if(!empty($module->fields[$col]) && $module->fields[$col]['field_type'] == 27){
+                    $data->data[$i][$j] = '';
+                    $data->data[$i][$j] .= '<div style="max-width: 125px;"><input type="text" name="'. $col .'" value="'.$data->data[$i][$col].'" data-slider-value="'.$data->data[$i][$col].'" class="slider form-control" data-slider-min="0" data-slider-max="2" data-slider-step="1" data-slider-orientation="horizontal"  data-slider-id="'.$data->data[$i][$listing_cols[0]].'"></div>';
+                }
+
 
                 if( $col!== 'id')
                     unset($data->data[$i][$col]);

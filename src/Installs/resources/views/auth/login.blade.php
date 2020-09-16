@@ -13,7 +13,7 @@
 
     @if (count($errors) > 0)
         <div class="alert alert-danger">
-            <strong>Whoops!</strong> There were some problems with your input.<br><br>
+            <strong>Rất tiếc!</strong>Có một số vấn đề với thông tin của bạn.<br><br>
             <ul>
                 @foreach ($errors->all() as $error)
                     <li>{{ $error }}</li>
@@ -23,7 +23,7 @@
     @endif
 
     <div class="login-box-body">
-    <p class="login-box-msg">Sign in to start your session</p>
+    <p class="login-box-msg">Đăng nhập để bắt đầu phiên làm việc của bạn</p>
     <form action="{{ url('/login') }}" method="post">
         <input type="hidden" name="_token" value="{{ csrf_token() }}">
         <div class="form-group has-feedback">
@@ -38,20 +38,26 @@
             <div class="col-xs-8">
                 <div class="checkbox icheck">
                     <label>
-                        <input type="checkbox" name="remember"> Remember Me
+                        <input type="checkbox" name="remember"> Ghi nhớ đăng nhập
                     </label>
                 </div>
             </div><!-- /.col -->
             <div class="col-xs-4">
-                <button type="submit" class="btn btn-primary btn-block btn-flat">Sign In</button>
+                <button type="submit" class="btn btn-primary btn-block btn-flat">Đăng nhập</button>
             </div><!-- /.col -->
         </div>
     </form>
 
     @include('auth.partials.social_login')
+    <div class="row">
 
-    <a href="{{ url('/password/reset') }}">I forgot my password</a><br>
-    <!--<a href="{{ url('/register') }}" class="text-center">Register a new membership</a>-->
+        <div class="col-xs-6">
+            <a href="{{ url('/register') }}">Đăng ký mới</a>
+        </div>
+        <div class="col-xs-6">
+            <a href="{{ url('/password/reset') }}"  class="pull-right">Lấy lại mật khẩu</a>
+        </div>
+    </div>
 
 </div><!-- /.login-box-body -->
 
