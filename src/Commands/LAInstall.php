@@ -411,6 +411,8 @@ class LAInstall extends Command
 
 
                 $this->call('vendor:publish', ['--provider' => 'Kreait\Laravel\Firebase\ServiceProvider'], '--tag=config');
+                //Eloquent-Sluggable
+                $this->call('vendor:publish', ['--provider' => 'Cviebrock\EloquentSluggable\ServiceProvider']);
 
                 ///Edit phpredis -> predis in file database.php
                 $this->line("\nEdit phpredis -> predis in file database.php");
