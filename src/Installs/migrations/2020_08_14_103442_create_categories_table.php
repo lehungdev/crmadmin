@@ -4,7 +4,7 @@
  * Help: lehung.hut@gmail.com
  * CrmAdmin is open-sourced software licensed under the MIT license.
  * Developed by: Lehungdev IT Solutions
- * Developer Website: http://ideagroup.vn
+ * Developer Website: http://rellifetech.com
  */
 
 use Illuminate\Database\Schema\Blueprint;
@@ -87,22 +87,43 @@ class CreateCategoriesTable extends Migration
                 "label" => "Thông số",
                 "field_type" => "Multiselect",
                 "unique" => false,
-                "defaultvalue" => "",
+                "defaultvalue" => [],
                 "minlength" => 0,
                 "maxlength" => 256,
                 "required" => false,
                 "listing_col" => true,
                 "popup_vals" => "@properties",
             ], [
-                "colname" => "publish",
+                "colname" => "is_active",
                 "label" => "Kích hoạt",
                 "field_type" => "Checkbox",
                 "unique" => false,
                 "defaultvalue" => "",
                 "minlength" => 0,
-                "maxlength" => 0,
+                "maxlength" => 11,
                 "required" => false,
                 "listing_col" => true
+            ], [
+                "colname" => "is_public",
+                "label" => "Duyệt bài",
+                "field_type" => "CheckboxActive",
+                "unique" => false,
+                "defaultvalue" => "",
+                "minlength" => 0,
+                "maxlength" => 11,
+                "required" => false,
+                "listing_col" => true
+            ], [
+                "colname" => "user_id",
+                "label" => "User create",
+                "field_type" => "Dropdown",
+                "unique" => false,
+                "defaultvalue" => "",
+                "minlength" => 0,
+                "maxlength" => 0,
+                "required" => false,
+                "listing_col" => true,
+                "popup_vals" => "@users",
             ]
         ]);
         
@@ -122,7 +143,7 @@ class CreateCategoriesTable extends Migration
             "listing_col" => true,
             "popup_vals" => ["Employee", "Client"]
         ]
-        # Format Details: Check http://ideagroup.vn/docs/migrations_cruds#schema-ui-types
+        # Format Details: Check http://rellifetech.com/docs/migrations_cruds#schema-ui-types
         
         colname: Database column name. lowercase, words concatenated by underscore (_)
         label: Label of Column e.g. Name, Cost, Is Public

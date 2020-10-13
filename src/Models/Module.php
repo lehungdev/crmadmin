@@ -4,7 +4,7 @@
  * Help: lehung.hut@gmail.com
  * CrmAdmin is open-sourced software licensed under the MIT license.
  * Developed by: Lehungdev IT Solutions
- * Developer Website: http://ideagroup.vn
+ * Developer Website: http://rellifetech.com
  */
 
 namespace Lehungdev\Crmadmin\Models;
@@ -1246,6 +1246,9 @@ class Module extends Model
                     case 'Multiselect':
                         // TODO: Bug fix
                         $row->{$field['colname']} = json_encode($request->{$field['colname']}, JSON_UNESCAPED_UNICODE);
+                        if(empty($row->{$field['colname']}) || $row->{$field['colname']} == "null"){
+                            $row->{$field['colname']} = $field['defaultvalue'];
+                        }
                         break;
                     case 'Password':
                         $row->{$field['colname']} = bcrypt($request->{$field['colname']});

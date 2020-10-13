@@ -30,12 +30,13 @@ use App\Http\Controllers\Helpers\IdeaHelper;
     </div>
 @endif
 <div class="row" style="margin-left: -10px; margin-right: -10px;">
-    <?php $color_array = ['bg-aqua', 'bg-green','bg-yellow','bg-maroon','bg-red','bg-olive','bg-fuchsia' ] ?>
+    <?php $i = 0; $color_array = ['bg-aqua', 'bg-green','bg-yellow','bg-maroon','bg-red','bg-olive','bg-fuchsia','bg-aqua', 'bg-green','bg-yellow','bg-maroon','bg-red','bg-olive','bg-fuchsia','bg-aqua', 'bg-green','bg-yellow','bg-maroon','bg-red','bg-olive','bg-fuchsia','bg-aqua', 'bg-green','bg-yellow','bg-maroon','bg-red','bg-olive','bg-aqua', 'bg-green','bg-yellow','bg-maroon','bg-red','bg-olive','bg-fuchsia','bg-aqua', 'bg-green','bg-yellow','bg-maroon','bg-red','bg-olive','bg-fuchsia','bg-aqua', 'bg-green','bg-yellow','bg-maroon','bg-red','bg-olive','bg-fuchsia','bg-aqua', 'bg-green','bg-yellow','bg-maroon','bg-red','bg-olive'] ?>
     @foreach ($allCategory as $key =>  $catItem)
         @if(empty($catItem->parent))
+			<?php $i++; ?>
             <div class="allCategory col-lg-2 col-xs-6" >
                 <!-- small box -->
-                <div class="small-box {{ $color_array[$key] }}">
+                <div class="small-box {{ $color_array[$i] }}">
                     <div class="inner">
                         <h4>{{$catItem->name }}</h4>
                         <p><b style="font-size: 16px;">({{ 'count' }})</b> <a class="add_real_estates" data-properties="{{ 'data_properties' }}" cat-id="{{ $catItem->id }}" title="{{ $catItem->name }}" data-toggle="modal" data-target="#AddModal" style="color: #f0f0f0; cursor: pointer;">Thêm mới</a></p>
@@ -63,9 +64,9 @@ use App\Http\Controllers\Helpers\IdeaHelper;
                             @if(empty($catItem->parent))
                                 <?php
                                     $show_menu = IdeaHelper::print_menu_editor($catItem, 'categories', $allCategory);
+                                    // dd($show_menu['catAll']);
                                     $allCategory = $show_menu['catAll'] ?? '';
                                 ?>
-                                {!! $show_menu['string'] !!}
                             @endif
                         @endforeach
                     </ol>
@@ -196,6 +197,7 @@ use App\Http\Controllers\Helpers\IdeaHelper;
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/dataTables.bootstrap4.min.css"/>
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/autofill/2.3.5/css/autoFill.bootstrap4.min.css"/>
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/1.6.2/css/buttons.dataTables.min.css"/>
+<link rel="stylesheet" type="text/css" href="{{ asset('la-assets/plugins/bootstrap-slider/slider.css') }}"/>
 
 <link type="text/css" href="https://cdn.datatables.net/select/1.3.1/css/select.dataTables.min.css" rel="stylesheet" />
 <link type="text/css" href="https://cdn.datatables.net/fixedcolumns/3.3.1/css/fixedColumns.dataTables.min.css" rel="stylesheet" />
@@ -218,11 +220,64 @@ use App\Http\Controllers\Helpers\IdeaHelper;
         display: none;
 
     }
+
+    @media (min-width: 768px){
+        .modal-dialog {
+            width: 88%;
+            margin: 30px auto;
+        }
+    }
+    @media (min-width: 920px){
+        .modal-dialog {
+            width: 920px;
+            margin: 30px auto;
+        }
+    }
+    .slider.slider-horizontal .slider-handle {
+        margin-top: -2px;
+    }
+    .slider-disabled .slider-selection {
+        -webkit-border-radius: 9px;
+        -moz-border-radius: 9px;
+        border-radius: 9px;
+    }
+    .slider.slider-horizontal .slider-selection {
+        height: 100%;
+        top: 0;
+        bottom: 0;
+        /* border: 1px solid #f2f1f1; */
+        -webkit-border-radius: 9px;
+        -moz-border-radius: 9px;
+        border-radius: 9px;
+        background-image: linear-gradient(to bottom, #e6f3e1, #e6f3e1);
+    }
+    .slider.slider-horizontal .slider-track {
+        height: 18px;
+        -webkit-border-radius: 9px;
+        -moz-border-radius: 9px;
+        border-radius: 9px;
+    }
+    .slider-selection {
+
+    }
+    .slider .tooltip{display:none !important;}
+    .slider.gray .slider-handle{background-color:#888;}
+    .slider.orange .slider-handle{background-color:#FF9800;}
+    .slider.green .slider-handle{background-color:#00a65a;}
+    button.dt-button, div.dt-button, a.dt-button {
+        background-color: #10cfbd;
+        border-color: #0eb7a7;
+        border-radius: 3px;
+        box-shadow: none;
+        border: 1px solid transparent;
+        background-image: none;
+        color: #fff;
+    }
 </style>
 @endpush
 
 @push('scripts')
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
+<!--script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script-->
 <script src="{{ asset('la-assets/plugins/nestable/jquery.nestable.js') }}"></script>
 <script src="{{ asset('la-assets/plugins/iconpicker/fontawesome-iconpicker.js') }}"></script>
 <script src="{{ asset('la-assets/plugins/datatables/datatables.min.js') }}"></script>
@@ -230,13 +285,15 @@ use App\Http\Controllers\Helpers\IdeaHelper;
 {{-- <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script> --}}
 <script src="https://cdn.datatables.net/1.10.21/js/dataTables.bootstrap4.min.js"></script>
 
-<script src="https://cdn.datatables.net/buttons/1.6.2/js/dataTables.buttons.min.js"></script>
+<!--script src="https://cdn.datatables.net/buttons/1.6.2/js/dataTables.buttons.min.js"></script>
 <script src="https://cdn.datatables.net/buttons/1.6.2/js/buttons.flash.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
 <script src="https://cdn.datatables.net/buttons/1.6.2/js/buttons.html5.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/1.6.2/js/buttons.print.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.6.2/js/buttons.print.min.js"></script-->
+<script src="{{ asset('la-assets/plugins/bootstrap-slider/bootstrap-slider.js') }}"></script>
+<script src="{{ asset('la-assets/plugins/jQueryUI/jquery-ui.js') }}"></script>
 <script>
 $(function () {
     $('input[name=icon]').iconpicker();
@@ -285,7 +342,7 @@ $(function () {
             data: {
                 menu_id: menu_id,
                 status: status,
-                "_token": '{{ csrf_token() }}'
+                _token: '{{ csrf_token() }}'
             },
             success: function( data ) {
 
@@ -414,16 +471,76 @@ $(function () {
             search: "_INPUT_",
             searchPlaceholder: "Search"
         },
-        dom: 'Bfrtip',
-        buttons: [
-            'csv', 'excel', 'pdf', 'print'
-        ],
         @if($show_actions)
             columnDefs: [ { orderable: false, targets: [-1] }],
         @endif
     });
-    $("#category-add-form").validate({
+    $("#category-add-form").validate({ });
 
+    $('#example1').on( 'draw.dt', function () {
+        $('.slider').slider();
+        // $('.slider').slider('disable');
+        $(".slider.slider-horizontal").each(function(index) {
+            var field = $(this).next().attr("name");
+            var value = $(this).next().val();
+            // console.log(""+field+" ^^^ "+value);
+            switch (value) {
+                case '0':
+                    $(this).removeClass("orange");
+                    $(this).removeClass("green");
+                    $(this).addClass("gray");
+                    break;
+                case '1':
+                    $(this).removeClass("gray");
+                    $(this).removeClass("green");
+                    $(this).addClass("orange");
+                    break;
+                case '2':
+                    $(this).removeClass("gray");
+                    $(this).removeClass("orange");
+                    $(this).addClass("green");
+                    break;
+            }
+        });
+        $('.slider').bind('slideStop', function(event) {
+            if($(this).next().attr("name")) {
+                var field = $(this).next().attr("name");
+                var value = $(this).next().val();
+                var id = $(this).next().attr("data-slider-id");
+                console.log(""+field+" = "+id);
+                $.ajax({
+                    type: "POST",
+                    url : "{{ url(config('crmadmin.adminRoute') . '/category_field_slider_switch') }}",
+                    data : {
+                        _token: '{{ csrf_token() }}',
+                        sliderValue: value,
+                        sliderId: id,
+                        sliderField: field,
+                    },
+                    success : function(data){
+                        console.log(data);
+                    }
+                });
+                if(value == 0) {
+                    $(this).removeClass("orange");
+                    $(this).removeClass("green");
+                    $(this).addClass("gray");
+                } else if(value == 1) {
+                    $(this).removeClass("gray");
+                    $(this).removeClass("green");
+                    $(this).addClass("orange");
+                } else if(value == 2) {
+                    $(this).removeClass("gray");
+                    $(this).removeClass("orange");
+                    $(this).addClass("green");
+                }
+            }
+        });
+        //Flat red color scheme for iCheck
+        // $('input[type="radio"]').iCheck({
+        // checkboxClass: 'icheckbox_flat-green',
+        // radioClass   : 'iradio_flat-green'
+        // })
     });
 
     $("select.active_lang" ).prop("disabled", 'true');

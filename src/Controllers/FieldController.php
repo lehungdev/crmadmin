@@ -4,7 +4,7 @@
  * Help: lehung.hut@gmail.com
  * CrmAdmin is open-sourced software licensed under the MIT license.
  * Developed by: Lehungdev IT Solutions
- * Developer Website: http://ideagroup.vn
+ * Developer Website: http://rellifetech.com
  */
 
 namespace Lehungdev\Crmadmin\Controllers;
@@ -71,7 +71,7 @@ class FieldController extends Controller
                     "unique" => false,
                     "defaultvalue" => 0,
                     "minlength" => 0,
-                    "maxlength" => 1,
+                    "maxlength" => 11,
                     "required" => false,
                     "lang_active" => 0,
                     "listing_col" => true
@@ -90,7 +90,7 @@ class FieldController extends Controller
                     "unique" => false,
                     "defaultvalue" => 0,
                     "minlength" => 0,
-                    "maxlength" => 1,
+                    "maxlength" => 11,
                     "required" => false,
                     "is_public" => 0,
                     "lang_active" => 0,

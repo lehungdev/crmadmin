@@ -4,7 +4,7 @@
  * Help: lehung.hut@gmail.com
  * LaraAdmin is open-sourced software licensed under the MIT license.
  * Developed by: Lehungdev IT Solutions
- * Developer Website: http://ideagroup.vn
+ * Developer Website: http://rellifetech.com
  */
 
 namespace Lehungdev\Crmadmin;
@@ -66,7 +66,13 @@ class LAFormMaker
 
             $field_type = ModuleFieldTypes::find($field_type);
 
-            $out = '<div class="form-group col-md-6 col-sm-6 col-xs-12" id="' . $field_name . '">';
+            if($field_type->name == 'Text' or $field_type->name == 'TextField' or $field_type->name == 'LongText'){
+                $class_field = 'col-md-12 col-sm-12 col-xs-12';
+            } else {
+                $class_field = 'col-md-6 col-sm-6 col-xs-12';
+            }
+
+            $out = '<div class="form-group '. $class_field .'" id="' . $field_name . '">';
             $required_ast = "";
 
             if(!isset($params['class'])) {
@@ -570,7 +576,7 @@ class LAFormMaker
                             <div class='uploaded_image'><img src='" . url("/s80x80/$path_image") . "'><i title='Remove Image' class='fa fa-times'></i></div>";
 
                     } else {
-                        $out .= "<a class='btn btn-default btn_upload_image' file_type='image' selecter='" . $field_name . "'>Upload <i class='fa fa-cloud-upload'></i></a>
+                        $out .= "<a class='btn btn-default btn_upload_image' style='margin-top:5px;' file_type='image' selecter='" . $field_name . "'>Upload <i class='fa fa-cloud-upload'></i></a>
                             <div class='uploaded_image hide'><img src=''><i title='Remove Image' class='fa fa-times'></i></div>";
                     }
 
@@ -959,11 +965,13 @@ class LAFormMaker
 
             $field_type = ModuleFieldTypes::find($field_type);
 
-            // if($field_type->name == 'Image' or $field_type->name == 'Files'){
-            //     $field_name_lang = $field_name.'_lang_'.$language_id;
-            // }
+            if($field_type->name == 'Text' or $field_type->name == 'TextField' or $field_type->name == 'LongText'){
+                $class_field = 'col-md-12 col-sm-12 col-xs-12';
+            } else {
+                $class_field = 'col-md-6 col-sm-6 col-xs-12';
+            }
 
-            $out = '<div class="form-group col-md-6 col-sm-6 col-xs-12" id="' . $field_name . '">';
+            $out = '<div class="form-group '. $class_field .'" id="' . $field_name . '">';
             $required_ast = "";
 
             if(!isset($params['class'])) {
@@ -1239,7 +1247,7 @@ class LAFormMaker
                             $module_table_item = $row->getTable();
                         } else $module_table_item = $url_array[count($url_array) - 1];
 
-                        $allCategories = \App\Models\Category::with(['category', 'children'])->publish()->orderBy('parent', 'asc')->orderBy('hierarchy', 'asc')->get();
+                        $allCategories = \App\Models\Category::with(['category', 'children'])->public()->orderBy('parent', 'asc')->orderBy('hierarchy', 'asc')->get();
 
                         $result_name = array();
                         $result_name[0] = 'None';
@@ -1447,7 +1455,7 @@ class LAFormMaker
                             <div class='uploaded_image'><img src='" . url("/s80x80/$path_image") . "'><i title='Remove Image' class='fa fa-times'></i></div>";
 
                     } else {
-                        $out .= "<a class='btn btn-default btn_upload_image' file_type='image' selecter='" . $field_name .'_'.$language_id . "'>Upload <i class='fa fa-cloud-upload'></i></a>
+                        $out .= "<a class='btn btn-default btn_upload_image'  style='margin-top:5px;' file_type='image' selecter='" . $field_name .'_'.$language_id . "'>Upload <i class='fa fa-cloud-upload'></i></a>
                             <div class='uploaded_image hide'><img src=''><i title='Remove Image' class='fa fa-times'></i></div>";
                     }
 
@@ -1493,7 +1501,7 @@ class LAFormMaker
                     $out .= '<label for="' . $field_name . '">' . $label . $required_ast . ' :</label>';
 
                     unset($params['data-rule-maxlength']);
-                    $params['data-placeholder'] = "Select multiple " . Str::plural($label);
+                    $params['data-placeholder'] = "Select multiple " . $label;
                     unset($params['placeholder']);
                     $params['multiple'] = "true";
                     $params['rel'] = "select2";
@@ -1971,9 +1979,14 @@ class LAFormMaker
             if(isset($module->row)) {
                 $row = $module->row;
             }
+            if($field_type->name == 'Text' or $field_type->name == 'TextField' or $field_type->name == 'LongText'){
+                $class_field = 'col-md-12 col-sm-12 col-xs-12';
+            } else {
+                $class_field = 'col-md-6 col-sm-6 col-xs-12';
+            }
 
-            $out = '<div class="form-group"  id="' . $field_name . '">';
-            $out .= '<label for="' . $field_name . '" class="col-md-6 col-sm-6 col-xs-12">' . $label . ' :</label>';
+            $out = '<div class="form-group '. $class_field .'" id="' . $field_name . '">';
+            $out .= '<label for="' . $field_name . '" ' . $label . ' :</label>';
 
             $value = $row->$field_name;
 

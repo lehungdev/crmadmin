@@ -4,7 +4,7 @@
  * Help: lehung.hut@gmail.com
  * CrmAdmin is open-sourced software licensed under the MIT license.
  * Developed by: Lehungdev IT Solutions
- * Developer Website: http://ideagroup.vn
+ * Developer Website: http://rellifetech.com
  */
 
 namespace Lehungdev\Crmadmin\Models;
@@ -59,7 +59,7 @@ class ModuleFields extends Model
             } else {
                 $field->unique = false;
             }
-            if(!empty($request->defaultvalue))
+            if(!empty($request->defaultvalue) || $request->defaultvalue == 0)
                 $field->defaultvalue = $request->defaultvalue;
             else $request->defaultvalue = "";
 
@@ -160,20 +160,20 @@ class ModuleFields extends Model
      * @param $request \Illuminate\Http\Request Object
      */
     public static function updateField($id, $request)
-    {
+    { 
         $module_id = $request->module_id;
-
+        
         $field = ModuleFields::find($id);
 
         // Update the Schema
         // Change Column Name if Different
         $module = Module::find($module_id);
-        if($field->colname != $request->colname) {
+        if($field->colname != $request->colname) { 
             Schema::table($module->name_db, function ($table) use ($field, $request) {
                 $table->renameColumn($field->colname, $request->colname);
             });
         }
-
+        
         $isFieldTypeChange = false;
 
         // Update Context in ModuleFields
@@ -189,9 +189,11 @@ class ModuleFields extends Model
         } else {
             $field->unique = false;
         }
-        if(!empty($request->defaultvalue))
+        if(!empty($request->defaultvalue) || $request->defaultvalue == 0){
             $field->defaultvalue = $request->defaultvalue;
-//        else $field->defaultvalue = "";
+        }
+        else $field->defaultvalue = "";
+        
 
         if($request->minlength == "") {
             $request->minlength = 0;

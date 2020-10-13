@@ -93,21 +93,94 @@
 @endsection
 @push('styles')
 <link rel="stylesheet" type="text/css" href="{{ asset('la-assets/plugins/iCheck/flat/green.css') }}"/>
+<link rel="stylesheet" type="text/css" href="{{ asset('la-assets/plugins/bootstrap-slider/slider.css') }}"/>
+<style>
+    .slider.slider-horizontal .slider-handle {
+        margin-top: -2px;
+    }
+    .slider-disabled .slider-selection {
+        -webkit-border-radius: 9px;
+        -moz-border-radius: 9px;
+        border-radius: 9px;
+    }
+    .slider.slider-horizontal .slider-selection {
+        height: 100%;
+        top: 0;
+        bottom: 0;
+        -webkit-border-radius: 9px;
+        -moz-border-radius: 9px;
+        border-radius: 9px;
+        background-image: linear-gradient(to bottom, #e6f3e1, #e6f3e1);
+    }
+    .slider.slider-horizontal .slider-track {
+        height: 18px;
+        -webkit-border-radius: 9px;
+        -moz-border-radius: 9px;
+        border-radius: 9px;
+    }
+    .slider .tooltip{display:none !important;}
+    .slider.gray .slider-handle{background-color:#888;}
+    .slider.orange .slider-handle{background-color:#FF9800;}
+    .slider.green .slider-handle{background-color:#8BC34A;}
+    </style>
 @endpush
 @push('scripts')
 <script src="{{ asset('la-assets/plugins/iconpicker/fontawesome-iconpicker.js') }}"></script>
 <script src="{{ asset('la-assets/plugins/iCheck/icheck.min.js') }}"></script>
+<script src="{{ asset('la-assets/plugins/bootstrap-slider/bootstrap-slider.js') }}"></script>
+<script src="{{ asset('la-assets/plugins/jQueryUI/jquery-ui.js') }}"></script>
 <script>
-     //Flat red color scheme for iCheck
+    $('.slider').slider();
+    $(".slider.slider-horizontal").each(function(index) {
+		var field = $(this).next().attr("name");
+		var value = $(this).next().val();
+		// console.log(""+field+" ^^^ "+value);
+		switch (value) {
+			case '0':
+				$(this).removeClass("orange");
+				$(this).removeClass("green");
+				$(this).addClass("gray");
+				break;
+			case '1':
+				$(this).removeClass("gray");
+				$(this).removeClass("green");
+				$(this).addClass("orange");
+				break;
+			case '2':
+				$(this).removeClass("gray");
+				$(this).removeClass("orange");
+				$(this).addClass("green");
+				break;
+		}
+	});
+    $('.slider').bind('slideStop', function(event) {
+		if($(this).next().attr("name")) {
+			var field = $(this).next().attr("name");
+			var value = $(this).next().val();
+			// console.log(""+field+" = "+value);
+			if(value == 0) {
+				$(this).removeClass("orange");
+				$(this).removeClass("green");
+				$(this).addClass("gray");
+			} else if(value == 1) {
+				$(this).removeClass("gray");
+				$(this).removeClass("green");
+				$(this).addClass("orange");
+			} else if(value == 2) {
+				$(this).removeClass("gray");
+				$(this).removeClass("orange");
+				$(this).addClass("green");
+			}
+		}
+	});
+    //Flat red color scheme for iCheck
     $('input[type="radio"]').iCheck({
       checkboxClass: 'icheckbox_flat-green',
       radioClass   : 'iradio_flat-green'
     })
     $(function () {
         $('#icon input').iconpicker();
-        $("#category-edit-form").validate({
-
-        });
+        $("#property-edit-form").validate({ });
 
         $("select.active_lang" ).prop("disabled", 'true');
         $("input.active_lang" ).prop("disabled", 'true');

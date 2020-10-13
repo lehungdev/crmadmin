@@ -75,7 +75,7 @@ class UserController extends Controller
 
     public function getTokenAndRefreshToken(OClient $oClient, $email, $password)
     {
-        $url = 'http://crm.com/public/oauth/token';
+        $url = url('oauth/token');
         $oClient = OClient::where('password_client', 1)->first();
         $http = new Client;
         try {
@@ -103,7 +103,7 @@ class UserController extends Controller
         $refresh_token = $request->header('Refreshtoken');
         $oClient = OClient::where('password_client', 1)->first();
         $http = new Client;
-        $url = 'http://crm.com/public/oauth/token/refresh';
+        $url = url('oauth/refresh');
 
         try {
             $response = $http->request('POST', $url, [

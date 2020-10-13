@@ -59,5 +59,13 @@ class CategoryTransformer extends TransformerAbstract
 		}
 
 	}
-    //Add_belongsTo_parent
+    
+	public function includeProduct(Category $categories)
+	{
+		if (!is_null($categories->product)){
+			return $this->collection($categories->product, new ProductTransformer);
+		}
+
+	}
+	//Add_belongsTo_parent
 }

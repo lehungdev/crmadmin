@@ -1,7 +1,10 @@
 <?php
 /**
- * Controller genrated using IdeaAdmin
+ * Controller generated using IdeaGroup
  * Help: lehung.hut@gmail.com
+ * LaraAdmin is open-sourced software licensed under the MIT license.
+ * Developed by: Dwij IT Solutions
+ * Developer Website: http://rellifetech.com
  */
 
 namespace App\Http\Controllers\CRM;
@@ -13,8 +16,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response as FacadeResponse;
 use Illuminate\Support\Facades\Input;
 use Collective\Html\FormFacade as Form;
-
 use Illuminate\Support\Str;
+
 use Lehungdev\Crmadmin\Models\Module;
 use Lehungdev\Crmadmin\Helpers\LAHelper;
 use Shanmuga\LaravelEntrust\Facades\LaravelEntrustFacade as LaravelEntrust;
@@ -24,18 +27,15 @@ use DB;
 use File;
 use Validator;
 use Datatables;
-
 use App\Models\Upload;
 
 class UploadsController extends Controller
 {
     public $show_action = true;
 
-
     public function __construct() {
         // for authentication (optional)
         $this->middleware('auth', ['except' => 'get_file']);
-
     }
 
     /**
@@ -45,13 +45,7 @@ class UploadsController extends Controller
      */
     public function index()
     {
-        $user_id = Auth::user()->id;
-
-        if($user_id == 1)
-            $module = Module::get('Uploads');//->orderBy('id', 'desc')
-        else
-            $module = Module::get('Uploads')->where("user_id", $user_id);
-
+        $module = Module::get('Uploads');
         if(Module::hasAccess($module->id)) {
             return View('crm.uploads.index', [
                 'show_actions' => $this->show_action,
@@ -67,16 +61,11 @@ class UploadsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function get_file($hash, $name)
+    public function get_file(Request $request, $hash, $name)
     {
-        //$user_id = Auth::user()->id;
-
-        //if($user_id == 1)
-        //$upload = Upload::where("hash", $hash)->first();
-        //else
-        //$upload = Upload::where("hash", $hash)->where("user_id", $user_id)->first();
 
         $upload = Upload::where("hash", $hash)->first();
+
         // Validate Upload Hash & Filename
         if(!isset($upload->id) || $upload->name != $name) {
             return response()->json([
@@ -107,13 +96,12 @@ class UploadsController extends Controller
                 abort(404);
 
             // Check if thumbnail
-            $size = Input::get('s');
-
+            $size = $request->get('s');
             if(isset($size)) {
                 if(!is_numeric($size)) {
                     $size = 150;
                 }
-                $thumbpath = storage_path("thumbnails/".basename($upload->path)."-".$size."x".$size);
+                $thumbpath = public_path("thumbnails/".basename($upload->path)."-".$size."x".$size);
 
                 if(File::exists($thumbpath)) {
                     $path = $thumbpath;
@@ -123,48 +111,11 @@ class UploadsController extends Controller
                     $path = $thumbpath;
                 }
             }
-            // Check if thumbnail
-            $width = Input::get('w');
-            if(!empty(Input::get('h')))
-                $height = Input::get('h');
-            else $height = $width;
-
-            if(isset($width)) {
-                if(!is_numeric($width)) {
-                    $width = 150;
-                    if(isset($height)) {
-                        $height = $height;
-                    } else {
-                        $height = $width;
-                    }
-                }
-                $thumbpath = storage_path("thumbnails/".basename($upload->path)."-".$width."x".$height);
-
-                if(File::exists($thumbpath)) {
-                    $path = $thumbpath;
-                } else {
-                    // Create Thumbnail
-                    LAHelper::createThumbnail($upload->path, $thumbpath, $width, $height, "transparent");
-                    $path = $thumbpath;
-                }
-            }
-
-//			$proportion = Input::get('p');
-//			if(!is_numeric($proportion)){
-//				$proportion = explode(',',$proportion);
-//				$proportion_w = $proportion[0];
-//				$proportion_h = $proportion[1];
-//
-//			} else {
-//				$proportion_w = 1;
-//				$proportion_h = 1;
-//			}
-
 
             $file = File::get($path);
             $type = File::mimeType($path);
 
-            $download = Input::get('download');
+            $download = $request->get('download');
             if(isset($download)) {
                 return response()->download($path, $upload->name);
             } else {
@@ -186,14 +137,13 @@ class UploadsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function upload_files() {
+    public function upload_files(Request $request) {
 
         if(Module::hasAccess("Uploads", "create")) {
-            $input = Input::all();
+            $input = $request->all();
 
-            if(Input::hasFile('file'))
-            {
-                /*
+            if($request->hasFile('file')) {
+
                 $rules = array(
                     'file' => 'mimes:jpg,jpeg,bmp,png,pdf|max:3000',
                 );
@@ -201,42 +151,35 @@ class UploadsController extends Controller
                 if ($validation->fails()) {
                     return response()->json($validation->errors()->first(), 400);
                 }
-                */
-                $file = Input::file('file');
 
-//				 print_r($file);
+                $file = $request->file('file');
 
-                $folder = storage_path('uploads');
-                $folder1 = public_path() . '/uploads';
+                //$folder = public_path('uploads');
+
+                if(!empty($request->input('folder_end'))){
+                        $folder_end1 =  $request->input('folder_end');
+                        $folder_end =  '/'.$folder_end1;
+                } else {
+                    $folder_end1 = '';
+                    $folder_end = '';
+                }
+
+                $folder = 'uploads'.$folder_end;
+
                 $filename = $file->getClientOriginalName();
+                $extension = pathinfo($filename, PATHINFO_EXTENSION);
 
-                $type_file3 = '.'.str_slug(substr( $filename,  strlen($filename) - 4, strlen($filename)));
-                $type_file4 = '.'.str_slug(substr( $filename,  strlen($filename) - 5, strlen($filename)));
-                $type_file5 = '.'.str_slug(substr( $filename,  strlen($filename) - 6, strlen($filename)));
-                if( Str::startsWith($type_file3, '.')) {
-                    $name_file = str_slug(substr( $filename,  0, strlen($filename) - 4), '-');
-                    $filename = $name_file.$type_file3;
-                }
-                else if(Str::startsWith($type_file4, '.') ){
-                    $name_file = str_slug(substr( $filename,  0, strlen($filename) - 5), '-');
-                    $filename = $name_file.$type_file4;
-                }
-                else{
-                    $name_file = str_slug(substr( $filename,  0, strlen($filename) - 6), '-');
-                    $filename = $name_file.$type_file5;
-                }
+                $filename_sort = Str::slug(Str::substr( $filename, 0, strlen($filename) - strlen($extension) - 1));
+                $filename      = $filename_sort.'.'.$extension;
+
                 $date_append = date("Y-m-d-His-");
-                $file_move = Input::file('file');
-                $upload_success = $file_move->move($folder1, $date_append.$filename);
-                //	$upload_success1 = $file_move->move($folder, $date_append.$filename);
-                $upload_success1 = copy($folder1.'/'.$date_append.$filename, $folder.'/'.$date_append.$filename);
 
+                $upload_success = $request->file('file')->move($folder, $date_append.$filename);
 
                 if( $upload_success ) {
-
                     // Get public preferences
                     // config("crmadmin.uploads.default_public")
-                    $public = Input::get('public');
+                    $public = $request->get('public');
                     if(isset($public)) {
                         $public = true;
                     } else {
@@ -246,16 +189,15 @@ class UploadsController extends Controller
                     $upload = Upload::create([
                         "name" => $filename,
                         "path" => $folder.DIRECTORY_SEPARATOR.$date_append.$filename,
-                        "path_name" => 'uploads/'.$date_append.$filename,
                         "extension" => pathinfo($filename, PATHINFO_EXTENSION),
-                        "caption" => "",
+                        "caption" => $folder_end1,
                         "hash" => "",
                         "public" => $public,
                         "user_id" => Auth::user()->id
                     ]);
                     // apply unique random hash to file
                     while(true) {
-                        $hash = strtolower(str_random(20));
+                        $hash = strtolower(Str::random(20));
                         if(!Upload::where("hash", $hash)->count()) {
                             $upload->hash = $hash;
                             break;
@@ -288,35 +230,51 @@ class UploadsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function uploaded_files()
+    public function uploaded_files(Request $request)
     {
-        $user_id = Auth::user()->id;
-
         if(Module::hasAccess("Uploads", "view")) {
             $uploads = array();
+            /*
+             * Get caption
+             * */
+            $path_end = explode("/",$request->path());
+            if(count($path_end) > 0 and $path_end[count($path_end) - 1] != 'uploaded_files')
+                $folder_end =  $path_end[count($path_end) - 1];
+            else $folder_end = '';
 
             // print_r(Auth::user()->roles);
-            if(LaravelEntrust::hasRole('SUPER_ADMIN')) {
-                $uploads = Upload::orderBy('id', 'desc')->get();
+            if(LaravelEntrust::hasRole('SUPER_ADMIN')) { //dd($folder_end);
+                // $uploads = Upload::where('caption', $folder_end)->get();
+                if(!empty($folder_end))
+                    $uploads = Upload::where('caption', $folder_end)->get();
+                else
+                    $uploads = Auth::user()->uploads;
+
             } else {
-//				if(config('crmadmin.uploads.private_uploads')) {
-                // Upload::where('user_id', 0)->first();
-//					$uploads = Auth::user()->uploads;
-//				} else {
-                //$uploads = Upload::where("user_id", $user_id)->orderBy('id', 'desc');
-//				}
-                $uploads = Upload::orderBy('id', 'desc')->where("user_id", $user_id)->get();
+                // if(config('crmadmin.uploads.private_uploads')) {
+                //     // Upload::where('user_id', 0)->first();
+                //     $uploads = Auth::user()->uploads;
+                // } else {
+                    if(!empty($folder_end))
+                        $uploads = Upload::where('caption', $folder_end)->get();
+                    else
+                        $uploads = Auth::user()->uploads;
+                // }
             }
+
             $uploads2 = array();
             foreach ($uploads as $upload) {
                 $u = (object) array();
                 $u->id = $upload->id;
                 $u->name = $upload->name;
+                $path = explode("/",$upload->path);
+                $date_append = Str::substr($path[count($path)-1], 2, 15 );
+                $u->date = $date_append;
                 $u->extension = $upload->extension;
                 $u->hash = $upload->hash;
                 $u->public = $upload->public;
                 $u->caption = $upload->caption;
-                //$u->user = $upload->user->name;
+                $u->user = $upload->user->name;
 
                 $uploads2[] = $u;
             }
@@ -330,6 +288,7 @@ class UploadsController extends Controller
             //     }
             // }
             // return response()->json(['files' => $files]);
+            // dd($uploads2);
             return response()->json(['uploads' => $uploads2]);
         } else {
             return response()->json([
@@ -344,11 +303,11 @@ class UploadsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function update_caption()
+    public function update_caption(Request $request)
     {
         if(Module::hasAccess("Uploads", "edit")) {
-            $file_id = Input::get('file_id');
-            $caption = Input::get('caption');
+            $file_id = $request->get('file_id');
+            $caption = $request->get('caption');
 
             $upload = Upload::find($file_id);
             if(isset($upload->id)) {
@@ -387,12 +346,11 @@ class UploadsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function update_filename()
+    public function update_filename(Request $request)
     {
         if(Module::hasAccess("Uploads", "edit")) {
-            $file_id = Input::get('file_id');
-            $filename = Input::get('filename');
-
+            $file_id = $request->get('file_id');
+            $filename = $request->get('filename');
 
             $upload = Upload::find($file_id);
             if(isset($upload->id)) {
@@ -431,11 +389,11 @@ class UploadsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function update_public()
+    public function update_public(Request $request)
     {
         if(Module::hasAccess("Uploads", "edit")) {
-            $file_id = Input::get('file_id');
-            $public = Input::get('public');
+            $file_id = $request->get('file_id');
+            $public = $request->get('public');
             if(isset($public)) {
                 $public = true;
             } else {
@@ -479,10 +437,10 @@ class UploadsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function delete_file()
+    public function delete_file(Request $request)
     {
         if(Module::hasAccess("Uploads", "delete")) {
-            $file_id = Input::get('file_id');
+            $file_id = $request->get('file_id');
 
             $upload = Upload::find($file_id);
             if(isset($upload->id)) {
@@ -515,4 +473,3 @@ class UploadsController extends Controller
         }
     }
 }
-

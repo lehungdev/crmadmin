@@ -1,7 +1,7 @@
 <script src="{{ asset('la-assets/plugins/dropzone/dropzone.js') }}"></script>
 <?php
 $path_site = explode(config('crmadmin.adminRoute'),\Request::path());
-$path_site = $path_site[1];
+$path_site = $path_site[1];//config('crmadmin.adminRoute')
 $path_site_item = explode("/",$path_site);
 if(count($path_site_item) > 0 and !empty($path_site_item[1]))
     $folder_end =  $path_site_item[1];

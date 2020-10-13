@@ -4,7 +4,7 @@
  * Help: lehung.hut@gmail.com
  * CrmAdmin is open-sourced software licensed under the MIT license.
  * Developed by: Lehungdev IT Solutions
- * Developer Website: http://ideagroup.vn
+ * Developer Website: http://rellifetech.com
  */
 
 namespace App\Http\Controllers\CRM;
@@ -17,6 +17,7 @@ use Auth;
 use DB;
 use Validator;
 use Datatables;
+use LaravelEntrust;
 use Collective\Html\FormFacade as Form;
 use Lehungdev\Crmadmin\Models\Module;
 use Lehungdev\Crmadmin\Models\ModuleFields;
@@ -35,8 +36,9 @@ class CategoryController extends Controller
      */
     public function index(Request $request)
     {
+        
         $module = Module::get('Categories');
-        $getAllCategory = Category::with(['category','children'])->publish()->get();
+        $getAllCategory = Category::with(['category','children'])->public()->orderBy('hierarchy', 'asc')->get(); //->orderBy('parent', 'asc')
         $url = $request->url();
         if(Module::hasAccess($module->id)) {
             return View('crm.categories.index', [
@@ -108,6 +110,14 @@ class CategoryController extends Controller
                 return redirect()->back()->withErrors($validator)->withInput();
             }
 
+            //Active and public
+            if(!LaravelEntrust::hasRole("SUPER_ADMIN")){
+                if($request->is_active == 1){
+                    $request->merge(['is_public'=>1]);
+                } else $request->merge(['is_public'=>0]);
+            }
+        
+			$request->merge(['user_id'=>Auth::user()->id]);
             $insert_id = Module::insert("Categories", $request);
 
             return redirect()->route(config('crmadmin.adminRoute') . '.categories.index');
@@ -191,7 +201,7 @@ class CategoryController extends Controller
         if(Module::hasAccess("Categories", "edit")) {
             $module = Module::get('Categories');
             $pvd_language = Language::get();
-
+            // dd($request);
             foreach($module->fields as $key_field => $field){
                 if(!empty($field['lang_active']) and isset($request->$key_field)){
                     if($field['label'] == 'Image'){
@@ -219,11 +229,20 @@ class CategoryController extends Controller
 
                 }
             }
-            $rules = Module::validateRules("Categories", $request, true, $id);
-            $validator = Validator::make($request->all(), $rules);
+            $rules = Module::validateRules("Categories", $request, true, $id); 
+            $validator = Validator::make($request->all(), $rules);  //dd($validator);
             if($validator->fails()) {
                 return redirect()->back()->withErrors($validator)->withInput();;
             }
+
+            $item = Category::find($id);
+            //Active and public
+            if(!LaravelEntrust::hasRole("SUPER_ADMIN")){
+                if($request->is_active == 1){
+                    $request->merge(['is_public'=>1]);
+                } else $request->merge(['is_public'=>0]);
+            }
+            $request->merge(['user_id'=>Auth::user()->id]);
             $insert_id = Module::updateRow("Categories", $request, $id);
 
             return redirect()->route(config('crmadmin.adminRoute') . '.categories.index');
@@ -260,7 +279,7 @@ class CategoryController extends Controller
     public function dtswitch(Request $request)
     {
         if(Module::hasFieldAccess("Categories", $request->switchName, "write")){
-            if($request->state == "true") {
+            if($request->state == "true" || $request->state == 1) {
                 $state = 1;
             } else {
                 $state = 0;
@@ -269,7 +288,28 @@ class CategoryController extends Controller
             if(isset($item->id)) {
                 $item[$request['switchName']] = $state;
                 $item->save();
-                return response()->json(['status' => 'success', 'message' => "Category field switch ". $request->switchName ." saved to " . $state]);
+                return response()->json(['status' => 'success', 'message' => "Category field switch ". $request->switchName . $item[$request['switchName']]. " saved to " . $state]);
+            } else {
+                return response()->json(['status' => 'failed', 'message' => "Category field not found"]);
+            }
+        }
+    }
+
+
+    /**
+     * Server side Datatable fetch via slide switch
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function dtSlideSwitch(Request $request)
+    {
+        if(Module::hasFieldAccess("Categories", $request->sliderField, "write")){
+            $item = Category::find($request->sliderId); //dd($item->id);
+            if(isset($item->id)) {
+                $item[$request['sliderField']] = $request->sliderValue;
+                $item->save();
+                return response()->json(['status' => 'success', 'message' => "Category field  slide switch ". $request->sliderField ." saved to " . $request->sliderId.$item[$request['sliderField']] ]);
             } else {
                 return response()->json(['status' => 'failed', 'message' => "Category field not found"]);
             }
@@ -317,7 +357,7 @@ class CategoryController extends Controller
     public function update_status(Request $request)
     {
         if(Module::hasAccess("Categories", "edit")) {
-            $status = $request->publish;
+            $status = $request->is_public;
             $menu_id = $request->menu_id;
 
             $insert_id = Module::updateRow("Categories", $request, $menu_id);
@@ -340,7 +380,7 @@ class CategoryController extends Controller
         $listing_cols = Module::getListingColumns('Categories');
         // dd($listing_cols);
 
-        $values = DB::table('categories')->select($listing_cols)->whereNull('deleted_at');
+        $values = DB::table('categories')->select($listing_cols)->whereNull('deleted_at')->limit(2500);
         $out = \DataTables::of($values)->make();
         $data = $out->getData();
 
@@ -408,21 +448,50 @@ class CategoryController extends Controller
                 }
                 //Field Multiselect
                 if(!empty($module->fields[$col]) && $module->fields[$col]['field_type'] == 15){
+                    
                     $popup_vals = str_replace('@', '', $module->fields[$col]['popup_vals']);
                     $json = str_replace('&quot;', '"', $data->data[$i][$col]);
                     $values_json = DB::table($popup_vals)->whereIn('id',json_decode($json))->pluck('name');
                     $data->data[$i][$j] = '';
                     foreach($values_json as $value_json){
+                        //Set value langue
+                        if(!empty($value_json) and is_array((array)$value_json)){
+                            $value_json = json_decode(str_replace('&quot;', '"', $value_json), true);
+                            $value_json = $value_json[config('app.locale_id')];
+                        }//End set value langue
+                        // dd($value_json);
                         $data->data[$i][$j] .= '<small class="label label-primary">'. $value_json .'</small> ';
                     }
                 }
 
+                // if(!empty($module->fields[$col]) && $module->fields[$col]['field_type'] == 20){
+                //     $values_json = json_decode(str_replace('&quot;', '"', $data->data[$i][$col]), true);
+                //     $data->data[$i][$j] = '';
+                //     foreach($values_json as $value_json){
+                //         $data->data[$i][$j] .= '<small class="label label-primary">'. $value_json .'</small> ';
+                //     }
+                // }
+
                 if(!empty($module->fields[$col]) && $module->fields[$col]['field_type'] == 20){
-                    $values_json = json_decode(str_replace('&quot;', '"', $data->data[$i][$col]), true);
-                    $data->data[$i][$j] = '';
-                    foreach($values_json as $value_json){
-                        $data->data[$i][$j] .= '<small class="label label-primary">'. $value_json .'</small> ';
+                    if(!is_array($data->data[$i][$col])){
+                        $values_json =  json_decode(str_replace('&quot;', '"', $data->data[$i][$col]), true);
                     }
+                    else {
+                        $values_json = $data->data[$i][$col];
+                    }
+                    $data->data[$i][$j] = '';
+                    if(is_array($values_json)){
+                        foreach($values_json as $value_json){
+                            $data->data[$i][$j] .= '<small class="label label-primary">'. $value_json .'</small> ';
+                        }
+                    } else {
+                        $data->data[$i][$j] .= $data->data[$i][$j] .= '<small class="label label-primary">'. $values_json .'</small> ';
+                    }
+                }
+
+                if(!empty($module->fields[$col]) && $module->fields[$col]['field_type'] == 27){
+                    $data->data[$i][$j] = '';
+                    $data->data[$i][$j] .= '<div style="max-width: 125px;"><input type="text" name="'. $col .'" value="'.$data->data[$i][$col].'" data-slider-value="'.$data->data[$i][$col].'" class="slider form-control" data-slider-min="0" data-slider-max="2" data-slider-step="1" data-slider-orientation="horizontal"  data-slider-id="'.$data->data[$i][$listing_cols[0]].'"></div>';
                 }
 
                 if( $col!== 'id')
