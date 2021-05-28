@@ -1,41 +1,46 @@
- {
-    "name": "lehungdev/crmadmin",
-    "description": "IdeaAdmin is a Open source Laravel Admin Panel / CMS which can be used as Admin Backend, Data Management Tool or CRM boilerplate for Laravel with features like CRUD Generation, Module Manager, Media, Menus, Backups and much more",
-    "keywords": ["php", "laravel", "crm", "admin", "cms", "administrator"],
-    "license": "MIT",
-    "require": {
-        "illuminate/support": "^8.9.0",
-        "laravelcollective/html": "^6.2.0",
-        "illuminate/container": "^8.9.0",
-        "yajra/laravel-datatables-oracle": "^9.11.1",
-        "creativeorange/gravatar": "^1.0.19",
-        "doctrine/dbal": "^2.11.1",
-        "shanmuga/laravel-entrust": "^1.3",
-        "spatie/laravel-backup": "^6.11.4",
-        "laravel/passport": "^10.0.1",
-        "symfony/psr-http-message-bridge": "^2.0.2",
-        "spatie/laravel-fractal": "^5.8.0",
-        "predis/predis": "^1.1.6",
-        "kreait/laravel-firebase": "^2.3.1",
-        "cviebrock/eloquent-sluggable": "^8.0.1",
-        "laravel/ui": "^3.0"
-    },
-    "authors": [
-        {
-            "name": "HungLV",
-            "email": "lehung.hut@gmail.com"
-        }
-    ],
-    "classmap": [
-        "src/Controllers",
-        "src/Models"
-    ],
-    "autoload": {
-        "psr-4": {
-            "Lehungdev\\Crmadmin\\": "src/"
-        },
-        "files": [
-        ]
+{
+  "name": "lehungdev/crmadmin",
+  "description": "IdeaAdmin is a Open source Laravel Admin Panel / CMS which can be used as Admin Backend, Data Management Tool or CRM boilerplate for Laravel with features like CRUD Generation, Module Manager, Media, Menus, Backups and much more",
+  "keywords": [
+    "php",
+    "laravel",
+    "crm",
+    "admin",
+    "cms",
+    "administrator"
+  ],
+  "license": "MIT",
+  "require": {
+    "illuminate/support": "^8.44.0",
+    "laravelcollective/html": "^6.2.1",
+    "illuminate/container": "^8.44.0",
+    "yajra/laravel-datatables-oracle": "^9.18.0",
+    "creativeorange/gravatar": "^1.0.20",
+    "doctrine/dbal": "^3.1.0",
+    "shanmuga/laravel-entrust": "^2.2",
+    "spatie/laravel-backup": "^7.5.3",
+    "laravel/passport": "^10.1.3",
+    "symfony/psr-http-message-bridge": "^2.1.0",
+    "spatie/laravel-fractal": "^5.8.1",
+    "predis/predis": "^1.1.7",
+    "kreait/laravel-firebase": "^3.1.0",
+    "cviebrock/eloquent-sluggable": "^8.0.7",
+    "laravel/ui": "^3.3.0"
+  },
+  "authors": [
+    {
+      "name": "HungLV",
+      "email": "lehung.hut@gmail.com"
     }
-
+  ],
+  "classmap": [
+    "src/Controllers",
+    "src/Models"
+  ],
+  "autoload": {
+    "psr-4": {
+      "Lehungdev\\Crmadmin\\": "src/"
+    },
+    "files": []
+  }
 }
