@@ -153,17 +153,17 @@ class LAInstall extends Command
                     mkdir($to . "/app/Models");
                 }
                 foreach ($this->modelsInstalled as $model) {
-                    if ($model == "User") {
-                        if (LAHelper::laravel_ver() == 5.3 || LAHelper::laravel_ver() != 5.4) {
-                            $this->copyFile($from . "/app/Models/" . $model . "5.5.php", $to . "/app/" . $model . ".php");
-                        } else {
-                            $this->copyFile($from . "/app/Models/" . $model . ".php", $to . "/app/" . $model . ".php");
-                        }
-                    } else if ($model == "Role" || $model == "Permission") {
-                        $this->copyFile($from . "/app/Models/" . $model . ".php", $to . "/app/" . $model . ".php");
-                    } else {
+                    // if ($model == "User") {
+                    //     if (LAHelper::laravel_ver() == 5.3 || LAHelper::laravel_ver() != 5.4) {
+                    //         $this->copyFile($from . "/app/Models/" . $model . "5.5.php", $to . "/app/" . $model . ".php");
+                    //     } else {
+                            // $this->copyFile($from . "/app/Models/" . $model . ".php", $to . "/app/" . $model . ".php");
+                    //     }
+                    // } else if ($model == "Role" || $model == "Permission") {
+                    //     $this->copyFile($from . "/app/Models/" . $model . ".php", $to . "/app/" . $model . ".php");
+                    // } else {
                         $this->copyFile($from . "/app/Models/" . $model . ".php", $to . "/app/Models/" . $model . ".php");
-                    }
+                    // }
                 }
 
                 // Custom Admin Route
@@ -301,7 +301,7 @@ class LAInstall extends Command
                 }
                 // Creating Super Admin User
 
-                $user = \App\User::where('context_id', "1")->first();
+                $user = \App\Models\User::where('context_id', "1")->first();
                 if (!isset($user['id'])) {
 
                     $this->line('Creating Super Admin User...');
@@ -312,7 +312,7 @@ class LAInstall extends Command
                     $data['password'] = bcrypt($this->secret('Super Admin password'));
                     $data['context_id'] = "1";
                     $data['type'] = "Employee";
-                    $user = \App\User::create($data);
+                    $user = \App\Models\User::create($data);
 
                     // TODO: This is Not Standard. Need to find alternative
                     Eloquent::unguard();
@@ -324,7 +324,7 @@ class LAInstall extends Command
                         'mobile2' => "",
                         'email' => $data['email'],
                         'gender' => 'Male',
-                        'dept' => "1",
+                        // 'dept' => "1",
                         'city' => "HaNoi",
                         'address' => "HaNoi, VietName",
                         'about' => "About user / biography",
@@ -338,7 +338,7 @@ class LAInstall extends Command
                 } else {
                     $this->info("Super Admin User '" . $user['name'] . "' exists. ");
                 }
-                $role = \App\Role::whereName('SUPER_ADMIN')->first();
+                $role = \App\Models\Role::whereName('SUPER_ADMIN')->first();
                 $user->attachRole($role);
 
                 $this->info("\n");

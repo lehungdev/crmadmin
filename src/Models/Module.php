@@ -94,9 +94,11 @@ class Module extends Model
      * @param $fields Array of Module fields
      * @throws Exception Throws exceptions if Invalid view_column_name provided.
      */
-    public static function generate($module_name, $module_name_db, $view_col, $faIcon = "fa-cube", $fields)
+    public static function generate($module_name, $module_name_db, $view_col, $faIcon, $fields)
     {
-
+        if(empty($faIcon)){
+            $faIcon = "fa-cube";
+        };
         $names = LAHelper::generateModuleNames($module_name, $faIcon);
         $fields = Module::format_fields($module_name, $fields);
 

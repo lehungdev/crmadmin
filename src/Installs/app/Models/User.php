@@ -7,7 +7,7 @@
  * Developer Website: http://rellifetech.com
  */
 
-namespace App;
+namespace App\Models;
 
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Auth\Passwords\CanResetPassword;

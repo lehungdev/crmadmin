@@ -7,7 +7,7 @@
  * Developer Website: http://rellifetech.com
  */
 
-namespace App;
+namespace App\Models;
 
 // use Shanmuga\LaravelEntrust\EntrustRole;
 // use Illuminate\Database\Eloquent\SoftDeletes;

@@ -74,7 +74,7 @@ class CreateUsersTable extends Migration
                 "popup_vals" => ["Employee","Client"],
             ]
         ]);
-        
+
         /*
         Module::generate("Module_Name", "Table_Name", "view_column_name" "Fields_Array");
 
