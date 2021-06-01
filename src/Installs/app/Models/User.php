@@ -16,7 +16,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Shanmuga\LaravelEntrust\Traits\LaravelEntrustUserTrait;
 
-class User extends Model implements Authenticatable
+class User extends Authenticatable
 {
     use  HasFactory, Notifiable, LaravelEntrustUserTrait;
 
