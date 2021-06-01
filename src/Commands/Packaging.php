@@ -96,9 +96,9 @@ class Packaging extends Command
         $this->line('Exporting migrations...');
         $this->replaceFolder($from . "/database/migrations", $to . "/migrations");
 
-        // seeds
-        $this->line('Exporting seeds...');
-        $this->copyFile($from . "/database/seeds/DatabaseSeeder.php", $to . "/seeds/DatabaseSeeder.php");
+        // seeders
+        $this->line('Exporting seeders...');
+        $this->copyFile($from . "/database/seeders/DatabaseSeeder.php", $to . "/seeders/DatabaseSeeder.php");
 
         // resources
         $this->line('Exporting resources: assets + views...');

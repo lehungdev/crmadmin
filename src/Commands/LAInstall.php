@@ -265,35 +265,19 @@ class LAInstall extends Command
                 }
 
                 // Routes
-                $this->line('Appending routes...');
-                //if(!$this->fileContains($to."/app/Http/routes.php", "crmadmin.adminRoute")) {
-                if (LAHelper::laravel_ver() == 5.3 || LAHelper::laravel_ver() != 5.4) {
-                    if (LAHelper::getLineWithString($to . "/routes/web.php", "require __DIR__.'/admin_routes.php';") == -1) {
-                        $this->appendFile($from . "/app/routes.php", $to . "/routes/web.php");
-                    }
-                    $this->copyFile($from . "/app/admin_routes.php", $to . "/routes/admin_routes.php");
-                    $this->copyFile($from . "/app/api.php", $to . "/routes/api.php");  ###changed
-                } else {
-                    if (LAHelper::getLineWithString($to . "/app/Http/routes.php", "require __DIR__.'/admin_routes.php';") == -1) {
-                        $this->appendFile($from . "/app/routes.php", $to . "/app/Http/routes.php");
-                    }
-                    $this->copyFile($from . "/app/admin_routes.php", $to . "/app/Http/admin_routes.php");
-                    $this->copyFile($from . "/app/api.php", $to . "/app/Http/api.php");  ###changed
+                $this->line('Appending routes...'); 
+                if (LAHelper::getLineWithString($to . "/routes/web.php", "require __DIR__.'/admin_routes.php';") == -1) {
+                    $this->appendFile($from . "/app/routes.php", $to . "/routes/web.php");
                 }
+                $this->copyFile($from . "/app/admin_routes.php", $to . "/routes/admin_routes.php");
+                $this->copyFile($from . "/app/api.php", $to . "/routes/api.php");  ###changed 
 
                 // tests
                 $this->line('Generating tests...');
-                $this->copyFolder($from . "/tests", $to . "/tests");
-                if (LAHelper::laravel_ver() == 5.3 || LAHelper::laravel_ver() != 5.4) {
-                    unlink($to . '/tests/TestCase.php');
-                    rename($to . '/tests/TestCase5.3.php', $to . '/tests/TestCase.php');
-                } else {
-                    unlink($to . '/tests/TestCase5.3.php');
-                }
+                $this->copyFolder($from . "/tests", $to . "/tests"); 
 
                 // Utilities
-                $this->line('Generating Utilities...');
-                // if(!$this->fileContains($to."/gulpfile.js", "admin-lte/AdminLTE.less")) {
+                $this->line('Generating Utilities...'); 
                 if (file_exists($to . "/gulpfile.js")) {
                     if (LAHelper::getLineWithString($to . "/gulpfile.js", "mix.less('admin-lte/AdminLTE.less', 'public/la-assets/css');") == -1) {
                         $this->appendFile($from . "/gulpfile.js", $to . "/gulpfile.js");
@@ -324,7 +308,7 @@ class LAInstall extends Command
                         'mobile2' => "",
                         'email' => $data['email'],
                         'gender' => 'Male',
-                        // 'dept' => "1",
+                        'dept' => "1",
                         'city' => "HaNoi",
                         'address' => "HaNoi, VietName",
                         'about' => "About user / biography",
