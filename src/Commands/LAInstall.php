@@ -62,10 +62,8 @@ class LAInstall extends Command
                 $this->line("DB Assistant Initiated....");
                 $db_data = array();
 
-                if (LAHelper::laravel_ver() == 5.3 || LAHelper::laravel_ver() != 5.4) {
-                    $db_data['host'] = $this->ask('Database Host', 'localhost');
-                    $db_data['port'] = $this->ask('Database Port', '3306');
-                }
+                $db_data['host'] = $this->ask('Database Host', 'localhost');
+                $db_data['port'] = $this->ask('Database Port', '3306');
                 $db_data['db'] = $this->ask('Database Name', 'crmadmin1');
                 $db_data['dbuser'] = $this->ask('Database User', 'root');
                 $dbpass = $this->ask('Database Password', false);
@@ -76,14 +74,11 @@ class LAInstall extends Command
                     $db_data['dbpass'] = "";
                 }
 
-                $default_db_conn = env('DB_CONNECTION', 'mysql');
-
-                if (LAHelper::laravel_ver() == 5.3 || LAHelper::laravel_ver() != 5.4) {
-                    config(['database.connections.' . $default_db_conn . '.host' => $db_data['host']]);
-                    config(['database.connections.' . $default_db_conn . '.port' => $db_data['port']]);
-                    LAHelper::setenv("DB_HOST", $db_data['host']);
-                    LAHelper::setenv("DB_PORT", $db_data['port']);
-                }
+                $default_db_conn = env('DB_CONNECTION', 'mysql'); 
+                config(['database.connections.' . $default_db_conn . '.host' => $db_data['host']]);
+                config(['database.connections.' . $default_db_conn . '.port' => $db_data['port']]);
+                LAHelper::setenv("DB_HOST", $db_data['host']);
+                LAHelper::setenv("DB_PORT", $db_data['port']); 
 
                 config(['database.connections.' . $default_db_conn . '.database' => $db_data['db']]);
                 config(['database.connections.' . $default_db_conn . '.username' => $db_data['dbuser']]);
@@ -100,7 +95,7 @@ class LAInstall extends Command
 
             if ($this->confirm("This process may change/append to the following of your existing project files:"
                 . "\n\n\t app/Http/routes.php"
-                . "\n\t app/User.php"
+                . "\n\t app/Models/User.php"
                 . "\n\t database/migrations/2014_10_12_000000_create_users_table.php"
                 . "\n\t gulpfile.js"
                 . "\n\t app/Providers/AuthServiceProvider.php"
@@ -112,35 +107,17 @@ class LAInstall extends Command
                 $this->line("\n" . 'Generating Controllers...');
                 $this->copyFolder($from . "/app/Controllers/Auth", $to . "/app/Http/Controllers/Auth");
                 $this->replaceFolder($from . "/app/Controllers/Helpers", $to . "/app/Http/Controllers/Helpers");
-                if (LAHelper::laravel_ver() == 5.3 || LAHelper::laravel_ver() != 5.4) {
-                    // Delete Redundant Controllers
-                    unlink($to . "/app/Http/Controllers/Auth/PasswordController.php");
-                    unlink($to . "/app/Http/Controllers/Auth/AuthController.php");
-                } else {
                     unlink($to . "/app/Http/Controllers/Auth/ForgotPasswordController.php");
                     unlink($to . "/app/Http/Controllers/Auth/LoginController.php");
                     unlink($to . "/app/Http/Controllers/Auth/RegisterController.php");
                     unlink($to . "/app/Http/Controllers/Auth/ResetPasswordController.php");
-                }
                 $this->replaceFolder($from . "/app/Controllers/CRM", $to . "/app/Http/Controllers/CRM");
-                if (LAHelper::laravel_ver() == 5.3 || LAHelper::laravel_ver() != 5.4) {
-                    $this->copyFile($from . "/app/Controllers/Controller.5.5.php", $to . "/app/Http/Controllers/Controller.php");
-                } else {
-                    $this->copyFile($from . "/app/Controllers/Controller.php", $to . "/app/Http/Controllers/Controller.php");
-                }
+                $this->copyFile($from . "/app/Controllers/Controller.php", $to . "/app/Http/Controllers/Controller.php");
                 $this->copyFile($from . "/app/Controllers/HomeController.php", $to . "/app/Http/Controllers/HomeController.php");
 
-                // Middleware
-                if (LAHelper::laravel_ver() == 5.3 || LAHelper::laravel_ver() != 5.4) {
-                    $this->copyFile($from . "/app/Middleware/RedirectIfAuthenticated.php", $to . "/app/Http/Middleware/RedirectIfAuthenticated.php");
-                    $this->copyFile($from . "/app/Middleware/CheckClientCredentials.php", $to . "/app/Http/Middleware/CheckClientCredentials.php");  ###changed
-                }
-
-                // AppServiceProvider - https://laravel-news.com/laravel-5-4-key-too-long-error
-                // if (LAHelper::laravel_ver() != 5.4) {
-                //     $this->copyFile($from . "/app/Providers/AppServiceProvider.php", $to . "/app/Providers/AppServiceProvider.php");
-
-                // }
+                // Middleware 
+                $this->copyFile($from . "/app/Middleware/RedirectIfAuthenticated.php", $to . "/app/Http/Middleware/RedirectIfAuthenticated.php");
+                $this->copyFile($from . "/app/Middleware/CheckClientCredentials.php", $to . "/app/Http/Middleware/CheckClientCredentials.php");  ###changed 
 
                 // Config
                 $this->line('Generating Config...');
@@ -153,31 +130,10 @@ class LAInstall extends Command
                     mkdir($to . "/app/Models");
                 }
                 foreach ($this->modelsInstalled as $model) {
-                    // if ($model == "User") {
-                    //     if (LAHelper::laravel_ver() == 5.3 || LAHelper::laravel_ver() != 5.4) {
-                    //         $this->copyFile($from . "/app/Models/" . $model . "5.5.php", $to . "/app/" . $model . ".php");
-                    //     } else {
-                            // $this->copyFile($from . "/app/Models/" . $model . ".php", $to . "/app/" . $model . ".php");
-                    //     }
-                    // } else if ($model == "Role" || $model == "Permission") {
-                    //     $this->copyFile($from . "/app/Models/" . $model . ".php", $to . "/app/" . $model . ".php");
-                    // } else {
-                        $this->copyFile($from . "/app/Models/" . $model . ".php", $to . "/app/Models/" . $model . ".php");
-                    // }
+                    $this->copyFile($from . "/app/Models/" . $model . ".php", $to . "/app/Models/" . $model . ".php");
                 }
 
                 // Custom Admin Route
-                /*
-                $this->line("\nDefault admin url route is /admin");
-                if ($this->confirm('Would you like to customize this url ?', false)) {
-                    $custom_admin_route = $this->ask('Custom admin route:', 'admin');
-                    $laconfigfile =  $this->openFile($to."/config/crmadmin.php");
-                    $arline = LAHelper::getLineWithString($to."/config/crmadmin.php", "'adminRoute' => 'admin',");
-                    $laconfigfile = str_replace($arline, "    'adminRoute' => '" . $custom_admin_route . "',", $laconfigfile);
-                    file_put_contents($to."/config/crmadmin.php", $laconfigfile);
-                    config(['crmadmin.adminRoute' => $custom_admin_route]);
-                }
-                */
 
                 // Generate Uploads / Thumbnails folders in /storage
                 $this->line('Generating Uploads / Thumbnails folders...');
@@ -198,18 +154,13 @@ class LAInstall extends Command
                 // check CACHE_DRIVER to be array or else
                 // It is required for Zizaco/Entrust
                 // https://github.com/Zizaco/entrust/issues/468
-                $driver_type = env('CACHE_DRIVER');
-                if ($driver_type != "array") {
-                    throw new Exception("Please set Cache Driver to array in .env (Required for Zizaco\Entrust) and run crm:install again:"
-                        . "\n\n\tCACHE_DRIVER=array\n\n", 1);
-                }
 
                 // migrations
                 $this->line('Generating migrations...');
                 $this->copyFolder($from . "/migrations", $to . "/database/migrations");
 
-                $this->line('Copying seeds...');
-                $this->copyFile($from . "/seeds/DatabaseSeeder.php", $to . "/database/seeds/DatabaseSeeder.php");
+                $this->line('Copying seeders...');
+                $this->copyFile($from . "/seeders/DatabaseSeeder.php", $to . "/database/seeders/DatabaseSeeder.php");
 
 
                 // resources
@@ -241,12 +192,7 @@ class LAInstall extends Command
                 $this->info(exec($composer_path . ' dump-autoload'));
 
                 $this->call('migrate:refresh');
-                // $this->call('migrate:refresh', ['--seed']);
 
-                // $this->call('db:seed', ['--class' => 'CrmAdminSeeder']);
-
-                // $this->line('Running seeds...');
-                // $this->info(exec('composer dump-autoload'));
                 $this->call('db:seed');
                 // Install Spatie Backup
                 $this->call('vendor:publish', ['--provider' => 'Spatie\Backup\BackupServiceProvider']);
@@ -265,19 +211,20 @@ class LAInstall extends Command
                 }
 
                 // Routes
-                $this->line('Appending routes...'); 
+                $this->line('Appending routes...');
                 if (LAHelper::getLineWithString($to . "/routes/web.php", "require __DIR__.'/admin_routes.php';") == -1) {
                     $this->appendFile($from . "/app/routes.php", $to . "/routes/web.php");
                 }
                 $this->copyFile($from . "/app/admin_routes.php", $to . "/routes/admin_routes.php");
-                $this->copyFile($from . "/app/api.php", $to . "/routes/api.php");  ###changed 
+                $this->copyFile($from . "/app/api.php", $to . "/routes/api.php");  ###changed
 
                 // tests
                 $this->line('Generating tests...');
-                $this->copyFolder($from . "/tests", $to . "/tests"); 
+                $this->copyFolder($from . "/tests", $to . "/tests");
+                unlink($to . '/tests/TestCase.php');
 
                 // Utilities
-                $this->line('Generating Utilities...'); 
+                $this->line('Generating Utilities...');
                 if (file_exists($to . "/gulpfile.js")) {
                     if (LAHelper::getLineWithString($to . "/gulpfile.js", "mix.less('admin-lte/AdminLTE.less', 'public/la-assets/css');") == -1) {
                         $this->appendFile($from . "/gulpfile.js", $to . "/gulpfile.js");
@@ -292,7 +239,7 @@ class LAInstall extends Command
 
                     $data = array();
                     $data['name'] = $this->ask('Super Admin name', 'Super Admin');
-                    $data['email'] = $this->ask('Super Admin email', 'user@example.com');
+                    $data['email'] = $this->ask('Super Admin email', 'lehung.hut@gmail.com');
                     $data['password'] = bcrypt($this->secret('Super Admin password'));
                     $data['context_id'] = "1";
                     $data['type'] = "Employee";
@@ -304,13 +251,13 @@ class LAInstall extends Command
                     \App\Models\Employee::create([
                         'name' => $data['name'],
                         'designation' => "Super Admin",
-                        'mobile' => "8888888888",
+                        'mobile' => "0888183869",
                         'mobile2' => "",
                         'email' => $data['email'],
                         'gender' => 'Male',
                         'dept' => "1",
                         'city' => "HaNoi",
-                        'address' => "HaNoi, VietName",
+                        'address' => "Hai Ba Trung",
                         'about' => "About user / biography",
                         'date_birth' => date("Y-m-d"),
                         'date_hire' => date("Y-m-d"),
@@ -337,7 +284,6 @@ class LAInstall extends Command
                 // Call Passport Routes And Add Some Configs
                 $this->info("Call Passport Routes And Add Some Configs");
                 $this->copyFile($from . "/app/Providers/AuthServiceProvider.php", $to . "/app/Providers/AuthServiceProvider.php");  ###changed
-                $this->copyFile($from . "/app/User.php", $to . "/app/User.php");  ###changed
                 $this->copyFile($from . "/.htaccess", $to . "/.htaccess");  ###changed
                 $this->copyFile($from . "/public/.htaccess", $to . "/public/.htaccess");  ###changed
                 $this->copyFile($from . "/public/resize.php", $to . "/public/resize.php");  ###changed
@@ -395,8 +341,6 @@ class LAInstall extends Command
 
 
                 $this->call('vendor:publish', ['--provider' => 'Kreait\Laravel\Firebase\ServiceProvider'], '--tag=config');
-                //Eloquent-Sluggable
-                $this->call('vendor:publish', ['--provider' => 'Cviebrock\EloquentSluggable\ServiceProvider']);
 
                 ///Edit phpredis -> predis in file database.php
                 $this->line("\nEdit phpredis -> predis in file database.php");

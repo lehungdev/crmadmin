@@ -25,7 +25,7 @@ use Illuminate\Support\Str;
 
 use App\User;
 use App\Models\Employee;
-use App\Role;
+use App\Models\Role;
 use Mail;
 use Log;
 

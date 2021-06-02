@@ -71,7 +71,7 @@ class FieldController extends Controller
                     "unique" => false,
                     "defaultvalue" => 0,
                     "minlength" => 0,
-                    "maxlength" => 11,
+                    "maxlength" => 1,
                     "required" => false,
                     "lang_active" => 0,
                     "listing_col" => true
@@ -90,7 +90,7 @@ class FieldController extends Controller
                     "unique" => false,
                     "defaultvalue" => 0,
                     "minlength" => 0,
-                    "maxlength" => 11,
+                    "maxlength" => 1,
                     "required" => false,
                     "is_public" => 0,
                     "lang_active" => 0,
@@ -102,7 +102,7 @@ class FieldController extends Controller
         // };
         $field_id = ModuleFields::createField($request);
         // Give Default Full Access to Super Admin
-        $role = \App\Role::where("name", "SUPER_ADMIN")->first();
+        $role = \App\Models\Role::where("name", "SUPER_ADMIN")->first();
         Module::setDefaultFieldRoleAccess($field_id, $role->id, "full");
         if(!empty($field_active_value)){
             $field_active_id = ModuleFields::createField((object) $field_active_value);

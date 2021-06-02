@@ -4,7 +4,7 @@
  * Help: lehung.hut@gmail.com
  * LaraAdmin is open-sourced software licensed under the MIT license.
  * Developed by: Dwij IT Solutions
- * Developer Website: http://ideagroup.vn
+ * Developer Website: http://rellifetech.com
  */
 
 namespace App\Http\Controllers\Api\Categories;

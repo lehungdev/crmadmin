@@ -4,7 +4,7 @@
  * Help: lehung.hut@gmail.com
  * CrmAdmin is open-sourced software licensed under the MIT license.
  * Developed by: Lehungdev IT Solutions
- * Developer Website: http://ideagroup.vn
+ * Developer Website: http://rellifetech.com
  */
 
 namespace App\Http\Controllers\Api\Categories;
@@ -59,13 +59,5 @@ class CategoryTransformer extends TransformerAbstract
 		}
 
 	}
-    
-	public function includeProduct(Category $categories)
-	{
-		if (!is_null($categories->product)){
-			return $this->collection($categories->product, new ProductTransformer);
-		}
-
-	}
-	//Add_belongsTo_parent
+    //Add_belongsTo_parent
 }

@@ -19,7 +19,7 @@ use Lehungdev\Crmadmin\Models\ModuleFields;
 use Lehungdev\Crmadmin\Models\ModuleFieldTypes;
 use Lehungdev\Crmadmin\CodeGenerator;
 use Illuminate\Support\Str;
-use App\Role;
+use App\Models\Role;
 use Schema;
 use Exception;
 use Lehungdev\Crmadmin\Models\Menu;

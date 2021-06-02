@@ -59,7 +59,7 @@
                     </ul>
                 @endif
             </div>
-            {!! Form::open(['action' => 'CRM\PropertyController@store', 'id' => 'property-add-form']) !!}
+            {!! Form::open(['action' => 'CRM\PropertyController@store', 'method' => 'POST', 'id' => 'property-add-form']) !!}
                 <div class="tab-content">
                     @if(isset($pvd_language))
                         @foreach ($pvd_language as $key => $value_lang)

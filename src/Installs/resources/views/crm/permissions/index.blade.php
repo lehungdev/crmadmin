@@ -53,7 +53,7 @@
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 				<h4 class="modal-title" id="myModalLabel">Add Permission</h4>
 			</div>
-			{!! Form::open(['action' => 'CRM\PermissionsController@store', 'id' => 'permission-add-form']) !!}
+			{!! Form::open(['action' => 'CRM\PermissionsController@store', 'method' => 'POST', 'id' => 'permission-add-form']) !!}
 			<div class="modal-body">
 				<div class="box-body">
                     @la_form($module)

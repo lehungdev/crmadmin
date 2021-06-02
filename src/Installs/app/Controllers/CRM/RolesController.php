@@ -22,8 +22,8 @@ use Lehungdev\Crmadmin\Models\ModuleFields;
 use Shanmuga\LaravelEntrust\Facades\LaravelEntrustFacade as LaravelEntrust;
 use Illuminate\Support\Str;
 
-use App\Role;
-use App\Permission;
+use App\Models\Role;
+use App\Models\Permission;
 
 class RolesController extends Controller
 {

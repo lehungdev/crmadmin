@@ -47,8 +47,8 @@
                             </div>
                             {{--
                             @la_input($module, 'name')
-					@la_input($module, 'image')
-					@la_input($module, 'locale')
+                            @la_input($module, 'image')
+                            @la_input($module, 'locale')
                             --}}
 
                             <div class="form-group">

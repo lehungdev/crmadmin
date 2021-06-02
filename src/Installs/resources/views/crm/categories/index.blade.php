@@ -64,9 +64,11 @@ use App\Http\Controllers\Helpers\IdeaHelper;
                             @if(empty($catItem->parent))
                                 <?php
                                     $show_menu = IdeaHelper::print_menu_editor($catItem, 'categories', $allCategory);
-                                    // dd($show_menu['catAll']);
                                     $allCategory = $show_menu['catAll'] ?? '';
                                 ?>
+                                {!! $show_menu['string'] !!}
+                    		@else
+                    			<?php break; ?>
                             @endif
                         @endforeach
                     </ol>

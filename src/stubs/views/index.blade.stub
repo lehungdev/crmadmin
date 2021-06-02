@@ -59,7 +59,7 @@
                     </ul>
                 @endif
             </div>
-            {!! Form::open(['action' => 'CRM\__controller_class_name__@store', 'id' => '__singular_var__-add-form']) !!}
+            {!! Form::open(['action' => 'CRM\__controller_class_name__@store', 'method' => 'POST', 'id' => '__singular_var__-add-form']) !!}
                 <div class="tab-content">
                     @if(isset($pvd_language))
                         @foreach ($pvd_language as $key => $value_lang)

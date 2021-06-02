@@ -7,13 +7,8 @@
  * Developer Website: http://rellifetech.com
  */
 
-namespace Tests;
-
-use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
-
-abstract class TestCase extends BaseTestCase
+class TestCase extends Illuminate\Foundation\Testing\TestCase
 {
-    use CreatesApplication;
     /**
      * The base URL to use while testing the application.
      *

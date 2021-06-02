@@ -38,7 +38,8 @@ class CategoryController extends Controller
     {
         
         $module = Module::get('Categories');
-        $getAllCategory = Category::with(['category','children'])->public()->orderBy('hierarchy', 'asc')->get(); //->orderBy('parent', 'asc')
+        $getAllCategory = Category::with(['category','children'])->public()->orderBy('parent', 'asc')->orderBy('hierarchy', 'asc')->get();
+
         $url = $request->url();
         if(Module::hasAccess($module->id)) {
             return View('crm.categories.index', [
@@ -462,15 +463,7 @@ class CategoryController extends Controller
                         // dd($value_json);
                         $data->data[$i][$j] .= '<small class="label label-primary">'. $value_json .'</small> ';
                     }
-                }
-
-                // if(!empty($module->fields[$col]) && $module->fields[$col]['field_type'] == 20){
-                //     $values_json = json_decode(str_replace('&quot;', '"', $data->data[$i][$col]), true);
-                //     $data->data[$i][$j] = '';
-                //     foreach($values_json as $value_json){
-                //         $data->data[$i][$j] .= '<small class="label label-primary">'. $value_json .'</small> ';
-                //     }
-                // }
+                } 
 
                 if(!empty($module->fields[$col]) && $module->fields[$col]['field_type'] == 20){
                     if(!is_array($data->data[$i][$col])){

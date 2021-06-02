@@ -18,7 +18,7 @@
     "creativeorange/gravatar": "^1.0.20",
     "doctrine/dbal": "^3.1.0",
     "shanmuga/laravel-entrust": "^2.2",
-    "spatie/laravel-backup": "^6.16.0",
+    "spatie/laravel-backup": "^7.6.0",
     "laravel/passport": "^10.1.3",
     "symfony/psr-http-message-bridge": "^2.1.0",
     "spatie/laravel-fractal": "^5.8.1",

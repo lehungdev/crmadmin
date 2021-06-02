@@ -53,7 +53,7 @@
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 				<h4 class="modal-title" id="myModalLabel">Add Employee</h4>
 			</div>
-			{!! Form::open(['action' => 'CRM\EmployeesController@store', 'id' => 'employee-add-form']) !!}
+			{!! Form::open(['action' => 'CRM\EmployeesController@store', 'method' => 'POST', 'id' => 'employee-add-form']) !!}
 			<div class="modal-body">
 				<div class="box-body">
                     @la_form($module)
@@ -77,7 +77,7 @@
 					<div class="form-group">
 						<label for="role">Role* :</label>
 						<select class="form-control" required="1" data-placeholder="Select Role" rel="select2" name="role">
-							<?php $roles = App\Role::all(); ?>
+							<?php $roles = App\Models\Role::all(); ?>
 							@foreach($roles as $role)
 								@if($role->id != 1)
 									<option value="{{ $role->id }}">{{ $role->name }}</option>

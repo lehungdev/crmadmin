@@ -54,15 +54,15 @@ class IdeaHelper
             $name_cat = $name_cat[config('app.locale_id')];
         } else $name_cat = $menu['name'];
 
-        if(count($childrens) > 0) 
-            $editing1 = '<a id="display_sub'.$menu['id'].'" class="display_sub btn-success btn pull-right" style="display: block;"><i class="fa fa-plus"></i></a>';
+        if(count($childrens) > 0)
+            $editing1 = '<a id="display_sub'.$menu['id'].'" class="display_sub btn-success btn pull-right" style="display: block;"><i class="fa fa-minus"></i></a>';
         else $editing1 = '';
 
 
         $editing = FormFacade::open(['route' => [config('crmadmin.adminRoute').'.categories.destroy', $menu['id']], 'method' => 'delete', 'style'=>'display:inline']);
         $editing .= $editing1;
         $editing .= '<button class="btn btn-xs btn-danger pull-right"><i class="fa fa-times"></i></button>';
-        $editing .= '<a menu_id="'.$menu['id'].'" status="2" class="addModuleMenu btn btn-danger pull-right"><i class="fa fa-plus"></i></a>';
+        $editing .= '<a menu_id="'.$menu['id'].'" status="2" class="addModuleMenu btn btn-danger pull-right"><i class="fa fa-minus"></i></a>';
         $editing .= FormFacade::close();
 
         $editing .= '<a class="editMenuBtn btn btn-xs btn-success pull-right" menu_id="'.$menu['id'].'" info=\''.json_encode($menu ?? '', JSON_UNESCAPED_UNICODE ).'\'><i class="fa fa-edit"></i></a>';
@@ -74,12 +74,12 @@ class IdeaHelper
 			        <div class="dd3-content"><a href="' . url(config('crmadmin.adminRoute') . '/'.$module_table_url) . '" > '.$name_cat.' '.$editing.'</a></div>';
 
             if(count($childrens) > 0) {
-                $str .= '<ol class="dd-list" style="display: none;">';
+                $str .= '<ol class="dd-list" style="display: block;">';
                     foreach($childrens as $children) {
-                       // if($children->is_public == 2){
+                        if(!empty($children->publish)){
                             $menu_show1 = IdeaHelper::print_menu_editor($children, 'categories', $cat_all, $module_tables);
                             $str .= $menu_show1['string'];
-                       // }
+                        }
                     }
                 $str .= '</ol>';
             }

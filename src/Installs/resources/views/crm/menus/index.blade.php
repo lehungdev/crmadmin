@@ -36,7 +36,7 @@ use Lehungdev\Crmadmin\Models\Module;
 						</div>
 						<div class="tab-pane" id="tab-custom-link">
 							
-							{!! Form::open(['action' => '\Lehungdev\Crmadmin\Controllers\MenuController@store', 'id' => 'menu-custom-form']) !!}
+							{!! Form::open(['action' => '\Lehungdev\Crmadmin\Controllers\MenuController@store', 'method' => 'POST', 'id' => 'menu-custom-form']) !!}
 								<input type="hidden" name="type" value="custom">
 								<div class="form-group">
 									<label for="url" style="font-weight:normal;">URL</label>

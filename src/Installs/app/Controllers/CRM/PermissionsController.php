@@ -23,8 +23,8 @@ use Lehungdev\Crmadmin\Helpers\LAHelper;
 use Shanmuga\LaravelEntrust\Facades\LaravelEntrustFacade as LaravelEntrust;
 use Illuminate\Support\Str;
 
-use App\Permission;
-use App\Role;
+use App\Models\Permission;
+use App\Models\Role;
 
 class PermissionsController extends Controller
 {

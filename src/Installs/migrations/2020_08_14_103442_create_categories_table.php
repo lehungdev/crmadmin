@@ -94,36 +94,15 @@ class CreateCategoriesTable extends Migration
                 "listing_col" => true,
                 "popup_vals" => "@properties",
             ], [
-                "colname" => "is_active",
+                "colname" => "publish",
                 "label" => "Kích hoạt",
                 "field_type" => "Checkbox",
                 "unique" => false,
                 "defaultvalue" => "",
                 "minlength" => 0,
-                "maxlength" => 11,
-                "required" => false,
-                "listing_col" => true
-            ], [
-                "colname" => "is_public",
-                "label" => "Duyệt bài",
-                "field_type" => "CheckboxActive",
-                "unique" => false,
-                "defaultvalue" => "",
-                "minlength" => 0,
-                "maxlength" => 11,
-                "required" => false,
-                "listing_col" => true
-            ], [
-                "colname" => "user_id",
-                "label" => "User create",
-                "field_type" => "Dropdown",
-                "unique" => false,
-                "defaultvalue" => "",
-                "minlength" => 0,
                 "maxlength" => 0,
                 "required" => false,
-                "listing_col" => true,
-                "popup_vals" => "@users",
+                "listing_col" => true
             ]
         ]);
         

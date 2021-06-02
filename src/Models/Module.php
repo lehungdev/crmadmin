@@ -94,11 +94,9 @@ class Module extends Model
      * @param $fields Array of Module fields
      * @throws Exception Throws exceptions if Invalid view_column_name provided.
      */
-    public static function generate($module_name, $module_name_db, $view_col, $faIcon, $fields)
+    public static function generate($module_name, $module_name_db, $view_col, $faIcon = "fa-cube", $fields)
     {
-        if(empty($faIcon)){
-            $faIcon = "fa-cube";
-        };
+
         $names = LAHelper::generateModuleNames($module_name, $faIcon);
         $fields = Module::format_fields($module_name, $fields);
 
@@ -109,13 +107,9 @@ class Module extends Model
         } else {
             // Check is Generated
             $is_gen = false;
-            if(file_exists(base_path('app/Http/Controllers/' . ($names->controller) . ".php"))) {
-                if(($names->model == "User" || $names->model == "Role" || $names->model == "Permission") && file_exists(base_path('app/' . ($names->model) . ".php"))) {
+            if(file_exists(base_path('app/Models/' . ($names->model) . ".php"))) {
                     $is_gen = true;
-                } else if(file_exists(base_path('app/Models/' . ($names->model) . ".php"))) {
-                    $is_gen = true;
-                }
-            }
+            }   
 
             // Create Module if not exists
             $module = Module::where('name', $names->module)->first();
@@ -134,9 +128,6 @@ class Module extends Model
             }
 
             $ftypes = ModuleFieldTypes::getFTypes();
-            //print_r($ftypes);
-            //print_r($module);
-            //print_r($fields);
 
             // Create Database Schema for table
             Schema::create($names->table, function (Blueprint $table) use ($fields, $module, $ftypes) {
@@ -192,21 +183,6 @@ class Module extends Model
                     Module::create_field_schema($table, $field);
                 }
 
-                // $table->string('name');
-                // $table->string('designation', 100);
-                // $table->string('mobile', 20);
-                // $table->string('mobile2', 20);
-                // $table->string('email', 100)->unique();
-                // $table->string('gender')->default('male');
-                // $table->integer('dept')->unsigned();
-                // $table->integer('role')->unsigned();
-                // $table->string('city', 50);
-                // $table->string('address', 1000);
-                // $table->string('about', 1000);
-                // $table->date('date_birth');
-                // $table->date('date_hire');
-                // $table->date('date_left');
-                // $table->double('salary_cur');
                 if($module->name_db == "users") {
                     $table->rememberToken();
                 }
@@ -253,8 +229,6 @@ class Module extends Model
         } else {
             $defval = $field->defaultvalue;
         }
-        // Log::debug('Module:create_field_schema ('.$update.') - '.$field->colname." - ".$field->field_type
-        // ." - ".$defval." - ".$field->maxlength);
 
         // Create Field in Database for respective Field Type
         switch($field->field_type) {
@@ -1106,6 +1080,7 @@ class Module extends Model
                     }
                 }
             }
+       
             return $rules;
         } else {
             return $rules;

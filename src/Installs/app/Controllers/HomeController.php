@@ -35,7 +35,7 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $roleCount = \App\Role::count();
+        $roleCount = \App\Models\Role::count();
 		if($roleCount != 0) {
 			if($roleCount != 0) {
 				return view('home');

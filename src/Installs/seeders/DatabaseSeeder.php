@@ -15,8 +15,8 @@ use Lehungdev\Crmadmin\Models\ModuleFieldTypes;
 use Lehungdev\Crmadmin\Models\Menu;
 use Lehungdev\Crmadmin\Models\LAConfigs;
 
-use App\Role;
-use App\Permission;
+use App\Models\Role;
+use App\Models\Permission;
 use App\Models\Department;
 use App\Models\Language;
 
