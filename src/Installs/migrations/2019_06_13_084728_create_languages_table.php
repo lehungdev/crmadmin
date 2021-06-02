@@ -4,7 +4,7 @@
  * Help: lehung.hut@gmail.com
  * CrmAdmin is open-sourced software licensed under the MIT license.
  * Developed by: Lehungdev IT Solutions
- * Developer Website: http://rellifetech.com
+ * Developer Website: http://ideagroup.vn
  */
 
 use Illuminate\Database\Schema\Blueprint;
@@ -70,7 +70,7 @@ class CreateLanguagesTable extends Migration
             "listing_col" => true,
             "popup_vals" => ["Employee", "Client"]
         ]
-        # Format Details: Check http://rellifetech.com/docs/migrations_cruds#schema-ui-types
+        # Format Details: Check http://ideagroup.vn/docs/migrations_cruds#schema-ui-types
         
         colname: Database column name. lowercase, words concatenated by underscore (_)
         label: Label of Column e.g. Name, Cost, Is Public

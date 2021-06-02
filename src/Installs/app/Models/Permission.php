@@ -7,25 +7,7 @@
  * Developer Website: http://rellifetech.com
  */
 
-namespace App;
-
-// use Shanmuga\LaravelEntrust\EntrustPermission;
-// use Illuminate\Database\Eloquent\SoftDeletes;
-
-// class Permission extends EntrustPermission
-// {
-//     use SoftDeletes;
-
-// 	protected $table = 'permissions';
-
-// 	protected $hidden = [
-
-//     ];
-
-// 	protected $guarded = [];
-
-// 	protected $dates = ['deleted_at'];
-// }
+namespace App\Models;
 
 
 use Shanmuga\LaravelEntrust\Models;

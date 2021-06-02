@@ -21,7 +21,7 @@ use Lehungdev\Crmadmin\Models\Module;
 use Lehungdev\Crmadmin\Models\ModuleFields;
 use Illuminate\Support\Str;
 
-use App\User;
+use App\Models\User;
 
 class UsersController extends Controller
 {

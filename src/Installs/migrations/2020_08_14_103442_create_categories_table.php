@@ -29,7 +29,7 @@ class CreateCategoriesTable extends Migration
                 "defaultvalue" => "",
                 "minlength" => 3,
                 "maxlength" => 255,
-                "required" => true,
+                "required" => false,
                 "listing_col" => true
             ], [
                 "colname" => "parent",
@@ -47,7 +47,7 @@ class CreateCategoriesTable extends Migration
                 "label" => "Hierarchy",
                 "field_type" => "Integer",
                 "unique" => false,
-                "defaultvalue" => "",
+                "defaultvalue" => "1000",
                 "minlength" => 0,
                 "maxlength" => 11,
                 "required" => false,
@@ -94,15 +94,36 @@ class CreateCategoriesTable extends Migration
                 "listing_col" => true,
                 "popup_vals" => "@properties",
             ], [
-                "colname" => "publish",
+                "colname" => "is_active",
                 "label" => "Kích hoạt",
                 "field_type" => "Checkbox",
                 "unique" => false,
-                "defaultvalue" => "",
+                "defaultvalue" => "0",
+                "minlength" => 0,
+                "maxlength" => 1,
+                "required" => false,
+                "listing_col" => true
+            ], [
+                "colname" => "is_public",
+                "label" => "Duyệt bài",
+                "field_type" => "CheckboxActive",
+                "unique" => false,
+                "defaultvalue" => "0",
+                "minlength" => 0,
+                "maxlength" => 1,
+                "required" => false,
+                "listing_col" => true
+            ], [
+                "colname" => "user_id",
+                "label" => "User create",
+                "field_type" => "Dropdown",
+                "unique" => false,
+                "defaultvalue" => "0",
                 "minlength" => 0,
                 "maxlength" => 0,
                 "required" => false,
-                "listing_col" => true
+                "listing_col" => true,
+                "popup_vals" => "@users",
             ]
         ]);
         

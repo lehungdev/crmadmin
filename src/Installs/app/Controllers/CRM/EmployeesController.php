@@ -23,7 +23,7 @@ use Lehungdev\Crmadmin\Models\LAConfigs;
 use Lehungdev\Crmadmin\Helpers\LAHelper;
 use Illuminate\Support\Str;
 
-use App\User;
+use App\Models\User;
 use App\Models\Employee;
 use App\Models\Role;
 use Mail;

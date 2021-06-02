@@ -4,7 +4,7 @@
  * Help: lehung.hut@gmail.com
  * CrmAdmin is open-sourced software licensed under the MIT license.
  * Developed by: Lehungdev IT Solutions
- * Developer Website: http://rellifetech.com
+ * Developer Website: http://ideagroup.vn
  */
 
 use Illuminate\Database\Schema\Blueprint;

@@ -18,7 +18,7 @@ class Category extends Model
 {
     use SoftDeletes, Cacheable, Filterable;
 
-    protected $cacheTime = 80;
+    protected $cacheTime = 0;
 
     protected $table = 'categories';
 
@@ -46,10 +46,27 @@ class Category extends Model
 			return $this->hasMany(Category::class, 'parent');
     }
 
-    public function scopePublish($query)
+    public function scopePublic($query)
     {
-        return $query->where('publish', '=', 1);
+        return $query->where([ 
+            ['is_active', 1], 
+            ['is_public', '!=', 0],
+        ]);
     }
 
-    //Add_hasMany
+    public function scopeApiPublic($query)
+    {
+        return $query->where([['is_public', 2], ['is_active', 1]]);
+    }
+
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', '=', 1);
+    }
+    
+	public function product()
+	{
+			return $this->hasMany(Product::class, 'category_id');
+	}
+	//Add_hasMany
 }

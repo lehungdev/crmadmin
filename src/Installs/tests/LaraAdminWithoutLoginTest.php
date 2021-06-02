@@ -122,7 +122,7 @@ class CrmAdminWithoutLoginTest extends TestCase
      */
     public function testSendPasswordReset()
     {
-        $user = factory(App\User::class)->create();
+        $user = factory(App\Models\User::class)->create();
 
         $this->visit('password/reset')
             ->type($user->email, 'email')

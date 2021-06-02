@@ -94,7 +94,7 @@ class Module extends Model
      * @param $fields Array of Module fields
      * @throws Exception Throws exceptions if Invalid view_column_name provided.
      */
-    public static function generate($module_name, $module_name_db, $view_col, $faIcon = "fa-cube", $fields)
+    public static function generate($module_name, $module_name_db, $view_col, $faIcon, $fields)
     {
 
         $names = LAHelper::generateModuleNames($module_name, $faIcon);
@@ -1370,7 +1370,7 @@ class Module extends Model
         }
 
         if($user_id) {
-            $user = \App\User::find($user_id);
+            $user = \App\Models\User::find($user_id);
             if(isset($user->id)) {
                 $roles = $user->roles();
             }
@@ -1428,7 +1428,7 @@ class Module extends Model
         }
 
         if($user_id) {
-            $user = \App\User::find($user_id);
+            $user = \App\Models\User::find($user_id);
             if(isset($user->id)) {
                 $roles = $user->roles();
             }
